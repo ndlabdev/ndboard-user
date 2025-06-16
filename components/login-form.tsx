@@ -1,61 +1,169 @@
+'use client'
+
+import { z } from 'zod'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage
+} from '@/components/ui/form'
 
-export function LoginForm ({
+const loginSchema = z.object({
+    email: z.string().email('Invalid email address'),
+    password: z.string().min(6, 'Password must be at least 6 characters')
+})
+
+type LoginFormValues = z.infer<typeof loginSchema>
+
+export function LoginForm({
     className,
+    onSubmit: onSubmitProp,
     ...props
-}: React.ComponentProps<'form'>) {
+}: React.ComponentProps<'form'> & {
+    onSubmit?: (values: LoginFormValues) => void | Promise<void>
+}) {
+    const form = useForm<LoginFormValues>({
+        resolver: zodResolver(loginSchema),
+        defaultValues: { email: '', password: '' }
+    })
+
+    const onSubmit = async (values: LoginFormValues) => {
+        if (onSubmitProp) {
+            await onSubmitProp(values)
+        } else {
+            console.log(values)
+        }
+    }
+
     return (
-        <form className={cn('flex flex-col gap-6', className)} {...props}>
-            <div className="flex flex-col items-center gap-2 text-center">
-                <h1 className="text-2xl font-bold">Login to your account</h1>
-                <p className="text-muted-foreground text-sm text-balance">
-                    Enter your email below to login to your account
-                </p>
-            </div>
-            <div className="grid gap-6">
-                <div className="grid gap-3">
-                    <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" placeholder="m@example.com" required />
+        <Form {...form}>
+            <form
+                className={cn('flex flex-col gap-6', className)}
+                onSubmit={form.handleSubmit(onSubmit)}
+                {...props}
+            >
+                { /* Section: Heading */}
+                <div className="flex flex-col items-center gap-2 text-center">
+                    <h1 className="text-2xl font-bold">Login to your account</h1>
+                    <p className="text-muted-foreground text-sm text-balance">
+                        Enter your email below to login to your account
+                    </p>
                 </div>
-                <div className="grid gap-3">
-                    <div className="flex items-center">
-                        <Label htmlFor="password">Password</Label>
-                        <a
-                            href="#"
-                            className="ml-auto text-sm underline-offset-4 hover:underline"
-                        >
-                            Forgot your password?
-                        </a>
+
+                { /* Section: Fields */}
+                <div className="grid gap-6">
+                    { /* Email */}
+                    <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Email</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="email"
+                                        placeholder="m@example.com"
+                                        autoComplete="email"
+                                        {...field}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    { /* Password */}
+                    <FormField
+                        control={form.control}
+                        name="password"
+                        render={({ field }) => (
+                            <FormItem>
+                                <div className="flex items-center">
+                                    <FormLabel>Password</FormLabel>
+                                    <a
+                                        href="#"
+                                        className="ml-auto text-sm underline-offset-4 hover:underline"
+                                    >
+                                        Forgot your password?
+                                    </a>
+                                </div>
+                                <FormControl>
+                                    <Input
+                                        type="password"
+                                        autoComplete="current-password"
+                                        {...field}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    { /* Submit button */}
+                    <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+                        Login
+                    </Button>
+
+                    { /* Divider */}
+                    <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+                        <span className="bg-background text-muted-foreground relative z-10 px-2">
+                            Or continue with
+                        </span>
                     </div>
-                    <Input id="password" type="password" required />
+
+                    { /* Login with GitHub */}
+                    <Button variant="outline" className="w-full" type="button">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="mr-2 h-4 w-4">
+                            <path
+                                d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
+                                fill="currentColor"
+                            />
+                        </svg>
+                        Login with GitHub
+                    </Button>
+
+                    { /* Login with Google */}
+                    <Button variant="outline" className="w-full" type="button">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" className="mr-2 h-4 w-4">
+                            <g>
+                                <path
+                                    fill="#4285F4"
+                                    d="M24 9.5c3.54 0 6.4 1.52 7.87 2.78l5.81-5.81C34.17 3.36 29.62 1.5 24 1.5 14.82 1.5 6.81 7.97 3.62 16.14l6.97 5.41C12.28 15.08 17.67 9.5 24 9.5z"
+                                />
+                                <path
+                                    fill="#34A853"
+                                    d="M46.14 24.49c0-1.68-.15-3.29-.44-4.84H24v9.17h12.49c-.54 2.9-2.18 5.35-4.66 7.01l7.29 5.67c4.25-3.91 6.72-9.68 6.72-16.01z"
+                                />
+                                <path
+                                    fill="#FBBC05"
+                                    d="M10.59 28.35A14.5 14.5 0 0 1 9.5 24c0-1.52.25-2.99.69-4.35l-6.97-5.41A23.95 23.95 0 0 0 0 24c0 3.8.91 7.4 2.51 10.58l8.08-6.23z"
+                                />
+                                <path
+                                    fill="#EA4335"
+                                    d="M24 46.5c6.43 0 11.82-2.13 15.76-5.82l-7.29-5.67c-2.03 1.37-4.61 2.18-8.47 2.18-6.33 0-11.72-5.58-13.41-12.92l-8.08 6.23C6.81 40.03 14.82 46.5 24 46.5z"
+                                />
+                                <path fill="none" d="M0 0h48v48H0z" />
+                            </g>
+                        </svg>
+                        Login with Google
+                    </Button>
                 </div>
-                <Button type="submit" className="w-full">
-                    Login
-                </Button>
-                <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
-                    <span className="bg-background text-muted-foreground relative z-10 px-2">
-                        Or continue with
-                    </span>
+
+                { /* Section: Footer */}
+                <div className="text-center text-sm">
+                    Don&apos;t have an account?{' '}
+                    <a href="#" className="underline underline-offset-4">
+                        Sign up
+                    </a>
                 </div>
-                <Button variant="outline" className="w-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path
-                            d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
-                            fill="currentColor"
-                        />
-                    </svg>
-                    Login with GitHub
-                </Button>
-            </div>
-            <div className="text-center text-sm">
-                Don&apos;t have an account?{ ' ' }
-                <a href="#" className="underline underline-offset-4">
-                    Sign up
-                </a>
-            </div>
-        </form>
+            </form>
+        </Form>
     )
 }
