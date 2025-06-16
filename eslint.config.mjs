@@ -37,7 +37,6 @@ const eslintConfig = [
             // JSX: closing tag, prop spacing
             'react/jsx-tag-spacing': ['error', { beforeSelfClosing: 'always' }],
             'react/jsx-closing-bracket-location': ['error', 'line-aligned'],
-            'react/jsx-curly-spacing': ['error', { when: 'never', children: { when: 'always' } }],
             'react/jsx-equals-spacing': ['error', 'never'],
 
             // Newline before return

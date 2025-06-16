@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { Loader2Icon } from 'lucide-react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -15,41 +16,46 @@ import {
     FormLabel,
     FormMessage
 } from '@/components/ui/form'
-import { useLoginMutation } from '@/features/auth/hooks/useLoginMutation'
+import { useRegisterMutation } from '@/features/auth/hooks/useRegisterMutation'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
-const loginSchema = z.object({
+const registerSchema = z.object({
+    name: z.string().min(2, 'Name is required'),
     email: z.string().email('Invalid email address'),
     password: z.string().min(6, 'Password must be at least 6 characters')
 })
 
-type LoginFormValues = z.infer<typeof loginSchema>
+type RegisterFormValues = z.infer<typeof registerSchema>
 
-export function AuthLoginForm({
+export function AuthRegisterForm({
     className,
     ...props
 }: React.ComponentProps<'form'>) {
     const router = useRouter()
 
-    const form = useForm<LoginFormValues>({
-        resolver: zodResolver(loginSchema),
+    const form = useForm<RegisterFormValues>({
+        resolver: zodResolver(registerSchema),
         defaultValues: {
+            name: '',
             email: '',
             password: ''
         }
     })
 
-    const loginMutation = useLoginMutation(
-        (data) => {
-            if (data.data?.token) {
-                localStorage.setItem('token', data.data.token)
-                router.push('/dashboard')
-            }
-        }
-    )
+    const registerMutation = useRegisterMutation(() => {
+        toast.success('Register successful! Please login.')
+        router.push('/login')
+    }, (error) => {
+        const msg =
+            (error as { message?: string })?.message ||
+            'Register failed. Please try again.'
 
-    const onSubmit = (values: LoginFormValues) => {
-        loginMutation.mutate(values)
+        toast.error(msg)
+    })
+
+    const onSubmit = (values: RegisterFormValues) => {
+        registerMutation.mutate(values)
     }
 
     return (
@@ -61,14 +67,34 @@ export function AuthLoginForm({
             >
                 { /* Section: Heading */ }
                 <div className="flex flex-col items-center gap-2 text-center">
-                    <h1 className="text-2xl font-bold">Login to your account</h1>
+                    <h1 className="text-2xl font-bold">Create your account</h1>
                     <p className="text-muted-foreground text-sm text-balance">
-                        Enter your email below to login to your account
+                        Enter your information to register a new account
                     </p>
                 </div>
 
                 { /* Section: Fields */ }
                 <div className="grid gap-6">
+                    { /* Name */ }
+                    <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Name</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="text"
+                                        placeholder="Your name"
+                                        autoComplete="name"
+                                        {...field}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
                     { /* Email */ }
                     <FormField
                         control={form.control}
@@ -95,15 +121,7 @@ export function AuthLoginForm({
                         name="password"
                         render={({ field }) => (
                             <FormItem>
-                                <div className="flex items-center">
-                                    <FormLabel>Password</FormLabel>
-                                    <a
-                                        href="#"
-                                        className="ml-auto text-sm underline-offset-4 hover:underline"
-                                    >
-                                        Forgot your password?
-                                    </a>
-                                </div>
+                                <FormLabel>Password</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="password"
@@ -117,8 +135,13 @@ export function AuthLoginForm({
                     />
 
                     { /* Submit button */ }
-                    <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-                        Login
+                    <Button type="submit" className="w-full" disabled={form.formState.isSubmitting || registerMutation.isPending}>
+                        {registerMutation.isPending ? (
+                            <>
+                                <Loader2Icon className="animate-spin" />
+                                Registering...
+                            </>
+                        ) : 'Register'}
                     </Button>
 
                     { /* Divider */ }
@@ -168,9 +191,9 @@ export function AuthLoginForm({
 
                 { /* Section: Footer */ }
                 <div className="text-center text-sm">
-                    Don&apos;t have an account?{ ' ' }
-                    <Link href="/register" className="underline underline-offset-4">
-                        Sign up
+                    Already have an account?{ ' ' }
+                    <Link href="/login" className="underline underline-offset-4">
+                        Login
                     </Link>
                 </div>
             </form>

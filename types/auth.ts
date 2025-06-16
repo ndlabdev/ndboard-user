@@ -10,3 +10,21 @@ export interface LoginResponse {
         token: string
     }
 }
+
+export interface RegisterRequest {
+    name: string
+    email: string
+    password: string
+}
+
+export interface RegisterResponse {
+    code: string
+    message: string
+    data?: {
+        user: {
+            id: string
+            name: string
+            email: string
+        }
+    }
+}
