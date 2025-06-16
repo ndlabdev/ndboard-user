@@ -1,0 +1,16 @@
+{
+    "editor.guides.bracketPairs": "active",
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 4,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit"
+    },
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "files.associations": {
+        "*.css": "tailwindcss"
+    },
+    "editor.quickSuggestions": {
+        "strings": true
+    },
+}
