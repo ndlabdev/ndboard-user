@@ -4,13 +4,13 @@ export type ApiError = {
     data?: unknown
 }
 
-export async function apiFetch<T> (
+export async function apiFetch<T>(
     url: string,
     options?: RequestInit & { parseJson?: boolean }
 ): Promise<T> {
     const { parseJson = true, ...fetchOptions } = options || {}
 
-    const res = await fetch(url, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
         ...fetchOptions,
         headers: {
             'Content-Type': 'application/json',

@@ -1,13 +1,13 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
+import { dirname } from 'path'
+import { fileURLToPath } from 'url'
+import { FlatCompat } from '@eslint/eslintrc'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 const compat = new FlatCompat({
-    baseDirectory: __dirname,
-});
+    baseDirectory: __dirname
+})
 
 const eslintConfig = [
     ...compat.config({
@@ -22,9 +22,6 @@ const eslintConfig = [
             'quotes': ['error', 'single'],
             'semi': ['error', 'never'],
             'comma-dangle': ['error', 'never'],
-
-            // Space before function paren
-            'space-before-function-paren': ['error', 'always'],
 
             // No unused vars (bắt buộc để code sạch)
             'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }], // ignore _props, _unused
@@ -43,9 +40,6 @@ const eslintConfig = [
             'react/jsx-curly-spacing': ['error', { when: 'never', children: { when: 'always' } }],
             'react/jsx-equals-spacing': ['error', 'never'],
 
-            // Max length line (giới hạn 120 ký tự/line cho dễ đọc)
-            'max-len': ['warn', { code: 120, ignoreUrls: true, ignoreTemplateLiterals: true }],
-
             // Newline before return
             'newline-before-return': 'error',
 
@@ -56,9 +50,9 @@ const eslintConfig = [
                 { blankLine: 'always', prev: ['const', 'let', 'var'], next: '*' },
                 { blankLine: 'any', prev: ['const', 'let', 'var'], next: ['const', 'let', 'var'] },
                 { blankLine: 'always', prev: '*', next: 'return' }
-            ],
+            ]
         }
     })
-];
+]
 
-export default eslintConfig;
+export default eslintConfig
