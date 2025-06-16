@@ -4,10 +4,17 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-    code: string
-    message: string
     data?: {
         token: string
+        user: {
+            id: string
+            name: string
+            email: string
+            role: string
+            provider: string
+            createdAt: string
+            isVerified: false
+        }
     }
 }
 
@@ -18,13 +25,15 @@ export interface RegisterRequest {
 }
 
 export interface RegisterResponse {
-    code: string
-    message: string
-    data?: {
+    data: {
         user: {
             id: string
             name: string
             email: string
+            role: string
+            provider: string
+            createdAt: string
+            isVerified: false
         }
     }
 }

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { Loader2Icon } from 'lucide-react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -15,7 +16,7 @@ import {
     FormLabel,
     FormMessage
 } from '@/components/ui/form'
-import { useLoginMutation } from '@/features/auth/hooks/useLoginMutation'
+import { useLoginMutation } from '@/features/auth'
 import { useRouter } from 'next/navigation'
 
 const loginSchema = z.object({
@@ -117,8 +118,13 @@ export function AuthLoginForm({
                     />
 
                     { /* Submit button */ }
-                    <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-                        Login
+                    <Button type="submit" className="w-full" disabled={form.formState.isSubmitting  || loginMutation.isPending}>
+                        {loginMutation.isPending ? (
+                            <>
+                                <Loader2Icon className="animate-spin" />
+                                Registering...
+                            </>
+                        ) : 'Login'}
                     </Button>
 
                     { /* Divider */ }

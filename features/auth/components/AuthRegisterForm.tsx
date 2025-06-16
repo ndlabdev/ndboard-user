@@ -16,7 +16,7 @@ import {
     FormLabel,
     FormMessage
 } from '@/components/ui/form'
-import { useRegisterMutation } from '@/features/auth/hooks/useRegisterMutation'
+import { useRegisterMutation } from '@/features/auth'
 import { useRouter } from '@bprogress/next/app'
 import { toast } from 'sonner'
 
