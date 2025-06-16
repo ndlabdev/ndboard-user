@@ -17,7 +17,7 @@ import {
     FormMessage
 } from '@/components/ui/form'
 import { useRegisterMutation } from '@/features/auth/hooks/useRegisterMutation'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@bprogress/next/app'
 import { toast } from 'sonner'
 
 const registerSchema = z.object({
