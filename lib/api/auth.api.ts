@@ -1,5 +1,5 @@
 import { apiFetch } from '../fetcher'
-import type { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } from '@/types'
+import type { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse, LoginGoogleResponse } from '@/types'
 
 export function loginApi(payload: LoginRequest): Promise<LoginResponse> {
     return apiFetch<LoginResponse>('/auth/login', {
@@ -13,4 +13,12 @@ export function registerApi(payload: RegisterRequest): Promise<RegisterResponse>
         method: 'POST',
         body: JSON.stringify(payload)
     })
+}
+
+export function loginGoogleApi(): Promise<LoginGoogleResponse> {
+    return apiFetch<LoginGoogleResponse>('/auth/google')
+}
+
+export function loginGoogleCallbackApi(): Promise<LoginResponse> {
+    return apiFetch<LoginResponse>('/auth/google/callback')
 }

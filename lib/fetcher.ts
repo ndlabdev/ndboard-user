@@ -12,6 +12,7 @@ export async function apiFetch<T>(
 
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
         ...fetchOptions,
+        credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
             ...(fetchOptions.headers || {})

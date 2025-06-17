@@ -13,7 +13,7 @@ export interface LoginResponse {
             role: string
             provider: string
             createdAt: string
-            isVerified: false
+            isVerified: boolean
         }
     }
 }
@@ -33,7 +33,13 @@ export interface RegisterResponse {
             role: string
             provider: string
             createdAt: string
-            isVerified: false
+            isVerified: boolean
         }
+    }
+}
+
+export interface LoginGoogleResponse {
+    data: {
+        url: string
     }
 }

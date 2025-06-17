@@ -1,6 +1,6 @@
 import { useMutation, UseMutationResult } from '@tanstack/react-query'
-import { loginApi } from '@/lib/api/auth.api'
-import type { LoginRequest, LoginResponse } from '@/types/auth'
+import { loginApi, loginGoogleApi, loginGoogleCallbackApi } from '@/lib/api'
+import type { LoginRequest, LoginResponse, LoginGoogleResponse } from '@/types/auth'
 
 export function useLoginMutation(
     onSuccess?: (_data: LoginResponse) => void,
@@ -8,6 +8,28 @@ export function useLoginMutation(
 ): UseMutationResult<LoginResponse, unknown, LoginRequest, unknown> {
     return useMutation<LoginResponse, unknown, LoginRequest>({
         mutationFn: loginApi,
+        onSuccess,
+        onError
+    })
+}
+
+export function useLoginGoogleMutation(
+    onSuccess?: (_data: LoginGoogleResponse) => void,
+    onError?: (_error: unknown) => void
+): UseMutationResult<LoginGoogleResponse, unknown, unknown, unknown> {
+    return useMutation<LoginGoogleResponse, unknown, unknown>({
+        mutationFn: loginGoogleApi,
+        onSuccess,
+        onError
+    })
+}
+
+export function useLoginGoogleCallbackMutation(
+    onSuccess?: (_data: LoginResponse) => void,
+    onError?: (_error: unknown) => void
+): UseMutationResult<LoginResponse, unknown, unknown, unknown> {
+    return useMutation<LoginResponse, unknown, unknown>({
+        mutationFn: loginGoogleCallbackApi,
         onSuccess,
         onError
     })
