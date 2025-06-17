@@ -38,6 +38,11 @@ export interface RegisterResponse {
     }
 }
 
+export interface LoginSocialParams {
+    code: string
+    state: string
+}
+
 export interface LoginGoogleResponse {
     data: {
         url: string

@@ -1,19 +1,21 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from '@bprogress/next/app'
+import { useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
 import { useLoginGoogleCallbackMutation } from '@/features/auth'
 
 export default function GoogleCallbackPage() {
-    const searchParams = useSearchParams()
     const router = useRouter()
+    const searchParams = useSearchParams()
     const code = searchParams.get('code')
+    const state = searchParams.get('state')
     const { mutate, isPending, isError, error } = useLoginGoogleCallbackMutation()
 
     useEffect(() => {
-        if (code) {
-            mutate(code, {
+        if (code && state) {
+            mutate({ code, state }, {
                 onSuccess: (res) => {
                     localStorage.setItem('token', res.data?.token as string)
                     toast.success('Login with Google successful!')
@@ -35,7 +37,8 @@ export default function GoogleCallbackPage() {
             toast.error('Missing Google code!')
             router.push('/login')
         }
-    }, [code])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [code, state])
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-indigo-50 to-white dark:from-[#18181b] dark:to-zinc-900 px-4">

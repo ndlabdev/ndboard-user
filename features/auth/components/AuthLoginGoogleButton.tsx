@@ -21,6 +21,7 @@ export function AuthLoginGoogleButton() {
                 const msg =
                     (error as { message?: string })?.message ||
                     'Login failed. Please try again.'
+
                 toast.error(msg)
             }
         })
