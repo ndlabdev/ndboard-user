@@ -1,3 +1,5 @@
+import { User } from './user'
+
 export interface LoginRequest {
     email: string
     password: string
@@ -6,16 +8,7 @@ export interface LoginRequest {
 export interface LoginResponse {
     data?: {
         token: string
-        user: {
-            id: string
-            name: string
-            email: string
-            username: string
-            role: string
-            provider: string
-            createdAt: string
-            isVerified: boolean
-        }
+        user: User['data']
     }
 }
 
@@ -27,16 +20,7 @@ export interface RegisterRequest {
 
 export interface RegisterResponse {
     data: {
-        user: {
-            id: string
-            name: string
-            email: string
-            username: string
-            role: string
-            provider: string
-            createdAt: string
-            isVerified: boolean
-        }
+        user: User['data']
     }
 }
 

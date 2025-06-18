@@ -1,4 +1,4 @@
-import { apiFetch } from '../fetcher'
+import { apiFetch } from '@/lib/fetcher'
 import type { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse, LoginGoogleResponse, LoginSocialParams } from '@/types'
 
 export function loginApi(payload: LoginRequest): Promise<LoginResponse> {

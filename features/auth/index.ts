@@ -1,4 +1,5 @@
 // ** Hooks
+export * from './hooks/useMeQuery'
 export * from './hooks/useLoginMutation'
 export * from './hooks/useRegisterMutation'
 

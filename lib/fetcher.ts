@@ -10,11 +10,18 @@ export async function apiFetch<T>(
 ): Promise<T> {
     const { parseJson = true, ...fetchOptions } = options || {}
 
+    let token: string | null = null
+
+    if (typeof window !== 'undefined') {
+        token = localStorage.getItem('token')
+    }
+
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
         ...fetchOptions,
         credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
             ...(fetchOptions.headers || {})
         }
     })
