@@ -17,9 +17,7 @@ import {
     FormMessage
 } from '@/components/ui/form'
 import { useLoginMutation } from '@/features/auth'
-import { useRouter } from 'next/navigation'
-import { loginGoogleApi } from '@/lib/api'
-import { toast } from 'sonner'
+import { useRouter } from '@bprogress/next/app'
 import { AuthLoginGoogleButton } from './AuthLoginGoogleButton'
 
 const loginSchema = z.object({
@@ -63,7 +61,7 @@ export function AuthLoginForm({
                 onSubmit={form.handleSubmit(onSubmit)}
                 {...props}
             >
-                { /* Section: Heading */}
+                {/* Section: Heading */}
                 <div className="flex flex-col items-center gap-2 text-center">
                     <h1 className="text-2xl font-bold">Login to your account</h1>
                     <p className="text-muted-foreground text-sm text-balance">
@@ -71,9 +69,9 @@ export function AuthLoginForm({
                     </p>
                 </div>
 
-                { /* Section: Fields */}
+                {/* Section: Fields */}
                 <div className="grid gap-6">
-                    { /* Email */}
+                    {/* Email */}
                     <FormField
                         control={form.control}
                         name="email"
@@ -93,7 +91,7 @@ export function AuthLoginForm({
                         )}
                     />
 
-                    { /* Password */}
+                    {/* Password */}
                     <FormField
                         control={form.control}
                         name="password"
@@ -120,7 +118,7 @@ export function AuthLoginForm({
                         )}
                     />
 
-                    { /* Submit button */}
+                    {/* Submit button */}
                     <Button type="submit" className="w-full" disabled={form.formState.isSubmitting || loginMutation.isPending}>
                         {loginMutation.isPending ? (
                             <>
@@ -130,14 +128,14 @@ export function AuthLoginForm({
                         ) : 'Login'}
                     </Button>
 
-                    { /* Divider */}
+                    {/* Divider */}
                     <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
                         <span className="bg-background text-muted-foreground relative z-10 px-2">
                             Or continue with
                         </span>
                     </div>
 
-                    { /* Login with GitHub */}
+                    {/* Login with GitHub */}
                     <Button variant="outline" className="w-full" type="button">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="mr-2 h-4 w-4">
                             <path
@@ -148,11 +146,11 @@ export function AuthLoginForm({
                         Login with GitHub
                     </Button>
 
-                    { /* Login with Google */}
+                    {/* Login with Google */}
                     <AuthLoginGoogleButton />
                 </div>
 
-                { /* Section: Footer */}
+                {/* Section: Footer */}
                 <div className="text-center text-sm">
                     Don&apos;t have an account?{' '}
                     <Link href="/register" className="underline underline-offset-4">
