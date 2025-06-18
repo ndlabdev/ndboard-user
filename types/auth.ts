@@ -10,6 +10,7 @@ export interface LoginResponse {
             id: string
             name: string
             email: string
+            username: string
             role: string
             provider: string
             createdAt: string
@@ -30,6 +31,7 @@ export interface RegisterResponse {
             id: string
             name: string
             email: string
+            username: string
             role: string
             provider: string
             createdAt: string

@@ -20,7 +20,7 @@ export default function GoogleCallbackPage() {
                     localStorage.setItem('token', res.data?.token as string)
                     toast.success('Login with Google successful!')
                     setTimeout(() => {
-                        router.push('/dashboard')
+                        router.push(`/u/${res.data?.user.username}/boards`)
                     }, 1000)
                 },
                 onError: (err) => {
