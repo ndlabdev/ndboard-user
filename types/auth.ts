@@ -29,7 +29,7 @@ export interface LoginSocialParams {
     state: string
 }
 
-export interface LoginGoogleResponse {
+export interface LoginSocialResponse {
     data: {
         url: string
     }

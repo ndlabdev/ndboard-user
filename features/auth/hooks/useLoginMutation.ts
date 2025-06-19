@@ -1,6 +1,6 @@
 import { useMutation, UseMutationResult } from '@tanstack/react-query'
-import { loginApi, loginGoogleApi, loginGoogleCallbackApi } from '@/lib/api'
-import type { LoginRequest, LoginResponse, LoginGoogleResponse, LoginSocialParams } from '@/types/auth'
+import { loginApi, loginGoogleApi, loginGoogleCallbackApi, loginGithubApi, loginGithubCallbackApi } from '@/lib/api'
+import type { LoginRequest, LoginResponse, LoginSocialResponse, LoginSocialParams } from '@/types/auth'
 
 export function useLoginMutation(
     onSuccess?: (_data: LoginResponse) => void,
@@ -14,10 +14,10 @@ export function useLoginMutation(
 }
 
 export function useLoginGoogleMutation(
-    onSuccess?: (_data: LoginGoogleResponse) => void,
+    onSuccess?: (_data: LoginSocialResponse) => void,
     onError?: (_error: unknown) => void
-): UseMutationResult<LoginGoogleResponse, unknown, unknown, unknown> {
-    return useMutation<LoginGoogleResponse, unknown, unknown>({
+): UseMutationResult<LoginSocialResponse, unknown, unknown, unknown> {
+    return useMutation<LoginSocialResponse, unknown, unknown>({
         mutationFn: loginGoogleApi,
         onSuccess,
         onError
@@ -30,6 +30,28 @@ export function useLoginGoogleCallbackMutation(
 ): UseMutationResult<LoginResponse, unknown, LoginSocialParams, unknown> {
     return useMutation<LoginResponse, unknown, LoginSocialParams>({
         mutationFn: loginGoogleCallbackApi,
+        onSuccess,
+        onError
+    })
+}
+
+export function useLoginGithubMutation(
+    onSuccess?: (_data: LoginSocialResponse) => void,
+    onError?: (_error: unknown) => void
+): UseMutationResult<LoginSocialResponse, unknown, unknown, unknown> {
+    return useMutation<LoginSocialResponse, unknown, unknown>({
+        mutationFn: loginGithubApi,
+        onSuccess,
+        onError
+    })
+}
+
+export function useLoginGithubCallbackMutation(
+    onSuccess?: (_data: LoginResponse) => void,
+    onError?: (_error: unknown) => void
+): UseMutationResult<LoginResponse, unknown, LoginSocialParams, unknown> {
+    return useMutation<LoginResponse, unknown, LoginSocialParams>({
+        mutationFn: loginGithubCallbackApi,
         onSuccess,
         onError
     })
