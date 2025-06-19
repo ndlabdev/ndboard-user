@@ -25,10 +25,9 @@ import {
     SidebarHeader,
     SidebarRail
 } from '@/components/ui/sidebar'
-import { useMeQuery } from '@/features/auth'
 import { Skeleton } from './ui/skeleton'
+import { useUserContext } from '@/features/auth'
 
-// This is sample data.
 const data = {
     teams: [
         {
@@ -154,7 +153,7 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-    const { data: user, isLoading, isError } = useMeQuery()
+    const { user, isLoading, isError } = useUserContext()
 
     return (
         <Sidebar collapsible="icon" {...props}>
@@ -178,7 +177,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     </div>
                 )}
                 {isError && <span className="text-xs text-red-500 px-2">Failed to load user info</span>}
-                {!isLoading && !isError && user?.data && <NavUser user={user.data} />}
+                {!isLoading && !isError && user && <NavUser user={user} />}
             </SidebarFooter>
             <SidebarRail />
         </Sidebar>
