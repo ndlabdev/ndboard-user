@@ -16,6 +16,7 @@ import {
     FormLabel,
     FormMessage
 } from '@/components/ui/form'
+import { toast } from 'sonner'
 import { useLoginMutation } from '@/features/auth'
 import { useRouter } from '@bprogress/next/app'
 import { AuthLoginGoogleButton } from './AuthLoginGoogleButton'
@@ -47,7 +48,14 @@ export function AuthLoginForm({
             if (data.data?.token) {
                 localStorage.setItem('token', data.data.token)
                 router.push('/dashboard')
+                router.push(`/u/${data?.data.user.username}/boards`)
             }
+        }, (error) => {
+            const msg =
+                (error as { message?: string })?.message ||
+                'Login failed. Please try again.'
+
+            toast.error(msg)
         }
     )
 
