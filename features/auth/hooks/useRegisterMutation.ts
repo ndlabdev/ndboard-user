@@ -1,5 +1,5 @@
 import { useMutation, UseMutationResult } from '@tanstack/react-query'
-import { registerApi } from '@/lib/api'
+import { authRegisterApi } from '@/lib/api'
 import type { RegisterRequest, RegisterResponse } from '@/types/auth'
 
 export function useRegisterMutation(
@@ -7,7 +7,7 @@ export function useRegisterMutation(
     onError?: (_error: unknown) => void
 ): UseMutationResult<RegisterResponse, unknown, RegisterRequest, unknown> {
     return useMutation<RegisterResponse, unknown, RegisterRequest>({
-        mutationFn: registerApi,
+        mutationFn: authRegisterApi,
         onSuccess,
         onError
     })

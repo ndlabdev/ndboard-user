@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import ReactQueryProvider from '@/providers/ReactQueryProvider'
 import RouteChangeProgress from '@/providers/RouteChangeProgress'
+import { AuthProvider } from '@/features/auth'
 import { Toaster } from '@/components/ui/sonner'
 
 const geistSans = Geist({
@@ -32,8 +33,10 @@ export default function RootLayout({
             >
                 <ReactQueryProvider>
                     <RouteChangeProgress>
-                        {children}
-                        <Toaster richColors position='top-center' />
+                        <AuthProvider>
+                            {children}
+                            <Toaster richColors position='top-center' />
+                        </AuthProvider>
                     </RouteChangeProgress>
                 </ReactQueryProvider>
             </body>

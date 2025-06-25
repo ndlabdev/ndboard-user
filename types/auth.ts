@@ -34,3 +34,10 @@ export interface LoginSocialResponse {
         url: string
     }
 }
+
+export interface RefreshTokenResponse {
+    data?: {
+        token: string
+        user: User['data']
+    }
+}

@@ -1,5 +1,5 @@
 import { useMutation, UseMutationResult } from '@tanstack/react-query'
-import { loginApi, loginGoogleApi, loginGoogleCallbackApi, loginGithubApi, loginGithubCallbackApi } from '@/lib/api'
+import { authLoginApi, authLoginGoogleApi, authLoginGoogleCallbackApi, authLoginGithubApi, authLoginGithubCallbackApi } from '@/lib/api'
 import type { LoginRequest, LoginResponse, LoginSocialResponse, LoginSocialParams } from '@/types/auth'
 
 export function useLoginMutation(
@@ -7,7 +7,7 @@ export function useLoginMutation(
     onError?: (_error: unknown) => void
 ): UseMutationResult<LoginResponse, unknown, LoginRequest, unknown> {
     return useMutation<LoginResponse, unknown, LoginRequest>({
-        mutationFn: loginApi,
+        mutationFn: authLoginApi,
         onSuccess,
         onError
     })
@@ -18,7 +18,7 @@ export function useLoginGoogleMutation(
     onError?: (_error: unknown) => void
 ): UseMutationResult<LoginSocialResponse, unknown, unknown, unknown> {
     return useMutation<LoginSocialResponse, unknown, unknown>({
-        mutationFn: loginGoogleApi,
+        mutationFn: authLoginGoogleApi,
         onSuccess,
         onError
     })
@@ -29,7 +29,7 @@ export function useLoginGoogleCallbackMutation(
     onError?: (_error: unknown) => void
 ): UseMutationResult<LoginResponse, unknown, LoginSocialParams, unknown> {
     return useMutation<LoginResponse, unknown, LoginSocialParams>({
-        mutationFn: loginGoogleCallbackApi,
+        mutationFn: authLoginGoogleCallbackApi,
         onSuccess,
         onError
     })
@@ -40,7 +40,7 @@ export function useLoginGithubMutation(
     onError?: (_error: unknown) => void
 ): UseMutationResult<LoginSocialResponse, unknown, unknown, unknown> {
     return useMutation<LoginSocialResponse, unknown, unknown>({
-        mutationFn: loginGithubApi,
+        mutationFn: authLoginGithubApi,
         onSuccess,
         onError
     })
@@ -51,7 +51,7 @@ export function useLoginGithubCallbackMutation(
     onError?: (_error: unknown) => void
 ): UseMutationResult<LoginResponse, unknown, LoginSocialParams, unknown> {
     return useMutation<LoginResponse, unknown, LoginSocialParams>({
-        mutationFn: loginGithubCallbackApi,
+        mutationFn: authLoginGithubCallbackApi,
         onSuccess,
         onError
     })
