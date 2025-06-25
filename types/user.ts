@@ -1,7 +1,7 @@
 export interface User {
     data: {
         id: string
-        avatar: string
+        avatarUrl: string
         name: string
         email: string
         username: string

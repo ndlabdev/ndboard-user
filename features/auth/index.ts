@@ -10,3 +10,4 @@ export * from './components/AuthRegisterForm'
 
 // ** Context
 export * from './contexts/AuthContext'
+export * from './contexts/UserContext'
