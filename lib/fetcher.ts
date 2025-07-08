@@ -4,6 +4,11 @@ export type ApiError = {
     data?: unknown
 }
 
+type ApiFetchOptions = RequestInit & {
+    parseJson?: boolean
+    query?: Record<string, string | number | boolean | undefined | null>
+}
+
 function getTokenFromCookie(tokenName: string): string | undefined {
     if (typeof document === 'undefined') return undefined
     const match = document.cookie.match(new RegExp(`(^| )${tokenName}=([^;]+)`))
@@ -11,14 +16,30 @@ function getTokenFromCookie(tokenName: string): string | undefined {
     return match ? decodeURIComponent(match[2]) : undefined
 }
 
+function buildQueryString(query?: Record<string, string | number | boolean | undefined | null>): string {
+    if (!query) return ''
+
+    const params = new URLSearchParams()
+    Object.entries(query).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+            params.append(key, String(value))
+        }
+    })
+    const str = params.toString()
+
+    return str ? `?${str}` : ''
+}
+
 export async function apiFetch<T>(
     url: string,
-    options?: RequestInit & { parseJson?: boolean }
+    options?: ApiFetchOptions
 ): Promise<T> {
-    const { parseJson = true, ...fetchOptions } = options || {}
+    const { parseJson = true, query, ...fetchOptions } = options || {}
     const token = getTokenFromCookie('token')
+    const queryString = buildQueryString(query)
+    const fullUrl = `${process.env.NEXT_PUBLIC_API_URL}${url}${queryString}`
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
+    const res = await fetch(fullUrl, {
         ...fetchOptions,
         credentials: 'include',
         headers: {

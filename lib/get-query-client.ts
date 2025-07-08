@@ -4,14 +4,14 @@ import {
     isServer
 } from '@tanstack/react-query'
 
-function makeQueryClient () {
+function makeQueryClient() {
     return new QueryClient({
         defaultOptions: {
             queries: {
                 staleTime: 2 * 60 * 1000,
                 gcTime: 10 * 60 * 1000,
                 refetchOnWindowFocus: false,
-                retry: 1,
+                retry: 0,
                 refetchOnMount: true,
                 refetchOnReconnect: true
             },
@@ -29,13 +29,13 @@ function makeQueryClient () {
 
 let browserQueryClient: QueryClient | undefined = undefined
 
-export function getQueryClient () {
+export function getQueryClient() {
     if (isServer) {
         return makeQueryClient()
     } else {
         if (!browserQueryClient) browserQueryClient = makeQueryClient()
 
-        
+
         return browserQueryClient
     }
 }
