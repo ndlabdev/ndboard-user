@@ -17,10 +17,11 @@ export default function GoogleCallbackPage() {
         if (code && state) {
             mutate({ code, state }, {
                 onSuccess: (res) => {
-                    localStorage.setItem('token', res.data?.token as string)
                     toast.success('Login with Google successful!')
                     setTimeout(() => {
-                        router.push(`/u/${res.data?.user.username}/boards`)
+                        const pathname = `/u/${res?.data?.user.username}/boards`
+                        localStorage.setItem('board_path', pathname)
+                        router.push(pathname)
                     }, 1000)
                 },
                 onError: (err) => {

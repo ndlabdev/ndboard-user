@@ -1,21 +1,17 @@
 'use client'
 
-import { useAuth } from '@/features/auth'
 import { useRouter } from '@bprogress/next/app'
 import { useEffect } from 'react'
 
-export function PublicGuard({ children }: { children: React.ReactNode }) {
-    const { isAuthenticated, isLoading, user } = useAuth()
+export default function PublicGuard({ children }: { children: React.ReactNode }) {
     const router = useRouter()
+    const boardPath = localStorage.getItem('board_path')
 
     useEffect(() => {
-        if (!isLoading && isAuthenticated && user?.username) {
-            router.replace(`/u/${user.username}/boards`)
+        if (boardPath) {
+            router.replace(boardPath)
         }
-    }, [isAuthenticated, isLoading, user, router])
-
-    if (isLoading) return <div>Loading...</div>
-    if (isAuthenticated) return null
+    }, [router, boardPath])
 
     return <>{children}</>
 }

@@ -17,8 +17,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const router = useRouter()
-    const { data, isLoading, isError, refetch } = useMeQuery()
+    const { data, isLoading, isFetching, isError, refetch } = useMeQuery()
     const [user, setUser] = useState<User['data'] | null>(null)
+    const [checked, setChecked] = useState(false)
 
     const refreshTokenMutation = useAuthRefreshTokenMutation(
         () => {
@@ -37,11 +38,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, [isError])
 
     useEffect(() => {
-        if (data?.data) setUser(data.data)
-    }, [data])
+        if (!isLoading && !isFetching) {
+            setUser(data?.data ?? null)
+            setChecked(true)
+        }
+    }, [isLoading, isFetching, data])
 
     const signOut = useCallback(() => {
-        localStorage.removeItem('token')
         setUser(null)
         router.replace('/login')
     }, [router])
@@ -66,7 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             value={{
                 user,
                 isAuthenticated: !!user,
-                isLoading: isLoading || refreshTokenMutation.isPending,
+                isLoading: !checked || refreshTokenMutation.isPending,
                 refresh,
                 signOut
             }}
@@ -78,7 +81,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
     const ctx = useContext(AuthContext)
-
     if (!ctx) throw new Error('useAuth must be used within AuthProvider')
 
     return ctx

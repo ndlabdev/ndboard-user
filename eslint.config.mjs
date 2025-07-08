@@ -35,7 +35,7 @@ const eslintConfig = [
             'arrow-parens': ['error', 'always'],
 
             // JSX: closing tag, prop spacing
-            'react/jsx-tag-spacing': ['error', { beforeSelfClosing: 'always', }],
+            'react/jsx-tag-spacing': ['error', { beforeSelfClosing: 'always' }],
             'react/jsx-closing-bracket-location': ['error', 'line-aligned'],
             // 'react/jsx-equals-spacing': ['error', 'never'],
 
@@ -43,13 +43,13 @@ const eslintConfig = [
             'newline-before-return': 'error',
 
             // Empty line between class members, function, block
-            'lines-between-class-members': ['error', 'always', { exceptAfterSingleLine: true }],
-            'padding-line-between-statements': [
-                'error',
-                { blankLine: 'always', prev: ['const', 'let', 'var'], next: '*' },
-                { blankLine: 'any', prev: ['const', 'let', 'var'], next: ['const', 'let', 'var'] },
-                { blankLine: 'always', prev: '*', next: 'return' }
-            ]
+            'lines-between-class-members': ['error', 'always', { exceptAfterSingleLine: true }]
+            // 'padding-line-between-statements': [
+            //     'error',
+            //     { blankLine: 'always', prev: ['const', 'let', 'var'], next: '*' },
+            //     { blankLine: 'any', prev: ['const', 'let', 'var'], next: ['const', 'let', 'var'] },
+            //     { blankLine: 'always', prev: '*', next: 'return' }
+            // ]
         }
     })
 ]

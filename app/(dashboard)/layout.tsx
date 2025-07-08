@@ -1,5 +1,12 @@
-import { PrivateGuard } from '@/components/guards/PrivateGuard'
+import { AuthProvider } from '@/features/auth'
+import PrivateGuard from '@/components/guards/PrivateGuard'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-    return <PrivateGuard>{children}</PrivateGuard>
+    return (
+        <AuthProvider>
+            <PrivateGuard>
+                {children}
+            </PrivateGuard>
+        </AuthProvider>
+    )
 }

@@ -8,10 +8,10 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator
 } from '@/components/ui/breadcrumb'
-import { useUserContext } from '@/features/auth'
+import { useAuth } from '@/features/auth'
 
 export function AppBreadcrumb() {
-    const { user } = useUserContext()
+    const { user } = useAuth()
 
     return (
         <Breadcrumb>

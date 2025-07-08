@@ -21,7 +21,7 @@ import {
     SidebarRail
 } from '@/components/ui/sidebar'
 import { Skeleton } from './ui/skeleton'
-import { useUserContext } from '@/features/auth'
+import { useAuth } from '@/features/auth'
 
 const data = {
     teams: [
@@ -61,7 +61,7 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-    const { user, isLoading, isError } = useUserContext()
+    const { user, isLoading } = useAuth()
 
     return (
         <Sidebar collapsible="icon" {...props}>
@@ -83,8 +83,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         </div>
                     </div>
                 )}
-                {isError && <span className="text-xs text-red-500 px-2">Failed to load user info</span>}
-                {!isLoading && !isError && user && <NavUser user={user} />}
+                {!isLoading && user && <NavUser user={user} />}
             </SidebarFooter>
             <SidebarRail />
         </Sidebar>

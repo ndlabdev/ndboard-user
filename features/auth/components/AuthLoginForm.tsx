@@ -45,11 +45,9 @@ export function AuthLoginForm({
 
     const loginMutation = useLoginMutation(
         (data) => {
-            if (data.data?.token) {
-                localStorage.setItem('token', data.data.token)
-                router.push('/dashboard')
-                router.push(`/u/${data?.data.user.username}/boards`)
-            }
+            const pathname = `/u/${data?.data?.user.username}/boards`
+            localStorage.setItem('board_path', pathname)
+            router.push(pathname)
         }, (error) => {
             const msg =
                 (error as { message?: string })?.message ||
