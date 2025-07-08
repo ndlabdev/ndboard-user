@@ -4,10 +4,11 @@ import { useEffect } from 'react'
 import { useRouter } from '@bprogress/next/app'
 import { useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
-import { useLoginGoogleCallbackMutation } from '@/features/auth'
+import { useAuth, useLoginGoogleCallbackMutation } from '@/features/auth'
 
 export default function GoogleCallbackPage() {
     const router = useRouter()
+    const { setUser } = useAuth()
     const searchParams = useSearchParams()
     const code = searchParams.get('code')
     const state = searchParams.get('state')
@@ -17,12 +18,9 @@ export default function GoogleCallbackPage() {
         if (code && state) {
             mutate({ code, state }, {
                 onSuccess: (res) => {
+                    setUser(res?.data?.user)
                     toast.success('Login with Google successful!')
-                    setTimeout(() => {
-                        const pathname = `/u/${res?.data?.user.username}/boards`
-                        localStorage.setItem('board_path', pathname)
-                        router.push(pathname)
-                    }, 1000)
+                    router.push(`/u/${res?.data?.user.username}/boards`)
                 },
                 onError: (err) => {
                     toast.error(
@@ -46,7 +44,7 @@ export default function GoogleCallbackPage() {
             <div className="bg-white/90 dark:bg-zinc-900/80 shadow-xl rounded-2xl p-8 flex flex-col items-center gap-4 max-w-md w-full border border-slate-200 dark:border-zinc-800">
                 <div className="flex items-center gap-2">
                     <svg
-                        className={`h-10 w-10 ${isPending ? 'animate-spin-slow' : ''}`}
+                        className={`h-10 w-10 ${isPending ? 'animate-spin [animation-duration:2s]' : ''}`}
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 48 48"
                     >

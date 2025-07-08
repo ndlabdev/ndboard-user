@@ -1,12 +1,13 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react'
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback, Dispatch, SetStateAction } from 'react'
 import { useRouter } from '@bprogress/next/app'
 import { useMeQuery, useAuthRefreshTokenMutation } from '@/features/auth'
 import type { User } from '@/types/user'
 
 type AuthContextType = {
     user: User['data'] | null
+    setUser: Dispatch<SetStateAction<User['data'] | null>>
     isAuthenticated: boolean
     isLoading: boolean
     refresh: () => Promise<void>
@@ -68,6 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         <AuthContext.Provider
             value={{
                 user,
+                setUser,
                 isAuthenticated: !!user,
                 isLoading: !checked || refreshTokenMutation.isPending,
                 refresh,

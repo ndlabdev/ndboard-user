@@ -4,17 +4,19 @@ export type ApiError = {
     data?: unknown
 }
 
+function getTokenFromCookie(tokenName: string): string | undefined {
+    if (typeof document === 'undefined') return undefined
+    const match = document.cookie.match(new RegExp(`(^| )${tokenName}=([^;]+)`))
+
+    return match ? decodeURIComponent(match[2]) : undefined
+}
+
 export async function apiFetch<T>(
     url: string,
     options?: RequestInit & { parseJson?: boolean }
 ): Promise<T> {
     const { parseJson = true, ...fetchOptions } = options || {}
-
-    let token: string | null = null
-
-    if (typeof window !== 'undefined') {
-        token = localStorage.getItem('token')
-    }
+    const token = getTokenFromCookie('token')
 
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
         ...fetchOptions,

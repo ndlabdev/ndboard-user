@@ -4,6 +4,7 @@ import './globals.css'
 import ReactQueryProvider from '@/providers/ReactQueryProvider'
 import RouteChangeProgress from '@/providers/RouteChangeProgress'
 import { Toaster } from '@/components/ui/sonner'
+import { AuthProvider } from '@/features/auth'
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -32,8 +33,10 @@ export default function RootLayout({
             >
                 <ReactQueryProvider>
                     <RouteChangeProgress>
-                        {children}
-                        <Toaster richColors position='top-center' />
+                        <AuthProvider>
+                            {children}
+                            <Toaster richColors position='top-center' />
+                        </AuthProvider>
                     </RouteChangeProgress>
                 </ReactQueryProvider>
             </body>

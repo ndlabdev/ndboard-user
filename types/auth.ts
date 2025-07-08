@@ -6,7 +6,7 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-    data?: {
+    data: {
         token: string
         user: User['data']
     }
