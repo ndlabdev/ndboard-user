@@ -24,20 +24,18 @@ import {
     FormMessage
 } from '@/components/ui/form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { WorkspaceCreateFormValues, workspaceCreateSchema, useWorkspaceCreateMutation } from '@/features/workspace'
+import { WorkspaceCreateFormValues, workspaceCreateSchema, useWorkspaceCreateMutation, workspaceCreateState } from '@/features/workspace'
 import { useQueryClient } from '@tanstack/react-query'
+import { useEffect } from 'react'
 
 export function WorkspaceCreateButton() {
     const queryClient = useQueryClient()
     const form = useForm<WorkspaceCreateFormValues>({
         resolver: zodResolver(workspaceCreateSchema),
-        defaultValues: {
-            name: '',
-            description: ''
-        }
+        defaultValues: workspaceCreateState
     })
 
-    const workspaceMutation = useWorkspaceCreateMutation(
+    const { mutate, isPending, isSuccess } = useWorkspaceCreateMutation(
         () => {
             toast.success('Workspace Created Successfully', {
                 description: 'Your new workspace has been created.'
@@ -53,9 +51,11 @@ export function WorkspaceCreateButton() {
         }
     )
 
-    const onSubmit = (values: WorkspaceCreateFormValues) => {
-        workspaceMutation.mutate(values)
-    }
+    const onSubmit = (values: WorkspaceCreateFormValues) => mutate(values)
+
+    useEffect(() => {
+        if (isSuccess) form.reset()
+    }, [isSuccess, form])
 
     return (
         <Dialog>
@@ -124,8 +124,8 @@ export function WorkspaceCreateButton() {
                                 <Button variant="outline">Cancel</Button>
                             </DialogClose>
 
-                            <Button type="submit" disabled={form.formState.isSubmitting || workspaceMutation.isPending}>
-                                {workspaceMutation.isPending ? (
+                            <Button type="submit" disabled={form.formState.isSubmitting || isPending}>
+                                {isPending ? (
                                     <>
                                         <Loader2Icon className="animate-spin" />
                                         Loading...
