@@ -1,6 +1,6 @@
 import { useMutation, UseMutationResult } from '@tanstack/react-query'
 import { authRefreshTokenApi } from '@/lib/api'
-import type { RefreshTokenResponse } from '@/types/auth'
+import type { RefreshTokenResponse } from '@/types'
 
 export function useAuthRefreshTokenMutation(
     onSuccess?: (_data: RefreshTokenResponse) => void,

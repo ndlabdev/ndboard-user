@@ -1,6 +1,6 @@
 import { useMutation, UseMutationResult } from '@tanstack/react-query'
 import { authLoginApi, authLoginGoogleApi, authLoginGoogleCallbackApi, authLoginGithubApi, authLoginGithubCallbackApi } from '@/lib/api'
-import type { LoginRequest, LoginResponse, LoginSocialResponse, LoginSocialParams } from '@/types/auth'
+import type { LoginRequest, LoginResponse, LoginSocialResponse, LoginSocialParams } from '@/types'
 
 export function useLoginMutation(
     onSuccess?: (_data: LoginResponse) => void,

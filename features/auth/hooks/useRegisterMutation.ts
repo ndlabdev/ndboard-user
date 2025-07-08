@@ -1,6 +1,6 @@
 import { useMutation, UseMutationResult } from '@tanstack/react-query'
 import { authRegisterApi } from '@/lib/api'
-import type { RegisterRequest, RegisterResponse } from '@/types/auth'
+import type { RegisterRequest, RegisterResponse } from '@/types'
 
 export function useRegisterMutation(
     onSuccess?: (_data: RegisterResponse) => void,
