@@ -1,0 +1,134 @@
+import type { BoardBackground } from '@/types'
+
+export const BOARD_VISIBILITY = {
+    PRIVATE: 'private',
+    WORKSPACE: 'workspace',
+    PUBLIC: 'public'
+} as const
+
+export const BOARD_ROLE = {
+    OWNER: 'owner',
+    ADMIN: 'admin',
+    MEMBER: 'member',
+    VIEWER: 'viewer'
+} as const
+
+export const BOARD_VISIBILITY_OPTIONS = [
+    {
+        id: BOARD_VISIBILITY.PRIVATE,
+        label: 'Private',
+        description: 'Only board members can view and edit. This board is invisible to anyone else.'
+    },
+    {
+        id: BOARD_VISIBILITY.WORKSPACE,
+        label: 'Workspace',
+        description: 'All members in this workspace can view and join the board. Only invited members can edit.'
+    },
+    {
+        id: BOARD_VISIBILITY.PUBLIC,
+        label: 'Public',
+        description: 'Anyone with the link can view this board. Only invited members can make changes.'
+    }
+]
+
+export const DEFAULT_BOARD_BACKGROUNDS: BoardBackground[] = [
+    {
+        key: 'unsplash-mountain',
+        type: 'image',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=60',
+        fullUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1600&q=80'
+    },
+    {
+        key: 'unsplash-forest',
+        type: 'image',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=60',
+        fullUrl: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=1600&q=80'
+    },
+    {
+        key: 'unsplash-sea',
+        type: 'image',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=60',
+        fullUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80'
+    },
+    {
+        key: 'unsplash-lake',
+        type: 'image',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?auto=format&fit=crop&w=400&q=60',
+        fullUrl: 'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?auto=format&fit=crop&w=1600&q=80'
+    },
+    {
+        key: 'unsplash-city',
+        type: 'image',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=400&q=60',
+        fullUrl: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1600&q=80'
+    },
+    {
+        key: 'unsplash-sunset',
+        type: 'image',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=60',
+        fullUrl: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=1600&q=80'
+    },
+    {
+        key: 'unsplash-leaves',
+        type: 'image',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=400&q=60',
+        fullUrl: 'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1600&q=80'
+    },
+    {
+        key: 'unsplash-sky',
+        type: 'image',
+        thumbnailUrl: 'https://images.unsplash.com/photo-1454023492550-5696f8ff10e1?auto=format&fit=crop&w=400&q=60',
+        fullUrl: 'https://images.unsplash.com/photo-1454023492550-5696f8ff10e1?auto=format&fit=crop&w=1600&q=80'
+    },
+
+    // Gradient
+    {
+        key: 'gradient-blue-purple',
+        type: 'gradient',
+        thumbnailUrl: '',
+        fullUrl: '',
+        value: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+    },
+    {
+        key: 'gradient-green-blue',
+        type: 'gradient',
+        thumbnailUrl: '',
+        fullUrl: '',
+        value: 'linear-gradient(135deg, #43cea2 0%, #185a9d 100%)'
+    },
+    {
+        key: 'gradient-orange-pink',
+        type: 'gradient',
+        thumbnailUrl: '',
+        fullUrl: '',
+        value: 'linear-gradient(135deg, #ff9966 0%, #ff5e62 100%)'
+    },
+    {
+        key: 'gradient-pink-yellow',
+        type: 'gradient',
+        thumbnailUrl: '',
+        fullUrl: '',
+        value: 'linear-gradient(135deg, #f7971e 0%, #ffd200 100%)'
+    },
+    {
+        key: 'gradient-teal-blue',
+        type: 'gradient',
+        thumbnailUrl: '',
+        fullUrl: '',
+        value: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)'
+    },
+    {
+        key: 'gradient-red-purple',
+        type: 'gradient',
+        thumbnailUrl: '',
+        fullUrl: '',
+        value: 'linear-gradient(135deg, #fc5c7d 0%, #6a82fb 100%)'
+    },
+    {
+        key: 'gradient-deepblue',
+        type: 'gradient',
+        thumbnailUrl: '',
+        fullUrl: '',
+        value: 'linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%)'
+    }
+]

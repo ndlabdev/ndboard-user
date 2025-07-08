@@ -16,6 +16,13 @@ import { Textarea } from '@/components/ui/textarea'
 import { Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from '@/components/ui/select'
+import {
     Form,
     FormControl,
     FormField,
@@ -27,6 +34,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { WorkspaceCreateFormValues, workspaceCreateSchema, useWorkspaceCreateMutation, workspaceCreateState } from '@/features/workspace'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
+import { BOARD_VISIBILITY_OPTIONS } from '../constants'
 
 export function WorkspaceCreateButton() {
     const queryClient = useQueryClient()
@@ -111,6 +119,39 @@ export function WorkspaceCreateButton() {
                                                     aria-placeholder="Enter workspace description"
                                                     {...field}
                                                 />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
+                            <div className="col-span-12">
+                                <FormField
+                                    control={form.control}
+                                    name="visibility"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Visibility</FormLabel>
+                                            <FormControl>
+                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                    <SelectTrigger className="w-full">
+                                                        <SelectValue placeholder="Select Visibility">
+                                                            {BOARD_VISIBILITY_OPTIONS.find((opt) => opt.id === field.value)?.label}
+                                                        </SelectValue>
+                                                    </SelectTrigger>
+
+                                                    <SelectContent>
+                                                        {BOARD_VISIBILITY_OPTIONS.map((item) => (
+                                                            <SelectItem key={item.id} value={item.id}>
+                                                                <div className="flex flex-col">
+                                                                    <span className="font-medium">{item.label}</span>
+                                                                    <span className="text-xs text-muted-foreground">{item.description}</span>
+                                                                </div>
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>

@@ -2,8 +2,11 @@
 export * from './hooks/useWorkspaceGetListQuery'
 export * from './hooks/useWorkspaceCreateMutation'
 
-// ** Component
+// ** Components
 export * from './components/WorkspaceCreateButton'
 
-// ** Schema
+// ** Schemas
 export * from './schemas/workspaceCreate'
+
+// ** Constants
+export * from './constants'
