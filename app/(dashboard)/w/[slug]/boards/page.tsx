@@ -4,6 +4,7 @@ import React from 'react'
 import { useParams } from 'next/navigation'
 import { Separator } from '@/components/ui/separator'
 import { useWorkspaceGetListQuery, WorkspaceHeader, WorkspaceSkeleton } from '@/features/workspace'
+import { BoardList } from '@/features/board'
 
 export default function BoardPage() {
     const params = useParams()
@@ -31,6 +32,11 @@ export default function BoardPage() {
             />
 
             <Separator />
+
+            <div>
+                <h2 className="text-xl font-bold mb-4">Your Boards</h2>
+                <BoardList workspaceId={workspace.id} />
+            </div>
         </section>
     )
 }

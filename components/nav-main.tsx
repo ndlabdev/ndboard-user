@@ -46,7 +46,7 @@ function WorkspaceNavItem({ item }: { item: WorkspaceNavData }) {
         <Collapsible key={item.id} asChild defaultOpen={item.isActive} className="group/collapsible">
             <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
-                    <SidebarMenuButton tooltip={item.title}>
+                    <SidebarMenuButton tooltip={item.title} isActive={item.isActive}>
                         <Avatar className="w-6 h-6">
                             {item.imageUrl && <AvatarImage src={item.imageUrl} alt={item.title} title={item.title} />}
                             <AvatarFallback>
