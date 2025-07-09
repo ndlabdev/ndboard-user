@@ -51,7 +51,7 @@ export function WorkspaceBackgroundPicker({
         <Popover modal>
             <PopoverTrigger asChild>
                 <div
-                    className="w-full h-40 rounded-xl mb-4 shadow relative overflow-hidden transition-all group"
+                    className="w-full h-40 rounded-xl shadow relative overflow-hidden transition-all group"
                     style={
                         selected.type === 'image'
                             ? {

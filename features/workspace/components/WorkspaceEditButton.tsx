@@ -15,15 +15,8 @@ import { Loader2Icon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Plus } from 'lucide-react'
+import { Edit2 } from 'lucide-react'
 import { toast } from 'sonner'
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue
-} from '@/components/ui/select'
 import {
     Form,
     FormControl,
@@ -33,50 +26,54 @@ import {
     FormMessage
 } from '@/components/ui/form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { WorkspaceCreateFormValues, workspaceCreateSchema, useWorkspaceCreateMutation, workspaceCreateState } from '@/features/workspace'
+import { useRouter } from '@bprogress/next/app'
+import { WorkspaceEditFormValues, useWorkspaceEditMutation, workspaceEditSchema } from '@/features/workspace'
 import { useQueryClient } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
-import { BOARD_VISIBILITY_OPTIONS } from '@/features/workspace'
+import { useState } from 'react'
 import { WorkspaceBackgroundPicker } from './WorkspaceBackgroundPicker'
 import { ScrollArea } from '@/components/ui/scroll-area'
 
-export function WorkspaceCreateButton() {
+interface Props {
+    id: string
+    name: string
+    slug: string
+    description?: string | undefined
+}
+
+export function WorkspaceEditButton(props: Props) {
+    const router = useRouter()
     const [open, setOpen] = useState(false)
     const queryClient = useQueryClient()
-    const form = useForm<WorkspaceCreateFormValues>({
-        resolver: zodResolver(workspaceCreateSchema),
-        defaultValues: workspaceCreateState
+    const form = useForm<WorkspaceEditFormValues>({
+        resolver: zodResolver(workspaceEditSchema),
+        defaultValues: props
     })
 
-    const { mutate, isPending, isSuccess } = useWorkspaceCreateMutation(
-        () => {
-            toast.success('Workspace Created Successfully', {
-                description: 'Your new workspace has been created.'
+    const { mutate, isPending } = useWorkspaceEditMutation(
+        (data) => {
+            toast.success('Workspace Updated Successfully', {
+                description: 'Your workspace information has been updated.'
             })
 
             setOpen(false)
             queryClient.invalidateQueries({ queryKey: ['workspaces'] })
+            if (props.slug !== data.data.slug) router.push(`/w/${data.data.slug}/boards`)
         }, (error) => {
             const msg =
                 (error as { message?: string })?.message ||
-                'Create Workspace Failed'
+                'Update Workspace Failed'
 
             toast.error(msg)
         }
     )
 
-    const onSubmit = (values: WorkspaceCreateFormValues) => mutate(values)
-
-    useEffect(() => {
-        if (isSuccess) form.reset()
-    }, [isSuccess, form])
+    const onSubmit = (values: WorkspaceEditFormValues) => mutate(values)
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="secondary" className="w-full" size="sm">
-                    <Plus />
-                    Create New Workspace
+                <Button variant="secondary" size="sm">
+                    <Edit2 />
                 </Button>
             </DialogTrigger>
 
@@ -84,10 +81,10 @@ export function WorkspaceCreateButton() {
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
                         <DialogHeader className="py-4">
-                            <DialogTitle>Create New Workspace</DialogTitle>
+                            <DialogTitle>Edit Workspace</DialogTitle>
 
                             <DialogDescription>
-                                A workspace helps you organize your projects, boards, and team members. Enter a name and description to get started.
+                                Update your workspace name and description below.
                             </DialogDescription>
                         </DialogHeader>
 
@@ -135,14 +132,14 @@ export function WorkspaceCreateButton() {
                                 <div className="col-span-12">
                                     <FormField
                                         control={form.control}
-                                        name="description"
+                                        name="slug"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Workspace Description</FormLabel>
+                                                <FormLabel>Workspace URL</FormLabel>
                                                 <FormControl>
-                                                    <Textarea
-                                                        placeholder="Enter workspace description"
-                                                        aria-placeholder="Enter workspace description"
+                                                    <Input
+                                                        placeholder="Enter workspace URL"
+                                                        aria-placeholder="Enter workspace URL"
                                                         {...field}
                                                     />
                                                 </FormControl>
@@ -155,29 +152,16 @@ export function WorkspaceCreateButton() {
                                 <div className="col-span-12">
                                     <FormField
                                         control={form.control}
-                                        name="visibility"
+                                        name="description"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Visibility</FormLabel>
+                                                <FormLabel>Workspace Description</FormLabel>
                                                 <FormControl>
-                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                        <SelectTrigger className="w-full">
-                                                            <SelectValue placeholder="Select Visibility">
-                                                                {BOARD_VISIBILITY_OPTIONS.find((opt) => opt.id === field.value)?.label}
-                                                            </SelectValue>
-                                                        </SelectTrigger>
-
-                                                        <SelectContent>
-                                                            {BOARD_VISIBILITY_OPTIONS.map((item) => (
-                                                                <SelectItem key={item.id} value={item.id}>
-                                                                    <div className="flex flex-col">
-                                                                        <span className="font-medium">{item.label}</span>
-                                                                        <span className="text-xs text-muted-foreground">{item.description}</span>
-                                                                    </div>
-                                                                </SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
+                                                    <Textarea
+                                                        placeholder="Enter workspace description"
+                                                        aria-placeholder="Enter workspace description"
+                                                        {...field}
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -198,7 +182,7 @@ export function WorkspaceCreateButton() {
                                         <Loader2Icon className="animate-spin" />
                                         Loading...
                                     </>
-                                ) : 'Create Workspace'}
+                                ) : 'Save Changes'}
                             </Button>
                         </DialogFooter>
                     </form>

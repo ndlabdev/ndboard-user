@@ -19,12 +19,14 @@ export interface WorkspaceCreateResponse {
     }
 }
 
+export type WorkspaceEditResponse = WorkspaceCreateResponse
+
 export interface WorkspaceListResponse {
     data: {
         id: string
         name: string
         slug: string
-        description: string | null
+        description: string
         imageUrl: string | null
         role: string
         joinedAt: Date
