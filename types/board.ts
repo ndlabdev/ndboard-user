@@ -31,3 +31,33 @@ export interface BoardListResponse {
     }[]
     meta: PaginateMeta
 }
+
+export interface BoardsDetailResponse {
+    data: {
+        readonly owner: {
+            name: string
+            id: string
+        }
+        readonly workspace: {
+            readonly id: string
+            readonly name: string
+        }
+        readonly name: string
+        readonly id: string
+        readonly createdAt: Date
+        readonly updatedAt: Date
+        readonly description: string | null
+        readonly shortLink: string
+        readonly slug: string
+        readonly workspaceId: string
+        readonly ownerId: string
+        readonly createdById: string
+        readonly updatedById: string
+        readonly visibility: string
+        readonly coverImageUrl: string | null
+        readonly isTemplate: boolean
+        readonly isArchived: boolean
+        readonly archivedAt: Date | null
+        readonly order: number
+    }
+}

@@ -1,5 +1,5 @@
 import { apiFetch } from '@/lib/fetcher'
-import type { BoardListResponse } from '@/types'
+import type { BoardListResponse, BoardsDetailResponse } from '@/types'
 
 export function boardGetListApi(workspaceId: string): Promise<BoardListResponse> {
     return apiFetch<BoardListResponse>('/boards', {
@@ -8,4 +8,8 @@ export function boardGetListApi(workspaceId: string): Promise<BoardListResponse>
             pageSize: 30
         }
     })
+}
+
+export function boardDetailApi(shortLink: string): Promise<BoardsDetailResponse> {
+    return apiFetch<BoardsDetailResponse>(`/boards/${shortLink}`)
 }
