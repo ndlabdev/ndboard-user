@@ -11,6 +11,7 @@ export const workspaceCreateSchema = z.object({
         .min(1, 'Workspace name cannot be empty')
         .max(100, 'Workspace name must be at most 100 characters'),
     description: z.string().optional(),
+    coverImageUrl: z.string().optional(),
     visibility: z.enum(BOARD_VISIBILITY_VALUES)
 })
 
@@ -18,6 +19,7 @@ export const workspaceCreateSchema = z.object({
 export const workspaceCreateState: z.infer<typeof workspaceCreateSchema> = {
     name: '',
     description: '',
+    coverImageUrl: '',
     visibility: BOARD_VISIBILITY.PRIVATE
 }
 

@@ -33,10 +33,13 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import { WorkspaceCreateFormValues, workspaceCreateSchema, useWorkspaceCreateMutation, workspaceCreateState } from '@/features/workspace'
 import { useQueryClient } from '@tanstack/react-query'
-import { useEffect } from 'react'
-import { BOARD_VISIBILITY_OPTIONS } from '../constants'
+import { useEffect, useState } from 'react'
+import { BOARD_VISIBILITY_OPTIONS } from '@/features/workspace'
+import { WorkspaceBackgroundPicker } from './WorkspaceBackgroundPicker'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 export function WorkspaceCreateButton() {
+    const [open, setOpen] = useState(false)
     const queryClient = useQueryClient()
     const form = useForm<WorkspaceCreateFormValues>({
         resolver: zodResolver(workspaceCreateSchema),
@@ -49,6 +52,7 @@ export function WorkspaceCreateButton() {
                 description: 'Your new workspace has been created.'
             })
 
+            setOpen(false)
             queryClient.invalidateQueries({ queryKey: ['workspaces'] })
         }, (error) => {
             const msg =
@@ -66,7 +70,7 @@ export function WorkspaceCreateButton() {
     }, [isSuccess, form])
 
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button variant="secondary" className="w-full" size="sm">
                     <Plus />
@@ -74,7 +78,7 @@ export function WorkspaceCreateButton() {
                 </Button>
             </DialogTrigger>
 
-            <DialogContent className="sm:max-w-[576px]">
+            <DialogContent className="sm:max-w-xl">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)}>
                         <DialogHeader>
@@ -85,82 +89,103 @@ export function WorkspaceCreateButton() {
                             </DialogDescription>
                         </DialogHeader>
 
-                        <div className="grid gap-4 mt-4">
-                            <div className="col-span-12">
-                                <FormField
-                                    control={form.control}
-                                    name="name"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Workspace Name</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    placeholder="Enter workspace name"
-                                                    aria-placeholder="Enter workspace name"
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                        <ScrollArea className="overflow-y-auto max-h-[70vh]">
+                            <div className="grid gap-4 my-4 px-6">
+                                <div className="col-span-12">
+                                    <FormField
+                                        control={form.control}
+                                        name="coverImageUrl"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Background</FormLabel>
+                                                <FormControl>
+                                                    <WorkspaceBackgroundPicker
+                                                        value={field.value}
+                                                        onChange={field.onChange}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+
+                                <div className="col-span-12">
+                                    <FormField
+                                        control={form.control}
+                                        name="name"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Workspace Name</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        placeholder="Enter workspace name"
+                                                        aria-placeholder="Enter workspace name"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+
+                                <div className="col-span-12">
+                                    <FormField
+                                        control={form.control}
+                                        name="description"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Workspace Description</FormLabel>
+                                                <FormControl>
+                                                    <Textarea
+                                                        placeholder="Enter workspace description"
+                                                        aria-placeholder="Enter workspace description"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+
+                                <div className="col-span-12">
+                                    <FormField
+                                        control={form.control}
+                                        name="visibility"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Visibility</FormLabel>
+                                                <FormControl>
+                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                        <SelectTrigger className="w-full">
+                                                            <SelectValue placeholder="Select Visibility">
+                                                                {BOARD_VISIBILITY_OPTIONS.find((opt) => opt.id === field.value)?.label}
+                                                            </SelectValue>
+                                                        </SelectTrigger>
+
+                                                        <SelectContent>
+                                                            {BOARD_VISIBILITY_OPTIONS.map((item) => (
+                                                                <SelectItem key={item.id} value={item.id}>
+                                                                    <div className="flex flex-col">
+                                                                        <span className="font-medium">{item.label}</span>
+                                                                        <span className="text-xs text-muted-foreground">{item.description}</span>
+                                                                    </div>
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
                             </div>
+                        </ScrollArea>
 
-                            <div className="col-span-12">
-                                <FormField
-                                    control={form.control}
-                                    name="description"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Workspace Description</FormLabel>
-                                            <FormControl>
-                                                <Textarea
-                                                    placeholder="Enter workspace description"
-                                                    aria-placeholder="Enter workspace description"
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-
-                            <div className="col-span-12">
-                                <FormField
-                                    control={form.control}
-                                    name="visibility"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Visibility</FormLabel>
-                                            <FormControl>
-                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                    <SelectTrigger className="w-full">
-                                                        <SelectValue placeholder="Select Visibility">
-                                                            {BOARD_VISIBILITY_OPTIONS.find((opt) => opt.id === field.value)?.label}
-                                                        </SelectValue>
-                                                    </SelectTrigger>
-
-                                                    <SelectContent>
-                                                        {BOARD_VISIBILITY_OPTIONS.map((item) => (
-                                                            <SelectItem key={item.id} value={item.id}>
-                                                                <div className="flex flex-col">
-                                                                    <span className="font-medium">{item.label}</span>
-                                                                    <span className="text-xs text-muted-foreground">{item.description}</span>
-                                                                </div>
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-                        </div>
-
-                        <DialogFooter className="mt-4">
+                        <DialogFooter className="mt-6">
                             <DialogClose asChild>
                                 <Button variant="outline">Cancel</Button>
                             </DialogClose>
