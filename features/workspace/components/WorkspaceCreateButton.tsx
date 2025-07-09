@@ -1,3 +1,5 @@
+'use client'
+
 import { Button } from '@/components/ui/button'
 import {
     Dialog,
@@ -78,9 +80,9 @@ export function WorkspaceCreateButton() {
                 </Button>
             </DialogTrigger>
 
-            <DialogContent className="sm:max-w-xl">
+            <DialogContent className="sm:max-w-xl max-h-[95vh] flex flex-col">
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
                         <DialogHeader>
                             <DialogTitle>Create New Workspace</DialogTitle>
 
@@ -89,7 +91,7 @@ export function WorkspaceCreateButton() {
                             </DialogDescription>
                         </DialogHeader>
 
-                        <ScrollArea className="overflow-y-auto max-h-[70vh]">
+                        <ScrollArea className="flex-1 min-h-0 overflow-y-auto">
                             <div className="grid gap-4 my-4 px-6">
                                 <div className="col-span-12">
                                     <FormField
@@ -185,7 +187,7 @@ export function WorkspaceCreateButton() {
                             </div>
                         </ScrollArea>
 
-                        <DialogFooter className="mt-6">
+                        <DialogFooter className="py-4 border-t">
                             <DialogClose asChild>
                                 <Button variant="outline">Cancel</Button>
                             </DialogClose>

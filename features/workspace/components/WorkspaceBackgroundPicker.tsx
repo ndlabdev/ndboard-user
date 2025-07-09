@@ -48,7 +48,7 @@ export function WorkspaceBackgroundPicker({
     }
 
     return (
-        <Popover>
+        <Popover modal>
             <PopoverTrigger asChild>
                 <div
                     className="w-full h-40 rounded-xl mb-4 shadow relative overflow-hidden transition-all group"
@@ -64,7 +64,7 @@ export function WorkspaceBackgroundPicker({
                 >
                     <div className="absolute inset-0 bg-black/10 pointer-events-none" />
                     <button
-                        className="absolute inset-0 flex items-center justify-center hover:bg-transparent bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute inset-0 cursor-pointer flex items-center justify-center hover:bg-transparent bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity"
                         tabIndex={-1}
                         type="button"
                     >
@@ -87,10 +87,7 @@ export function WorkspaceBackgroundPicker({
                             <button
                                 key={bg.key}
                                 aria-label={bg.key}
-                                className={`rounded-lg h-18 bg-default hover:bg-default p-0 overflow-hidden transition-all focus:outline-none hover:scale-105 active:scale-95 ${selected.key === bg.key
-                                    ? 'ring-2 ring-primary ring-offset-2 ring-offset-background'
-                                    : 'ring-0'
-                                    }`}
+                                className={`rounded-lg h-18 bg-default hover:bg-default p-0 overflow-hidden transition-all focus:outline-none hover:scale-105 active:scale-95 ${selected.key === bg.key ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : 'ring-0'}`}
                                 style={{ aspectRatio: '4/3' }}
                                 onClick={() => handleSelect(bg)}
                                 type="button"
@@ -115,10 +112,7 @@ export function WorkspaceBackgroundPicker({
                             <button
                                 key={bg.key}
                                 aria-label={bg.key}
-                                className={`rounded-lg h-18 transition-all focus:outline-none hover:scale-105 active:scale-95 ${selected.key === bg.key
-                                    ? 'ring-2 ring-primary ring-offset-2 ring-offset-background'
-                                    : 'ring-0'
-                                    }`}
+                                className={`rounded-lg h-18 transition-all focus:outline-none hover:scale-105 active:scale-95 ${selected.key === bg.key ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : 'ring-0'}`}
                                 style={{
                                     background: bg.value,
                                     aspectRatio: '4/3'
