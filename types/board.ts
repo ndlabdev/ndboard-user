@@ -32,7 +32,7 @@ export interface BoardListResponse {
     meta: PaginateMeta
 }
 
-export interface BoardsDetailResponse {
+export interface BoardDetailResponse {
     data: {
         readonly owner: {
             name: string
@@ -59,5 +59,27 @@ export interface BoardsDetailResponse {
         readonly isArchived: boolean
         readonly archivedAt: Date | null
         readonly order: number
+    }
+}
+
+export interface BoardCreateResponse {
+    data: {
+        name: string
+        slug: string
+        shortLink: string
+        id: string
+        createdAt: Date
+        updatedAt: Date
+        description: string | null
+        workspaceId: string
+        visibility: string
+        coverImageUrl: string | null
+        isTemplate: boolean
+        isArchived: boolean
+        archivedAt: Date | null
+        order: number
+        ownerId: string
+        createdById: string
+        updatedById: string
     }
 }

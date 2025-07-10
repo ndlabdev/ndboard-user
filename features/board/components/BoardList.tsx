@@ -5,7 +5,7 @@ import {
     CardTitle
 } from '@/components/ui/card'
 
-import { BoardSkeleton, useBoardGetListQuery } from '@/features/board'
+import { BoardCreateFirst, BoardSkeleton, useBoardGetListQuery } from '@/features/board'
 import { useRouter } from '@bprogress/next/app'
 import { User } from 'lucide-react'
 
@@ -58,6 +58,8 @@ export function BoardList({ workspaceId }: Props) {
                     </CardContent>
                 </Card>
             ))}
+
+            <BoardCreateFirst workspaceId={workspaceId} />
         </div>
     )
 }

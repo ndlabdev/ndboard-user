@@ -1,5 +1,6 @@
 import { apiFetch } from '@/lib/fetcher'
-import type { BoardListResponse, BoardsDetailResponse } from '@/types'
+import { BoardCreateFormValues } from '@/features/board'
+import type { BoardListResponse, BoardDetailResponse, BoardCreateResponse } from '@/types'
 
 export function boardGetListApi(workspaceId: string): Promise<BoardListResponse> {
     return apiFetch<BoardListResponse>('/boards', {
@@ -10,6 +11,13 @@ export function boardGetListApi(workspaceId: string): Promise<BoardListResponse>
     })
 }
 
-export function boardDetailApi(shortLink: string): Promise<BoardsDetailResponse> {
-    return apiFetch<BoardsDetailResponse>(`/boards/${shortLink}`)
+export function boardDetailApi(shortLink: string): Promise<BoardDetailResponse> {
+    return apiFetch<BoardDetailResponse>(`/boards/${shortLink}`)
+}
+
+export function boardCreateApi(payload: BoardCreateFormValues): Promise<BoardCreateResponse> {
+    return apiFetch<BoardCreateResponse>('/boards', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+    })
 }

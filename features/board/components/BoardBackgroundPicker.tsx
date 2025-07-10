@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import Image from 'next/image'
 import { BoardBackground } from '@/types'
-import { DEFAULT_BOARD_BACKGROUNDS } from '@/features/workspace'
+import { DEFAULT_BOARD_BACKGROUNDS } from '@/features/board'
 import {
     Popover,
     PopoverContent,
@@ -13,7 +13,7 @@ interface BoardBackgroundSelectorProps {
     onChange?: (_bg?: string) => void;
 }
 
-export function WorkspaceBackgroundPicker({
+export function BoardBackgroundPicker({
     value,
     onChange
 }: BoardBackgroundSelectorProps) {

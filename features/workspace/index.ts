@@ -12,6 +12,3 @@ export * from './components/WorkspaceSkeleton'
 // ** Schemas
 export * from './schemas/workspaceCreate'
 export * from './schemas/workspaceEdit'
-
-// ** Constants
-export * from './constants'
