@@ -18,13 +18,6 @@ import { Textarea } from '@/components/ui/textarea'
 import { Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue
-} from '@/components/ui/select'
-import {
     Form,
     FormControl,
     FormField,
@@ -36,8 +29,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { WorkspaceCreateFormValues, workspaceCreateSchema, useWorkspaceCreateMutation, workspaceCreateState } from '@/features/workspace'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import { BOARD_VISIBILITY_OPTIONS } from '@/features/workspace'
-import { WorkspaceBackgroundPicker } from './WorkspaceBackgroundPicker'
 import { ScrollArea } from '@/components/ui/scroll-area'
 
 export function WorkspaceCreateButton() {
@@ -83,7 +74,7 @@ export function WorkspaceCreateButton() {
             <DialogContent className="sm:max-w-xl max-h-[95vh] flex flex-col">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
-                        <DialogHeader className="py-4">
+                        <DialogHeader className="py-4 border-b">
                             <DialogTitle>Create New Workspace</DialogTitle>
 
                             <DialogDescription>
@@ -93,25 +84,6 @@ export function WorkspaceCreateButton() {
 
                         <ScrollArea className="flex-1 min-h-0 overflow-y-auto">
                             <div className="grid gap-4 my-4 px-6">
-                                <div className="col-span-12">
-                                    <FormField
-                                        control={form.control}
-                                        name="coverImageUrl"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Background</FormLabel>
-                                                <FormControl>
-                                                    <WorkspaceBackgroundPicker
-                                                        value={field.value}
-                                                        onChange={field.onChange}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-
                                 <div className="col-span-12">
                                     <FormField
                                         control={form.control}
@@ -145,39 +117,6 @@ export function WorkspaceCreateButton() {
                                                         aria-placeholder="Enter workspace description"
                                                         {...field}
                                                     />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-
-                                <div className="col-span-12">
-                                    <FormField
-                                        control={form.control}
-                                        name="visibility"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Visibility</FormLabel>
-                                                <FormControl>
-                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                        <SelectTrigger className="w-full">
-                                                            <SelectValue placeholder="Select Visibility">
-                                                                {BOARD_VISIBILITY_OPTIONS.find((opt) => opt.id === field.value)?.label}
-                                                            </SelectValue>
-                                                        </SelectTrigger>
-
-                                                        <SelectContent>
-                                                            {BOARD_VISIBILITY_OPTIONS.map((item) => (
-                                                                <SelectItem key={item.id} value={item.id}>
-                                                                    <div className="flex flex-col">
-                                                                        <span className="font-medium">{item.label}</span>
-                                                                        <span className="text-xs text-muted-foreground">{item.description}</span>
-                                                                    </div>
-                                                                </SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>

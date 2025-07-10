@@ -30,7 +30,6 @@ import { useRouter } from '@bprogress/next/app'
 import { WorkspaceEditFormValues, useWorkspaceEditMutation, workspaceEditSchema } from '@/features/workspace'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { WorkspaceBackgroundPicker } from './WorkspaceBackgroundPicker'
 import { ScrollArea } from '@/components/ui/scroll-area'
 
 interface Props {
@@ -80,7 +79,7 @@ export function WorkspaceEditButton(props: Props) {
             <DialogContent className="sm:max-w-xl max-h-[95vh] flex flex-col">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
-                        <DialogHeader className="py-4">
+                        <DialogHeader className="py-4 border-b">
                             <DialogTitle>Edit Workspace</DialogTitle>
 
                             <DialogDescription>
@@ -90,25 +89,6 @@ export function WorkspaceEditButton(props: Props) {
 
                         <ScrollArea className="flex-1 min-h-0 overflow-y-auto">
                             <div className="grid gap-4 my-4 px-6">
-                                <div className="col-span-12">
-                                    <FormField
-                                        control={form.control}
-                                        name="coverImageUrl"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Background</FormLabel>
-                                                <FormControl>
-                                                    <WorkspaceBackgroundPicker
-                                                        value={field.value}
-                                                        onChange={field.onChange}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-
                                 <div className="col-span-12">
                                     <FormField
                                         control={form.control}

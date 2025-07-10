@@ -13,8 +13,7 @@ export const workspaceEditSchema = z.object({
         .nonempty('Workspace URL cannot be empty')
         .min(1, 'Workspace URL cannot be empty')
         .max(120, 'Workspace URL must be at most 120 characters'),
-    description: z.string().optional(),
-    coverImageUrl: z.string().optional()
+    description: z.string().optional()
 })
 
 // ** Types
