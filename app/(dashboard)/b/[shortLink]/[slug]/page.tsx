@@ -2,6 +2,7 @@
 
 import { useParams } from 'next/navigation'
 import { BoardCoverImage, BoardDetailSkeleton, useBoardDetailQuery } from '@/features/board'
+import { ListColumnKanban } from '@/features/list'
 
 export default function BoardDetailPage() {
     const params = useParams()
@@ -33,7 +34,7 @@ export default function BoardDetailPage() {
                 </div>
 
                 <div className="flex-1 overflow-x-auto overflow-y-hidden">
-                    ?
+                    <ListColumnKanban boardId={board.id} />
                 </div>
             </div>
         </section>

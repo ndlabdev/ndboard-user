@@ -14,3 +14,7 @@ export function getInitials(name: string, maxLen = 2) {
         .join('')
         .slice(0, maxLen)
 }
+
+export function isUrl(text: string) {
+    return /^https?:\/\/\S+$/i.test(text.trim())
+}
