@@ -4,11 +4,10 @@ import { useEffect } from 'react'
 import { useRouter } from '@bprogress/next/app'
 import { useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
-import { useAuth, useLoginGoogleCallbackMutation } from '@/features/auth'
+import { useLoginGoogleCallbackMutation } from '@/features/auth'
 
 export default function GoogleCallbackPage() {
     const router = useRouter()
-    const { setUser } = useAuth()
     const searchParams = useSearchParams()
     const code = searchParams.get('code')
     const state = searchParams.get('state')
@@ -18,7 +17,6 @@ export default function GoogleCallbackPage() {
         if (code && state) {
             mutate({ code, state }, {
                 onSuccess: (res) => {
-                    setUser(res?.data?.user)
                     toast.success('Login with Google successful!')
                     router.push(`/u/${res?.data?.user.username}/boards`)
                 },

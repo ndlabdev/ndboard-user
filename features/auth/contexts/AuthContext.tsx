@@ -1,16 +1,28 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState, ReactNode, useCallback, Dispatch, SetStateAction } from 'react'
+import {
+    createContext,
+    useContext,
+    useEffect,
+    useState,
+    ReactNode,
+    useCallback,
+    Dispatch,
+    SetStateAction
+} from 'react'
 import { useRouter } from '@bprogress/next/app'
-import { useMeQuery, useAuthRefreshTokenMutation } from '@/features/auth'
+import {
+    useMeQuery,
+    useAuthLogoutMutation
+} from '@/features/auth'
 import type { User } from '@/types/user'
+import { toast } from 'sonner'
 
 type AuthContextType = {
     user: User['data'] | null
     setUser: Dispatch<SetStateAction<User['data'] | null>>
     isAuthenticated: boolean
     isLoading: boolean
-    refresh: () => Promise<void>
     signOut: () => void
 }
 
@@ -18,52 +30,31 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const router = useRouter()
-    const { data, isLoading, isFetching, isError, refetch } = useMeQuery()
+    const { data, isLoading, isFetching } = useMeQuery()
     const [user, setUser] = useState<User['data'] | null>(null)
-    const [checked, setChecked] = useState(false)
 
-    const refreshTokenMutation = useAuthRefreshTokenMutation(
+    const authLogoutMutation = useAuthLogoutMutation(
         () => {
-            refetch()
+            setUser(null)
+            router.replace('/login')
+            toast.success('Logged out successfully')
         },
         () => {
-            signOut()
+            setUser(null)
+            router.replace('/login')
+            toast.error('Session expired, please login again!')
         }
     )
 
     useEffect(() => {
-        if (isError && !refreshTokenMutation.isPending) {
-            refreshTokenMutation.mutate()
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isError])
-
-    useEffect(() => {
         if (!isLoading && !isFetching) {
             setUser(data?.data ?? null)
-            setChecked(true)
         }
     }, [isLoading, isFetching, data])
 
     const signOut = useCallback(() => {
-        setUser(null)
-        router.replace('/login')
-    }, [router])
-
-    const refresh = useCallback(async () => {
-        return new Promise<void>((resolve, reject) => {
-            refreshTokenMutation.mutate(undefined, {
-                onSuccess: () => {
-                    refetch()
-                    resolve()
-                },
-                onError: () => {
-                    signOut()
-                    reject()
-                }
-            })
-        })
-    }, [refreshTokenMutation, refetch, signOut])
+        authLogoutMutation.mutate()
+    }, [authLogoutMutation])
 
     return (
         <AuthContext.Provider
@@ -71,8 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 user,
                 setUser,
                 isAuthenticated: !!user,
-                isLoading: !checked || refreshTokenMutation.isPending,
-                refresh,
+                isLoading: !isLoading && !isFetching,
                 signOut
             }}
         >
