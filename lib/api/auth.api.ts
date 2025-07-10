@@ -40,3 +40,9 @@ export function authRefreshTokenApi(): Promise<RefreshTokenResponse> {
         method: 'POST'
     })
 }
+
+export function authLogoutApi() {
+    return apiFetch('/auth/logout', {
+        method: 'POST'
+    })
+}

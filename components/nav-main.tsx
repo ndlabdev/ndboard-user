@@ -19,6 +19,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useWorkspaceGetListQuery, WorkspaceCreateButton } from '@/features/workspace'
 import { usePathname } from 'next/navigation'
 import { useMemo } from 'react'
+import { getInitials } from '@/lib/utils'
 
 type SubMenuItem = {
     title: string
@@ -50,7 +51,7 @@ function WorkspaceNavItem({ item }: { item: WorkspaceNavData }) {
                         <Avatar className="w-6 h-6">
                             {item.imageUrl && <AvatarImage src={item.imageUrl} alt={item.title} title={item.title} />}
                             <AvatarFallback>
-                                {item.title.slice(0, 1).toUpperCase()}
+                                {getInitials(item.title)}
                             </AvatarFallback>
                         </Avatar>
                         <span className='truncate'>{item.title}</span>

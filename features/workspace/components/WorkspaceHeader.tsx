@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { WorkspaceEditButton } from '@/features/workspace'
+import { getInitials } from '@/lib/utils'
 
 export function WorkspaceHeader({
     id,
@@ -19,12 +20,7 @@ export function WorkspaceHeader({
             <Avatar className="size-20 rounded-xl border bg-muted">
                 {imageUrl && <AvatarImage src={imageUrl} alt={name} />}
                 <AvatarFallback>
-                    {name
-                        .split(' ')
-                        .map((w) => w[0])
-                        .join('')
-                        .slice(0, 2)
-                        .toUpperCase()}
+                    {getInitials(name)}
                 </AvatarFallback>
             </Avatar>
 
