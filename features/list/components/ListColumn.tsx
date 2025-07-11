@@ -40,7 +40,7 @@ export function ListColumn({ column, isOverlay = false }: Props) {
         <li
             ref={isOverlay ? undefined : setNodeRef}
             style={style}
-            className="list-none flex-none flex flex-col w-72 bg-white/90 rounded-xl shadow-lg max-h-full"
+            className="list-none flex-none flex flex-col w-72 bg-white/90 rounded-xl max-h-full pb-2"
         >
             <header
                 className="cursor-grab active:cursor-grabbing select-none"

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useCardGetListQuery, CardItem } from '@/features/card'
-import { SortableContext } from '@dnd-kit/sortable'
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { CardGetListResponse } from '@/types'
 
 interface Props {
@@ -19,8 +19,8 @@ export function CardItemKanban({ listId }: Props) {
     }, [cards?.data])
 
     return (
-        <SortableContext items={cardsIds}>
-            <ul className="p-2 space-y-2 overflow-y-auto h-full">
+        <SortableContext items={cardsIds} strategy={verticalListSortingStrategy}>
+            <ul className="p-2 pb-0 space-y-2 overflow-y-auto h-full">
                 {columns.map((card) => (
                     <CardItem
                         key={card.id}

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { ListColumn, useListGetListQuery } from '@/features/list'
-import { arrayMove, SortableContext } from '@dnd-kit/sortable'
+import { arrayMove, SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortable'
 import { DndContext, DragEndEvent, DragOverEvent, DragOverlay, DragStartEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { ListGetListItem, ListGetListResponse } from '@/types'
 import { createPortal } from 'react-dom'
@@ -79,8 +79,8 @@ export function ListColumnKanban({ boardId }: Props) {
             onDragEnd={onDragEnd}
             onDragOver={onDragOver}
         >
-            <SortableContext items={columnsIds}>
-                <ul className="flex gap-4 items-start overflow-hidden">
+            <SortableContext items={columnsIds} strategy={horizontalListSortingStrategy}>
+                <ul className="flex gap-4 items-start overflow-hidden h-full">
                     {columns.map((column) => (
                         <ListColumn
                             key={column.id}
