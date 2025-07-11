@@ -34,7 +34,7 @@ export default function BoardDetailPage() {
                 </div>
 
 
-                <div className="h-full w-full px-4 py-6 overflow-x-auto overflow-y-hidden max-h-[calc(100vh-108px)]">
+                <div className="h-full w-full overflow-x-auto overflow-y-hidden max-h-[calc(100vh-108px)]">
                     <ListColumnKanban boardId={board.id} />
                 </div>
             </div>

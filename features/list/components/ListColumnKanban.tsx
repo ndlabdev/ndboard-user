@@ -90,7 +90,7 @@ export function ListColumnKanban({ boardId }: Props) {
             onDragOver={onDragOver}
         >
             <SortableContext items={columnsIds} strategy={horizontalListSortingStrategy}>
-                <ul className="flex gap-4 items-start overflow-hidden h-full">
+                <ul className="flex gap-4 items-start px-4 py-6 overflow-y-hidden h-full">
                     {columns.map((column) => (
                         <ListColumn
                             key={column.id}
