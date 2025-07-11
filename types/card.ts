@@ -43,3 +43,20 @@ export interface CardGetListResponse {
     data: CardGetListItem[]
     meta: PaginateMeta
 }
+
+export interface CardCreateResponse {
+    data: {
+        name: string
+        id: string
+        createdAt: Date
+        updatedAt: Date
+        description: string | null
+        listId: string
+        dueDate: Date | null
+        order: number
+        isArchived: boolean
+        boardId: string
+        createdById: string
+        updatedById: string
+    }
+}
