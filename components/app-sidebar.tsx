@@ -76,7 +76,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarContent>
 
             <SidebarFooter>
-                {isLoading && (
+                {!user && (
                     <div className="flex items-center space-x-2">
                         <Skeleton className="h-8 w-8 rounded-lg" />
                         <div className="grid flex-1 space-y-1">
@@ -85,7 +85,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         </div>
                     </div>
                 )}
-                {!isLoading && user && <NavUser user={user} />}
+                {user && <NavUser user={user} />}
             </SidebarFooter>
             <SidebarRail />
         </Sidebar>

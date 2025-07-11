@@ -1,5 +1,6 @@
 // ** Components
 export * from './components/CardItem'
+export * from './components/CardItemKanban'
 export * from './components/CardLinkPreview'
 
 // ** Hooks

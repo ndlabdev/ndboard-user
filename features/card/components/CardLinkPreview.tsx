@@ -82,6 +82,7 @@ export function CardLinkPreview({ meta }: BoardLinkCardProps) {
                                 {title}
                             </div>
                         </TooltipTrigger>
+
                         <TooltipContent>
                             <span>{title}</span>
                         </TooltipContent>

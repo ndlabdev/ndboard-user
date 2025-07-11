@@ -1,28 +1,106 @@
-import { CardItem } from '@/features/card'
-import { useListGetListQuery } from '@/features/list'
+'use client'
+
+import { useEffect, useMemo, useState } from 'react'
+import { ListColumn, useListGetListQuery } from '@/features/list'
+import { arrayMove, SortableContext } from '@dnd-kit/sortable'
+import { DndContext, DragEndEvent, DragOverEvent, DragOverlay, DragStartEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
+import { ListGetListItem, ListGetListResponse } from '@/types'
+import { createPortal } from 'react-dom'
 
 interface Props {
     boardId: string
 }
 
 export function ListColumnKanban({ boardId }: Props) {
-    const { data: columns } = useListGetListQuery(boardId)
+    const { data: lists } = useListGetListQuery(boardId)
+    const [columns, setColumns] = useState<ListGetListResponse['data']>([])
+    const columnsIds = useMemo(() => columns.map((col) => col.id), [columns])
+    const [activeColumn, setActiveColumn] = useState<ListGetListItem | null>(null)
+
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 10
+            }
+        })
+    )
+
+    useEffect(() => {
+        if (lists?.data) {
+            setColumns(lists.data)
+        }
+    }, [lists?.data])
+
+    function onDragStart(event: DragStartEvent) {
+        if (event.active.data.current?.type === 'Column') {
+            setActiveColumn(event.active.data.current.column)
+
+            return
+        }
+    }
+
+    function onDragEnd(event: DragEndEvent) {
+        setActiveColumn(null)
+
+        const { active, over } = event
+        if (!over) return
+
+        const activeId = active.id
+        const overId = over.id
+        if (activeId === overId) return
+
+        const isActiveAColumn = active.data.current?.type === 'Column'
+        if (!isActiveAColumn) return
+
+        setColumns((columns) => {
+            const activeColumnIndex = columns.findIndex((col) => col.id === activeId)
+            const overColumnIndex = columns.findIndex((col) => col.id === overId)
+
+            return arrayMove(columns, activeColumnIndex, overColumnIndex)
+        })
+    }
+
+    function onDragOver(event: DragOverEvent) {
+        const { active, over } = event
+        if (!over) return
+
+        const activeId = active.id
+        const overId = over.id
+        if (activeId === overId) return
+
+        const isActiveATask = active.data.current?.type === 'Card'
+        if (!isActiveATask) return
+    }
 
     return (
-        <ul className="flex gap-4 items-start overflow-x-auto px-4 py-6 h-full">
-            {columns?.data?.map((column) => (
-                <li key={column.id} className="list-none flex-shrink-0 w-72 bg-white/90 rounded-xl shadow-lg flex flex-col max-h-full">
-                    <header className="cursor-pointer">
-                        <div className="flex items-center justify-between px-4 py-3">
-                            <h3>{column.name}</h3>
-                        </div>
-                    </header>
+        <DndContext
+            sensors={sensors}
+            onDragStart={onDragStart}
+            onDragEnd={onDragEnd}
+            onDragOver={onDragOver}
+        >
+            <SortableContext items={columnsIds}>
+                <ul className="flex gap-4 items-start overflow-hidden">
+                    {columns.map((column) => (
+                        <ListColumn
+                            key={column.id}
+                            column={column}
+                        />
+                    ))}
+                </ul>
+            </SortableContext>
 
-                    <ul className="flex-1 overflow-y-auto px-2 py-2 h-full space-y-2">
-                        <CardItem listId={column.id} />
-                    </ul>
-                </li>
-            ))}
-        </ul>
+            {createPortal(
+                <DragOverlay>
+                    {activeColumn && (
+                        <ListColumn
+                            column={activeColumn}
+                            isOverlay
+                        />
+                    )}
+                </DragOverlay>,
+                document.body
+            )}
+        </DndContext >
     )
 }

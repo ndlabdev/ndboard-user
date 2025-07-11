@@ -1,4 +1,5 @@
 // ** Components
+export * from './components/ListColumn'
 export * from './components/ListColumnKanban'
 
 // ** Hooks

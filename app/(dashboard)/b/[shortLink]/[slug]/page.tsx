@@ -23,17 +23,18 @@ export default function BoardDetailPage() {
     const board = data.data
 
     return (
-        <section className="relative min-h-[calc(100vh-52px)] w-full">
+        <section className="relative w-full">
             <BoardCoverImage coverImageUrl={board?.coverImageUrl} />
 
-            <div className="relative z-20 flex flex-col h-[calc(100vh-40px)] w-full">
+            <div className="relative z-20 flex flex-col h-full w-full">
                 <div className="backdrop-blur-md bg-black/10 shadow-lg inline-block py-2.5 px-4">
                     <h1 className="font-semibold text-base">
-                        {board?.name}
+                        {board.name}
                     </h1>
                 </div>
 
-                <div className="flex-1 overflow-x-auto overflow-y-hidden">
+
+                <div className="h-full w-full px-4 py-6 overflow-x-auto overflow-y-hidden max-h-[calc(100vh-108px)]">
                     <ListColumnKanban boardId={board.id} />
                 </div>
             </div>
