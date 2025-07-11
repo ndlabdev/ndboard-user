@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { ListColumn, useListGetListQuery } from '@/features/list'
+import { ListColumn, useListGetListQuery, useListReorderMutation } from '@/features/list'
 import { arrayMove, SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortable'
 import { DndContext, DragEndEvent, DragOverEvent, DragOverlay, DragStartEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { ListGetListItem, ListGetListResponse } from '@/types'
@@ -16,6 +16,7 @@ export function ListColumnKanban({ boardId }: Props) {
     const [columns, setColumns] = useState<ListGetListResponse['data']>([])
     const columnsIds = useMemo(() => columns.map((col) => col.id), [columns])
     const [activeColumn, setActiveColumn] = useState<ListGetListItem | null>(null)
+    const { mutateAsync } = useListReorderMutation()
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -52,11 +53,20 @@ export function ListColumnKanban({ boardId }: Props) {
         const isActiveAColumn = active.data.current?.type === 'Column'
         if (!isActiveAColumn) return
 
-        setColumns((columns) => {
-            const activeColumnIndex = columns.findIndex((col) => col.id === activeId)
-            const overColumnIndex = columns.findIndex((col) => col.id === overId)
+        const activeColumnIndex = columns.findIndex((col) => col.id === activeId)
+        const overColumnIndex = columns.findIndex((col) => col.id === overId)
 
-            return arrayMove(columns, activeColumnIndex, overColumnIndex)
+        if (activeColumnIndex === overColumnIndex) return
+
+        const newOrder = arrayMove(columns, activeColumnIndex, overColumnIndex)
+        setColumns(newOrder)
+
+        mutateAsync({
+            boardId,
+            lists: newOrder.map((col, idx) => ({
+                id: col.id,
+                order: idx
+            }))
         })
     }
 
