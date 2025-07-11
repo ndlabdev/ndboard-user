@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { ListColumn, useListGetListQuery, useListReorderMutation } from '@/features/list'
+import { ListColumn, ListColumnCreate, useListGetListQuery, useListReorderMutation } from '@/features/list'
 import { arrayMove, SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortable'
 import { DndContext, DragEndEvent, DragOverEvent, DragOverlay, DragStartEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { ListGetListItem, ListGetListResponse } from '@/types'
@@ -97,6 +97,8 @@ export function ListColumnKanban({ boardId }: Props) {
                             column={column}
                         />
                     ))}
+
+                    <ListColumnCreate boardId={boardId} />
                 </ul>
             </SortableContext>
 
@@ -111,6 +113,6 @@ export function ListColumnKanban({ boardId }: Props) {
                 </DragOverlay>,
                 document.body
             )}
-        </DndContext >
+        </DndContext>
     )
 }

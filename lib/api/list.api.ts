@@ -1,6 +1,6 @@
 import { apiFetch } from '@/lib/fetcher'
-import type { ListGetListResponse } from '@/types'
-import { ListReorderFormValues } from '@/features/list'
+import type { ListGetListResponse, ListCreateResponse } from '@/types'
+import { ListReorderFormValues, ListCreateFormValues } from '@/features/list'
 
 export function listGetListApi(boardId: string): Promise<ListGetListResponse> {
     return apiFetch<ListGetListResponse>('/lists', {
@@ -13,6 +13,13 @@ export function listGetListApi(boardId: string): Promise<ListGetListResponse> {
 export function listReorderApi(payload: ListReorderFormValues) {
     return apiFetch<ListReorderFormValues>('/lists/reorder', {
         method: 'PATCH',
+        body: JSON.stringify(payload)
+    })
+}
+
+export function listCreateApi(payload: ListCreateFormValues): Promise<ListCreateResponse> {
+    return apiFetch<ListCreateResponse>('/lists', {
+        method: 'POST',
         body: JSON.stringify(payload)
     })
 }

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useCardGetListQuery, CardItem, useCardCreateMutation } from '@/features/card'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { CardGetListResponse } from '@/types'
-import { Plus } from 'lucide-react'
+import { Loader2Icon, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -19,7 +19,7 @@ export function CardItemKanban({ listId }: Props) {
     const [newCardTitles, setNewCardTitles] = useState<Record<string, string>>({})
     const [columns, setColumns] = useState<CardGetListResponse['data']>([])
     const cardsIds = useMemo(() => columns.map((col) => col.id), [columns])
-    const { mutateAsync } = useCardCreateMutation()
+    const { mutateAsync, isPending } = useCardCreateMutation()
 
     useEffect(() => {
         if (cards?.data) {
@@ -99,18 +99,20 @@ export function CardItemKanban({ listId }: Props) {
                         />
 
                         <div className="flex gap-1">
-                            <Button
-                                type="submit"
-                                size="sm"
-                                onClick={() => submitAddCard(listId)}
-                            >
-                                Add Card
+                            <Button type="submit" size="sm" disabled={isPending} onClick={() => submitAddCard(listId)}>
+                                {isPending ? (
+                                    <>
+                                        <Loader2Icon className="animate-spin" />
+                                        Loading...
+                                    </>
+                                ) : 'Add Card'}
                             </Button>
 
                             <Button
                                 type="reset"
                                 size="sm"
                                 variant="ghost"
+                                disabled={isPending}
                                 onClick={() => closeAddCard(listId)}
                             >
                                 Cancel
