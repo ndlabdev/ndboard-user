@@ -3,10 +3,18 @@
 import { useParams } from 'next/navigation'
 import { BoardCoverImage, BoardDetailSkeleton, useBoardDetailQuery } from '@/features/board'
 import { ListColumnKanban } from '@/features/list'
+import { useEffect, useState } from 'react'
 
 export default function BoardDetailPage() {
     const params = useParams()
+    const [render, setRender] = useState<boolean>(false)
     const { data, isError, isLoading } = useBoardDetailQuery(params.shortLink as string)
+
+    useEffect(() => {
+        setRender(true)
+    }, [])
+
+    if (!render) return null
 
     if (isLoading) {
         return <BoardDetailSkeleton />
@@ -35,7 +43,7 @@ export default function BoardDetailPage() {
 
 
                 <div className="h-full w-full overflow-x-auto overflow-y-hidden max-h-[calc(100vh-108px)]">
-                    <ListColumnKanban boardId={board.id} />
+                    <ListColumnKanban board={board} />
                 </div>
             </div>
         </section>

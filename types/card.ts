@@ -1,4 +1,5 @@
 import { PaginateMeta } from './api-common'
+import { BoardCardsResponse } from './board'
 import { OgObject } from './og-object'
 
 export interface CardGetListItem {
@@ -6,6 +7,7 @@ export interface CardGetListItem {
     name: string
     description: string | null
     dueDate: Date | null
+    listId: string
     order: number
     isArchived: boolean
     createdAt: Date
@@ -45,18 +47,5 @@ export interface CardGetListResponse {
 }
 
 export interface CardCreateResponse {
-    data: {
-        name: string
-        id: string
-        createdAt: Date
-        updatedAt: Date
-        description: string | null
-        listId: string
-        dueDate: Date | null
-        order: number
-        isArchived: boolean
-        boardId: string
-        createdById: string
-        updatedById: string
-    }
+    data: BoardCardsResponse
 }

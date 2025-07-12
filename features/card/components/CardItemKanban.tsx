@@ -1,31 +1,23 @@
-import { useEffect, useMemo, useState } from 'react'
-import { useCardGetListQuery, CardItem, useCardCreateMutation } from '@/features/card'
+import { Dispatch, SetStateAction, useMemo, useState } from 'react'
+import { CardItem, useCardCreateMutation } from '@/features/card'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
-import { CardGetListResponse } from '@/types'
+import { BoardCardsResponse } from '@/types'
 import { Loader2Icon, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { useQueryClient } from '@tanstack/react-query'
 
 interface Props {
     listId: string
+    cards: BoardCardsResponse[]
+    setCards?: Dispatch<SetStateAction<BoardCardsResponse[]>>
 }
 
-export function CardItemKanban({ listId }: Props) {
-    const queryClient = useQueryClient()
-    const { data: cards } = useCardGetListQuery(listId)
+export function CardItemKanban({ listId, cards, setCards }: Props) {
     const [addingCardListId, setAddingCardListId] = useState<string | null>(null)
     const [newCardTitles, setNewCardTitles] = useState<Record<string, string>>({})
-    const [columns, setColumns] = useState<CardGetListResponse['data']>([])
-    const cardsIds = useMemo(() => columns.map((col) => col.id), [columns])
+    const cardsIds = useMemo(() => cards.map((col) => col.id), [cards])
     const { mutateAsync, isPending } = useCardCreateMutation()
-
-    useEffect(() => {
-        if (cards?.data) {
-            setColumns(cards.data)
-        }
-    }, [cards?.data])
 
     function openAddCard(listId: string) {
         setAddingCardListId(listId)
@@ -51,12 +43,14 @@ export function CardItemKanban({ listId }: Props) {
             listId,
             name: title
         }, {
-            onSuccess: () => {
+            onSuccess: ({ data }) => {
                 toast.success('Card Created Successfully!', {
                     description: 'Your new card has been added to the list.'
                 })
 
-                queryClient.invalidateQueries({ queryKey: ['cards', listId] })
+                if (setCards) {
+                    setCards((prev) => [...prev, data])
+                }
             },
             onError: (error) => {
                 const msg =
@@ -73,7 +67,7 @@ export function CardItemKanban({ listId }: Props) {
     return (
         <SortableContext items={cardsIds} strategy={verticalListSortingStrategy}>
             <ul className="p-2 pb-0 space-y-2 overflow-y-auto h-full">
-                {columns.map((card) => (
+                {cards.map((card) => (
                     <CardItem
                         key={card.id}
                         card={card}

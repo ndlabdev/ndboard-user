@@ -4,14 +4,12 @@ import { Loader2Icon, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
-import { useQueryClient } from '@tanstack/react-query'
 
 interface Props {
     boardId: string
 }
 
 export function ListColumnCreate({ boardId }: Props) {
-    const queryClient = useQueryClient()
     const [addingList, setAddingList] = useState<boolean>(false)
     const [newListTitle, setNewListTitle] = useState<string>('')
     const { mutateAsync, isPending } = useListCreateMutation()
@@ -28,8 +26,6 @@ export function ListColumnCreate({ boardId }: Props) {
                 toast.success('List Created Successfully!', {
                     description: 'Your new list has been created.'
                 })
-
-                queryClient.invalidateQueries({ queryKey: ['list', boardId] })
             },
             onError: (error) => {
                 const msg =

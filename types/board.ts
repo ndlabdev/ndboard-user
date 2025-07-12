@@ -1,4 +1,5 @@
 import { PaginateMeta } from './api-common'
+import { OgObject } from './og-object'
 
 export type BoardBackground = {
     key: string
@@ -32,33 +33,99 @@ export interface BoardListResponse {
     meta: PaginateMeta
 }
 
+export interface BoardListsResponse {
+    name: string;
+    id: string;
+    boardId: string;
+    color: string;
+}
+
+export interface BoardCardsResponse {
+    id: string;
+    name: string;
+    description: string | null;
+    listId: string;
+    order: number;
+    dueDate: Date | null;
+    isArchived: boolean;
+    labels: {
+        id: string;
+        name: string;
+        color: string;
+    }[];
+    assignees: {
+        id: string;
+        name: string;
+        avatarUrl: string | null;
+    }[];
+    checklists: {
+        id: string;
+        title: string;
+        order: number;
+        items: {
+            name: string;
+            id: string;
+            order: number;
+            checklistId: string;
+            isChecked: boolean;
+        }[];
+    }[];
+    attachments: {
+        name: string;
+        id: string;
+        createdAt: Date;
+        cardId: string;
+        url: string;
+        uploadedById: string;
+    }[];
+    comments: {
+        id: string;
+        content: string;
+        createdAt: Date;
+        user: {
+            name: string;
+            id: string;
+            avatarUrl: string | null;
+        };
+    }[];
+    customFieldValues: {
+        id: string;
+        value: string;
+        cardId: string;
+        boardCustomFieldId: string;
+    }[];
+    meta: OgObject;
+}
+
 export interface BoardDetailResponse {
     data: {
-        readonly owner: {
+        owner: {
             name: string
             id: string
         }
-        readonly workspace: {
-            readonly id: string
-            readonly name: string
+        workspace: {
+            id: string
+            name: string
         }
-        readonly name: string
-        readonly id: string
-        readonly createdAt: Date
-        readonly updatedAt: Date
-        readonly description: string | null
-        readonly shortLink: string
-        readonly slug: string
-        readonly workspaceId: string
-        readonly ownerId: string
-        readonly createdById: string
-        readonly updatedById: string
-        readonly visibility: string
-        readonly coverImageUrl: string | null
-        readonly isTemplate: boolean
-        readonly isArchived: boolean
-        readonly archivedAt: Date | null
-        readonly order: number
+        name: string
+        id: string
+        createdAt: Date
+        updatedAt: Date
+        description: string | null
+        shortLink: string
+        slug: string
+        workspaceId: string
+        ownerId: string
+        createdById: string
+        updatedById: string
+        visibility: string
+        coverImageUrl: string | null
+        isTemplate: boolean
+        isArchived: boolean
+        archivedAt: Date | null
+        order: number
+        lists: BoardListsResponse[]
+        cards: BoardCardsResponse[]
     }
 }
 

@@ -1,15 +1,17 @@
 import { CSS } from '@dnd-kit/utilities'
 import { CardItemKanban } from '@/features/card'
 import { useSortable } from '@dnd-kit/sortable'
-import { ListGetListItem } from '@/types'
-import { CSSProperties } from 'react'
+import { BoardCardsResponse, BoardListsResponse } from '@/types'
+import { CSSProperties, Dispatch, SetStateAction } from 'react'
 
 interface Props {
-    column: ListGetListItem
+    column: BoardListsResponse
+    cards: BoardCardsResponse[]
+    setCards?: Dispatch<SetStateAction<BoardCardsResponse[]>>
     isOverlay?: boolean
 }
 
-export function ListColumn({ column, isOverlay = false }: Props) {
+export function ListColumn({ column, cards, setCards, isOverlay = false }: Props) {
     const {
         setNodeRef,
         attributes,
@@ -24,23 +26,22 @@ export function ListColumn({ column, isOverlay = false }: Props) {
         }
     })
 
-    const style: CSSProperties = isOverlay
-        ? {
-            width: '100%',
-            opacity: 0.9,
+    const style: CSSProperties = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        ...(isOverlay && {
+            opacity: 0.85,
             pointerEvents: 'none',
-            boxShadow: '0 2px 12px #0004'
-        }
-        : {
-            transition,
-            transform: CSS.Transform.toString(transform)
-        }
+            boxShadow: '0 8px 20px rgba(0,0,0,0.2)',
+            background: 'rgba(255, 255, 255, 0.95)'
+        })
+    }
 
     return (
         <li
-            ref={isOverlay ? undefined : setNodeRef}
+            ref={setNodeRef}
             style={style}
-            className="list-none flex-none flex flex-col w-72 bg-white/90 rounded-xl max-h-full pb-2"
+            className="list-none flex-none flex flex-col w-72 bg-white rounded-xl max-h-full pb-2 transition-all duration-200 ease-in-out"
         >
             <header
                 className="cursor-grab active:cursor-grabbing select-none"
@@ -52,7 +53,11 @@ export function ListColumn({ column, isOverlay = false }: Props) {
                 </div>
             </header>
 
-            <CardItemKanban listId={column.id} />
+            <CardItemKanban
+                listId={column.id}
+                cards={cards}
+                setCards={setCards}
+            />
         </li >
     )
 }

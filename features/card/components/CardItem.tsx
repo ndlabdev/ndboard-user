@@ -1,14 +1,16 @@
 import { isUrl } from '@/lib/utils'
 import { CardLinkPreview } from '@/features/card'
-import { useSortable } from '@dnd-kit/sortable'
-import { CardGetListItem } from '@/types'
+import { defaultAnimateLayoutChanges, useSortable } from '@dnd-kit/sortable'
+import { BoardCardsResponse } from '@/types'
 import { CSS } from '@dnd-kit/utilities'
+import { CSSProperties } from 'react'
 
 interface Props {
-    card: CardGetListItem
+    card: BoardCardsResponse
+    isOverlay?: boolean
 }
 
-export function CardItem({ card }: Props) {
+export function CardItem({ card, isOverlay = false }: Props) {
     const {
         setNodeRef,
         attributes,
@@ -19,13 +21,23 @@ export function CardItem({ card }: Props) {
         id: card.id,
         data: {
             type: 'Card',
-            card
-        }
+            card,
+            listId: card.listId
+        },
+        animateLayoutChanges: (args) =>
+            defaultAnimateLayoutChanges({ ...args, wasDragging: true })
     })
 
-    const style = {
+    const style: CSSProperties = {
+        transform: CSS.Transform.toString(transform),
         transition,
-        transform: CSS.Transform.toString(transform)
+        ...(isOverlay
+            ? {
+                opacity: 0.9,
+                pointerEvents: 'none',
+                boxShadow: '0 2px 12px #0004'
+            }
+            : {})
     }
 
     return (
@@ -35,9 +47,9 @@ export function CardItem({ card }: Props) {
             style={style}
             {...attributes}
             {...listeners}
-            className="bg-white rounded-lg shadow border border-white hover:border-primary transition group list-none cursor-pointer"
+            className="bg-white rounded-lg shadow border border-white hover:border-primary transition-all duration-200 group list-none cursor-pointer"
         >
-            {isUrl(card.name)
+            {isUrl(card.name) && card.meta
                 ? <CardLinkPreview meta={card.meta} />
                 : (
                     <div className="p-3">

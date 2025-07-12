@@ -1,21 +1,23 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
-import { ListColumn, ListColumnCreate, useListGetListQuery, useListReorderMutation } from '@/features/list'
+import { useMemo, useState } from 'react'
+import { ListColumn, ListColumnCreate, useListReorderMutation } from '@/features/list'
 import { arrayMove, SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortable'
 import { DndContext, DragEndEvent, DragOverEvent, DragOverlay, DragStartEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
-import { ListGetListItem, ListGetListResponse } from '@/types'
+import { BoardCardsResponse, BoardDetailResponse, BoardListsResponse } from '@/types'
 import { createPortal } from 'react-dom'
+import { CardItem } from '@/features/card'
 
 interface Props {
-    boardId: string
+    board: BoardDetailResponse['data']
 }
 
-export function ListColumnKanban({ boardId }: Props) {
-    const { data: lists } = useListGetListQuery(boardId)
-    const [columns, setColumns] = useState<ListGetListResponse['data']>([])
+export function ListColumnKanban({ board }: Props) {
+    const [columns, setColumns] = useState<BoardListsResponse[]>(board.lists)
     const columnsIds = useMemo(() => columns.map((col) => col.id), [columns])
-    const [activeColumn, setActiveColumn] = useState<ListGetListItem | null>(null)
+    const [cards, setCards] = useState<BoardCardsResponse[]>(board.cards)
+    const [activeColumn, setActiveColumn] = useState<BoardListsResponse | null>(null)
+    const [activeCard, setActiveCard] = useState<BoardCardsResponse | null>(null)
     const { mutateAsync } = useListReorderMutation()
 
     const sensors = useSensors(
@@ -26,15 +28,15 @@ export function ListColumnKanban({ boardId }: Props) {
         })
     )
 
-    useEffect(() => {
-        if (lists?.data) {
-            setColumns(lists.data)
-        }
-    }, [lists?.data])
-
     function onDragStart(event: DragStartEvent) {
         if (event.active.data.current?.type === 'Column') {
             setActiveColumn(event.active.data.current.column)
+
+            return
+        }
+
+        if (event.active.data.current?.type === 'Card') {
+            setActiveCard(event.active.data.current.card)
 
             return
         }
@@ -42,6 +44,7 @@ export function ListColumnKanban({ boardId }: Props) {
 
     function onDragEnd(event: DragEndEvent) {
         setActiveColumn(null)
+        setActiveCard(null)
 
         const { active, over } = event
         if (!over) return
@@ -55,14 +58,14 @@ export function ListColumnKanban({ boardId }: Props) {
 
         const activeColumnIndex = columns.findIndex((col) => col.id === activeId)
         const overColumnIndex = columns.findIndex((col) => col.id === overId)
-
+    
         if (activeColumnIndex === overColumnIndex) return
-
+    
         const newOrder = arrayMove(columns, activeColumnIndex, overColumnIndex)
         setColumns(newOrder)
-
+    
         mutateAsync({
-            boardId,
+            boardId: board.id,
             lists: newOrder.map((col, idx) => ({
                 id: col.id,
                 order: idx
@@ -79,7 +82,33 @@ export function ListColumnKanban({ boardId }: Props) {
         if (activeId === overId) return
 
         const isActiveATask = active.data.current?.type === 'Card'
+        const isOverATask = over.data.current?.type === 'Card'
         if (!isActiveATask) return
+
+        if (isActiveATask && isOverATask) {
+            setCards((cards) => {
+                const activeIndex = cards.findIndex((t) => t.id === activeId)
+                const overIndex = cards.findIndex((t) => t.id === overId)
+                if (cards[activeIndex].listId != cards[overIndex].listId) {
+                    cards[activeIndex].listId = cards[overIndex].listId
+                    
+                    return arrayMove(cards, activeIndex, overIndex - 1)
+                }
+                
+                return arrayMove(cards, activeIndex, overIndex)
+            })
+        }
+
+        const isOverAColumn = over.data.current?.type === 'Column'
+        if (isActiveATask && isOverAColumn) {
+            setCards((cards) => {
+                const activeIndex = cards.findIndex((t) => t.id === activeId)
+                cards[activeIndex].listId = overId.toString()
+                console.log('DROPPING TASK OVER COLUMN', { activeIndex })
+                
+                return arrayMove(cards, activeIndex, activeIndex)
+            })
+        }
     }
 
     return (
@@ -95,10 +124,12 @@ export function ListColumnKanban({ boardId }: Props) {
                         <ListColumn
                             key={column.id}
                             column={column}
+                            cards={cards.filter((task) => task.listId === column.id)}
+                            setCards={setCards}
                         />
                     ))}
 
-                    <ListColumnCreate boardId={boardId} />
+                    <ListColumnCreate boardId={board.id} />
                 </ul>
             </SortableContext>
 
@@ -107,6 +138,14 @@ export function ListColumnKanban({ boardId }: Props) {
                     {activeColumn && (
                         <ListColumn
                             column={activeColumn}
+                            cards={cards.filter((task) => task.listId === activeColumn.id)}
+                            isOverlay
+                        />
+                    )}
+
+                    {activeCard && (
+                        <CardItem
+                            card={activeCard}
                             isOverlay
                         />
                     )}
