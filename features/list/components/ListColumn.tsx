@@ -58,6 +58,6 @@ export function ListColumn({ column, cards, setCards, isOverlay = false }: Props
                 cards={cards}
                 setCards={setCards}
             />
-        </li >
+        </li>
     )
 }

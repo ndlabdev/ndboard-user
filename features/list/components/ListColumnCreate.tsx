@@ -1,15 +1,17 @@
-import { useState } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 import { useListCreateMutation } from '@/features/list'
 import { Loader2Icon, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
+import { BoardListsResponse } from '@/types'
 
 interface Props {
     boardId: string
+    setColumns: Dispatch<SetStateAction<BoardListsResponse[]>>
 }
 
-export function ListColumnCreate({ boardId }: Props) {
+export function ListColumnCreate({ boardId, setColumns }: Props) {
     const [addingList, setAddingList] = useState<boolean>(false)
     const [newListTitle, setNewListTitle] = useState<string>('')
     const { mutateAsync, isPending } = useListCreateMutation()
@@ -22,10 +24,12 @@ export function ListColumnCreate({ boardId }: Props) {
             boardId,
             name: title
         }, {
-            onSuccess: () => {
+            onSuccess: ({ data }) => {
                 toast.success('List Created Successfully!', {
                     description: 'Your new list has been created.'
                 })
+
+                setColumns((prev) => [...prev, data])
             },
             onError: (error) => {
                 const msg =

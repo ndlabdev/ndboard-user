@@ -129,7 +129,10 @@ export function ListColumnKanban({ board }: Props) {
                         />
                     ))}
 
-                    <ListColumnCreate boardId={board.id} />
+                    <ListColumnCreate
+                        boardId={board.id}
+                        setColumns={setColumns}
+                    />
                 </ul>
             </SortableContext>
 
