@@ -23,7 +23,7 @@ export default function BoardDetailPage() {
     const board = data.data
 
     return (
-        <section className="relative w-full">
+        <section className="relative w-full h-full">
             <BoardCoverImage coverImageUrl={board?.coverImageUrl} />
 
             <div className="relative z-20 flex flex-col h-full w-full">
