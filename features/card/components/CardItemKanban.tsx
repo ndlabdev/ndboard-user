@@ -66,7 +66,7 @@ export function CardItemKanban({ listId, cards, setCards }: Props) {
 
     return (
         <SortableContext items={cardsIds} strategy={verticalListSortingStrategy}>
-            <ul className="p-2 pb-0 space-y-2 overflow-y-auto h-full">
+            <ul className="p-2 pb-0 space-y-2 overflow-y-auto overflow-x-hidden h-full">
                 {cards.map((card) => (
                     <CardItem
                         key={card.id}

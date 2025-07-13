@@ -41,7 +41,7 @@ export function ListColumn({ column, cards, setCards, isOverlay = false }: Props
         <li
             ref={setNodeRef}
             style={style}
-            className="list-none flex-none flex flex-col w-72 bg-white rounded-xl max-h-full pb-2 transition-all duration-200 ease-in-out"
+            className="list-none flex-none flex flex-col w-72 bg-white rounded-xl max-h-full pb-3 transition-all duration-200 ease-in-out"
         >
             <header
                 className="cursor-grab active:cursor-grabbing select-none"
