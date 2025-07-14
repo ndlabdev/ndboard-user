@@ -3,37 +3,39 @@
 import { useMemo, useState } from 'react'
 import { ListColumn, ListColumnCreate, useListReorderMutation } from '@/features/list'
 import { arrayMove, SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortable'
-import { DndContext, DragEndEvent, DragOverEvent, DragOverlay, DragStartEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
+import {
+    DndContext,
+    DragEndEvent,
+    DragOverEvent,
+    DragOverlay,
+    DragStartEvent,
+    PointerSensor,
+    useSensor,
+    useSensors
+} from '@dnd-kit/core'
 import { BoardCardsResponse, BoardDetailResponse, BoardListsResponse } from '@/types'
 import { createPortal } from 'react-dom'
-import { CardItem, useCardReorderMutation } from '@/features/card'
+import { CardItem, useCardBulkReorderMutation } from '@/features/card'
 
 interface Props {
     board: BoardDetailResponse['data']
 }
 
-function getNewCardOrder(cards: { order: number }[], overIndex: number): number {
-    const ORDER_STEP = 1024
-
-    if (cards.length === 0) return ORDER_STEP
-    if (overIndex === 0) return cards[0].order - ORDER_STEP
-    if (overIndex >= cards.length) return cards[cards.length - 1].order + ORDER_STEP
-
-    const prevOrder = cards[overIndex - 1].order
-    const nextOrder = cards[overIndex].order
-    
-    return (prevOrder + nextOrder) / 2
-}
-
 export function ListColumnKanban({ board }: Props) {
     const [columns, setColumns] = useState<BoardListsResponse[]>(board.lists)
-    const columnsIds = useMemo(() => columns.map((col) => col.id), [columns])
     const [cards, setCards] = useState<BoardCardsResponse[]>(board.cards)
-    const [activeColumn, setActiveColumn] = useState<BoardListsResponse | null>(null)
-    const [activeCard, setActiveCard] = useState<BoardCardsResponse | null>(null)
-    const [overCard, setOverCard] = useState<BoardCardsResponse | null>(null)
-    const { mutateAsync } = useListReorderMutation()
-    const { mutateAsync: mutateAsyncCard } = useCardReorderMutation()
+    const [activeColumnId, setActiveColumnId] = useState<string | null>(null)
+    const [activeCardId, setActiveCardId] = useState<string | null>(null)
+    const [dragMeta, setDragMeta] = useState<{
+        activeCardOriginListId?: string,
+        overCardListId?: string,
+        activeCardId?: string,
+        overCardId?: string
+    } | null>(null)
+    const { mutateAsync: mutateListOrder } = useListReorderMutation()
+    const { mutateAsync: mutateCardOrder } = useCardBulkReorderMutation()
+
+    const columnsIds = useMemo(() => columns.map((col) => col.id), [columns])
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -44,147 +46,189 @@ export function ListColumnKanban({ board }: Props) {
     )
 
     function onDragStart(event: DragStartEvent) {
-        if (event.active.data.current?.type === 'Column') {
-            setActiveColumn(event.active.data.current.column)
-
-            return
-        }
-
-        if (event.active.data.current?.type === 'Card') {
-            setActiveCard(event.active.data.current.card)
-
-            return
-        }
-    }
-
-    console.log(cards)
-    async function onDragEnd(event: DragEndEvent) {
-        setActiveColumn(null)
-        setActiveCard(null)
-        setOverCard(null)
-
-        const { active, over } = event
-        if (!over) return
-
-        const activeId = active.id
-        const overId = over.id
-
-        const isActiveAColumn = active.data.current?.type === 'Column'
-        if (isActiveAColumn) {
-            if (activeId === overId) return
-            
-            const activeColumnIndex = columns.findIndex((col) => col.id === activeId)
-            const overColumnIndex = columns.findIndex((col) => col.id === overId)
-    
-            if (activeColumnIndex === overColumnIndex) return
-    
-            const newOrder = arrayMove(columns, activeColumnIndex, overColumnIndex)
-            setColumns(newOrder)
-    
-            await mutateAsync({
-                boardId: board.id,
-                lists: newOrder.map((col, idx) => ({
-                    id: col.id,
-                    order: idx
-                }))
+        const type = event.active.data.current?.type
+        if (type === 'Column') setActiveColumnId(event.active.id as string)
+        if (type === 'Card') {
+            setActiveCardId(event.active.id as string)
+            setDragMeta({
+                activeCardId: event.active.id as string,
+                activeCardOriginListId: event.active.data.current?.listId
             })
-
-            return
         }
-
-        // const isActiveACard = active.data.current?.type === 'Card'
-        // if (!isActiveACard) return
-
-        // const draggedCard = activeCard as BoardCardsResponse
-        // const overCardData = overCard as BoardCardsResponse | undefined
-        // const overColumnData = over.data.current?.column as BoardListsResponse | undefined
-
-        // let targetListId: string
-        // if (overCardData) {
-        //     targetListId = overCardData.listId
-        // } else if (overColumnData) {
-        //     targetListId = overColumnData.id
-        // } else {
-        //     return
-        // }
-
-        // const cardsInTargetList = cards
-        //     .filter((card) => card.listId === targetListId)
-        //     .sort((a, b) => a.order - b.order)
-
-        // let overIndex = 0
-        // if (overCardData) {
-        //     overIndex = cardsInTargetList.findIndex((card) => card.id === overCardData.id)
-        // } else {
-        //     overIndex = cardsInTargetList.length
-        // }
-
-        // if (
-        //     draggedCard.listId === targetListId &&
-        // overCardData &&
-        // cardsInTargetList.findIndex((card) => card.id === draggedCard.id) < overIndex
-        // ) {
-        //     overIndex--
-        // }
-
-        // const newOrder = getNewCardOrder(cardsInTargetList, overIndex)
-
-        // await mutateAsyncCard({
-        //     id: draggedCard.id,
-        //     listId: targetListId,
-        //     order: newOrder
-        // })
-
-        // return
     }
 
     function onDragOver(event: DragOverEvent) {
         const { active, over } = event
         if (!over) return
 
-        const activeId = active.id
-        const overId = over.id
-        if (activeId === overId) return
+        const activeType = active.data.current?.type
+        const overType = over.data.current?.type
+        if (activeType !== 'Card') return
 
-        if (over) setOverCard(over.data.current?.card as BoardCardsResponse)
-        else setOverCard(null)
+        setDragMeta((meta) => ({
+            ...(meta || {}),
+            overCardId: over.id as string,
+            overCardListId: overType === 'Card'
+                ? over.data.current?.listId
+                : (overType === 'Column' ? over.id.toString() : undefined)
+        }))
 
-        const isActiveATask = active.data.current?.type === 'Card'
-        const isOverATask = over.data.current?.type === 'Card'
-        if (!isActiveATask) return
+        setCards((prev) => {
+            const next = [...prev]
+            const activeIndex = next.findIndex((card) => card.id === active.id)
+            if (activeIndex === -1) return next
 
-        if (isActiveATask && isOverATask) {
-            setCards((cards) => {
-                const activeIndex = cards.findIndex((t) => t.id === activeId)
-                const overIndex = cards.findIndex((t) => t.id === overId)
-                if (cards[activeIndex].listId != cards[overIndex].listId) {
-                    cards[activeIndex].listId = cards[overIndex].listId
+            const activeCard = next[activeIndex]
 
-                    return arrayMove(cards, activeIndex, overIndex - 1)
+            if (overType === 'Card') {
+                const overIndex = next.findIndex((card) => card.id === over.id)
+                if (overIndex === -1) return next
+
+                const overCard = next[overIndex]
+                if (activeCard.listId !== overCard.listId) {
+                    next.splice(activeIndex, 1)
+
+                    const newCard = { ...activeCard, listId: overCard.listId }
+                    const insertAt = next.findIndex((card) => card.id === over.id)
+
+                    next.splice(insertAt, 0, newCard)
+                } else {
+                    return arrayMove(next, activeIndex, overIndex)
                 }
-                
-                return arrayMove(cards, activeIndex, overIndex)
-            })
+            } else if (overType === 'Column') {
+                const overListId = over.id.toString()
+                if (activeCard.listId !== overListId) {
+                    next.splice(activeIndex, 1)
+
+                    const newCard = { ...activeCard, listId: overListId }
+                    const destIndexes = next
+                        .map((c, i) => c.listId === overListId ? i : -1)
+                        .filter((i) => i !== -1)
+                    const insertAt = destIndexes.length > 0
+                        ? destIndexes[destIndexes.length - 1] + 1
+                        : next.length
+
+                    next.splice(insertAt, 0, newCard)
+                }
+            }
+
+            return next
+        })
+    }
+
+    async function onDragEnd(event: DragEndEvent) {
+        setActiveColumnId(null)
+        setActiveCardId(null)
+
+        const { active, over } = event
+        if (!over) {
+            setDragMeta(null)
+
+            return
         }
 
-        const isOverAColumn = over.data.current?.type === 'Column'
-        if (isActiveATask && isOverAColumn) {
-            setCards((cards) => {
-                const activeIndex = cards.findIndex((t) => t.id === activeId)
-                cards[activeIndex].listId = overId.toString()
-                console.log('DROPPING TASK OVER COLUMN', { activeIndex })
-                
-                return arrayMove(cards, activeIndex, activeIndex)
+        const activeType = active.data.current?.type
+        const overType = over.data.current?.type
+
+        if (activeType === 'Column' && overType === 'Column') {
+            if (active.id === over.id) {
+                setDragMeta(null)
+
+                return
+            }
+            const oldIdx = columns.findIndex((col) => col.id === active.id)
+            const newIdx = columns.findIndex((col) => col.id === over.id)
+            if (oldIdx === -1 || newIdx === -1) {
+                setDragMeta(null)
+
+                return
+            }
+            const newOrder = arrayMove(columns, oldIdx, newIdx)
+            setColumns(newOrder)
+
+            if (oldIdx !== newIdx) {
+                await mutateListOrder({
+                    boardId: board.id,
+                    lists: newOrder.map((col, idx) => ({
+                        id: col.id,
+                        order: idx
+                    }))
+                })
+            }
+
+            setDragMeta(null)
+
+            return
+        }
+
+        if (activeType === 'Card') {
+            const originListId = dragMeta?.activeCardOriginListId ||
+                (cards.find((c) => c.id === active.id)?.listId)
+
+            let targetListId: string | undefined
+            if (overType === 'Card') {
+                targetListId = dragMeta?.overCardListId || (cards.find((c) => c.id === over.id)?.listId)
+            } else if (overType === 'Column') {
+                targetListId = over.id.toString()
+            } else {
+                targetListId = originListId
+            }
+
+            const changedListIds = Array.from(new Set([
+                originListId,
+                targetListId
+            ].filter(Boolean))) as string[]
+
+            const nextCards = cards.map((card) => ({ ...card }))
+            changedListIds.forEach((listId) => {
+                const cardsInList = nextCards
+                    .filter((card) => card.listId === listId)
+                    .map((card, idx) => ({
+                        ...card,
+                        order: idx
+                    }))
+
+                cardsInList.forEach((card) => {
+                    const idx = nextCards.findIndex((c) => c.id === card.id)
+                    if (idx !== -1) nextCards[idx].order = card.order
+                })
             })
+
+            const listsPayload = changedListIds.map((listId) => ({
+                listId,
+                cards: nextCards
+                    .filter((card) => card.listId === listId)
+                    .sort((a, b) => a.order - b.order)
+                    .map((card) => ({
+                        id: card.id,
+                        order: card.order
+                    }))
+            })).filter((list) => list.cards.length > 0)
+
+            if (listsPayload.length > 0) {
+                await mutateCardOrder({ lists: listsPayload })
+            }
+
+            setCards(nextCards)
+            setDragMeta(null)
+        } else {
+            setDragMeta(null)
         }
     }
+
+    const activeColumn = activeColumnId
+        ? columns.find((col) => col.id === activeColumnId) || null
+        : null
+    const activeCard = activeCardId
+        ? cards.find((card) => card.id === activeCardId) || null
+        : null
 
     return (
         <DndContext
             sensors={sensors}
             onDragStart={onDragStart}
-            onDragEnd={onDragEnd}
             onDragOver={onDragOver}
+            onDragEnd={onDragEnd}
         >
             <SortableContext items={columnsIds} strategy={horizontalListSortingStrategy}>
                 <ul className="flex gap-4 items-start px-4 py-6 overflow-y-hidden h-full">
@@ -196,11 +240,7 @@ export function ListColumnKanban({ board }: Props) {
                             setCards={setCards}
                         />
                     ))}
-
-                    <ListColumnCreate
-                        boardId={board.id}
-                        setColumns={setColumns}
-                    />
+                    <ListColumnCreate boardId={board.id} setColumns={setColumns} />
                 </ul>
             </SortableContext>
 
@@ -213,12 +253,8 @@ export function ListColumnKanban({ board }: Props) {
                             isOverlay
                         />
                     )}
-
                     {activeCard && (
-                        <CardItem
-                            card={activeCard}
-                            isOverlay
-                        />
+                        <CardItem card={activeCard} isOverlay />
                     )}
                 </DragOverlay>,
                 document.body

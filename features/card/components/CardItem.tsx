@@ -21,7 +21,8 @@ export function CardItem({ card, isOverlay = false }: Props) {
         id: card.id,
         data: {
             type: 'Card',
-            card
+            card,
+            listId: card.listId
         },
         animateLayoutChanges: (args) =>
             defaultAnimateLayoutChanges({ ...args, wasDragging: true })
