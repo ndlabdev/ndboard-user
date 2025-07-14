@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ListColumn, ListColumnCreate, useListReorderMutation } from '@/features/list'
 import { arrayMove, SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortable'
 import {
@@ -19,12 +19,13 @@ import { CardItem, useCardBulkReorderMutation } from '@/features/card'
 
 interface Props {
     board: BoardDetailResponse['data']
-    allCards: any
+    allCards: BoardCardsResponse[]
 }
 
 export function ListColumnKanban({ board, allCards }: Props) {
     const [columns, setColumns] = useState<BoardListsResponse[]>(board.lists)
     const [cards, setCards] = useState<BoardCardsResponse[]>(allCards)
+
     const [activeColumnId, setActiveColumnId] = useState<string | null>(null)
     const [activeCardId, setActiveCardId] = useState<string | null>(null)
     const [dragMeta, setDragMeta] = useState<{
@@ -33,7 +34,7 @@ export function ListColumnKanban({ board, allCards }: Props) {
         activeCardId?: string,
         overCardId?: string
     } | null>(null)
-    const initialized = useRef(false)
+
     const { mutateAsync: mutateListOrder } = useListReorderMutation()
     const { mutateAsync: mutateCardOrder } = useCardBulkReorderMutation()
 
@@ -48,15 +49,8 @@ export function ListColumnKanban({ board, allCards }: Props) {
     )
 
     useEffect(() => {
-        if (!initialized.current && allCards.length > 0) {
-            setCards(allCards)
-            initialized.current = true
-        }
-
-        if (initialized.current && board.id !== undefined) {
-            initialized.current = false
-        }
-    }, [allCards, board.id])
+        setCards(allCards)
+    }, [allCards])
 
     function onDragStart(event: DragStartEvent) {
         const type = event.active.data.current?.type
@@ -207,23 +201,6 @@ export function ListColumnKanban({ board, allCards }: Props) {
                 })
             })
 
-            let needUpdate = false
-            changedListIds.forEach((listId) => {
-                const oldOrder = cards
-                    .filter((card) => card.listId === listId)
-                    .sort((a, b) => a.order - b.order)
-                    .map((card) => card.id)
-
-                const newOrder = nextCards
-                    .filter((card) => card.listId === listId)
-                    .sort((a, b) => a.order - b.order)
-                    .map((card) => card.id)
-
-                if (JSON.stringify(oldOrder) !== JSON.stringify(newOrder)) {
-                    needUpdate = true
-                }
-            })
-
             const listsPayload = changedListIds.map((listId) => ({
                 listId,
                 cards: nextCards
@@ -235,7 +212,7 @@ export function ListColumnKanban({ board, allCards }: Props) {
                     }))
             })).filter((list) => list.cards.length > 0)
 
-            if (needUpdate && listsPayload.length > 0) {
+            if (listsPayload.length > 0) {
                 await mutateCardOrder({ lists: listsPayload })
             }
 

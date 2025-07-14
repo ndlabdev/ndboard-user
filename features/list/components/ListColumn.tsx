@@ -2,7 +2,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { CardItemKanban } from '@/features/card'
 import { useSortable } from '@dnd-kit/sortable'
 import { BoardCardsResponse, BoardListsResponse } from '@/types'
-import { CSSProperties, Dispatch, SetStateAction } from 'react'
+import { CSSProperties, Dispatch, memo, SetStateAction } from 'react'
 
 interface Props {
     column: BoardListsResponse
@@ -11,7 +11,7 @@ interface Props {
     isOverlay?: boolean
 }
 
-export function ListColumn({ column, cards, setCards, isOverlay = false }: Props) {
+export const ListColumn = memo(function ListColumn({ column, cards, setCards, isOverlay = false }: Props) {
     const {
         setNodeRef,
         attributes,
@@ -60,4 +60,4 @@ export function ListColumn({ column, cards, setCards, isOverlay = false }: Props
             />
         </li>
     )
-}
+})
