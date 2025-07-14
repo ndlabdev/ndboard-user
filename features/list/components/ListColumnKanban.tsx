@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { ListColumn, ListColumnCreate, useListReorderMutation } from '@/features/list'
 import { arrayMove, SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortable'
 import {
@@ -19,11 +19,12 @@ import { CardItem, useCardBulkReorderMutation } from '@/features/card'
 
 interface Props {
     board: BoardDetailResponse['data']
+    allCards: any
 }
 
-export function ListColumnKanban({ board }: Props) {
+export function ListColumnKanban({ board, allCards }: Props) {
     const [columns, setColumns] = useState<BoardListsResponse[]>(board.lists)
-    const [cards, setCards] = useState<BoardCardsResponse[]>(board.cards)
+    const [cards, setCards] = useState<BoardCardsResponse[]>(allCards)
     const [activeColumnId, setActiveColumnId] = useState<string | null>(null)
     const [activeCardId, setActiveCardId] = useState<string | null>(null)
     const [dragMeta, setDragMeta] = useState<{
@@ -32,6 +33,7 @@ export function ListColumnKanban({ board }: Props) {
         activeCardId?: string,
         overCardId?: string
     } | null>(null)
+    const initialized = useRef(false)
     const { mutateAsync: mutateListOrder } = useListReorderMutation()
     const { mutateAsync: mutateCardOrder } = useCardBulkReorderMutation()
 
@@ -44,6 +46,17 @@ export function ListColumnKanban({ board }: Props) {
             }
         })
     )
+
+    useEffect(() => {
+        if (!initialized.current && allCards.length > 0) {
+            setCards(allCards)
+            initialized.current = true
+        }
+
+        if (initialized.current && board.id !== undefined) {
+            initialized.current = false
+        }
+    }, [allCards, board.id])
 
     function onDragStart(event: DragStartEvent) {
         const type = event.active.data.current?.type
@@ -194,6 +207,23 @@ export function ListColumnKanban({ board }: Props) {
                 })
             })
 
+            let needUpdate = false
+            changedListIds.forEach((listId) => {
+                const oldOrder = cards
+                    .filter((card) => card.listId === listId)
+                    .sort((a, b) => a.order - b.order)
+                    .map((card) => card.id)
+
+                const newOrder = nextCards
+                    .filter((card) => card.listId === listId)
+                    .sort((a, b) => a.order - b.order)
+                    .map((card) => card.id)
+
+                if (JSON.stringify(oldOrder) !== JSON.stringify(newOrder)) {
+                    needUpdate = true
+                }
+            })
+
             const listsPayload = changedListIds.map((listId) => ({
                 listId,
                 cards: nextCards
@@ -205,7 +235,7 @@ export function ListColumnKanban({ board }: Props) {
                     }))
             })).filter((list) => list.cards.length > 0)
 
-            if (listsPayload.length > 0) {
+            if (needUpdate && listsPayload.length > 0) {
                 await mutateCardOrder({ lists: listsPayload })
             }
 
@@ -215,6 +245,16 @@ export function ListColumnKanban({ board }: Props) {
             setDragMeta(null)
         }
     }
+
+    const cardsByListId = useMemo(() => {
+        const map: Record<string, BoardCardsResponse[]> = {}
+        for (const card of cards) {
+            if (!map[card.listId]) map[card.listId] = []
+            map[card.listId].push(card)
+        }
+
+        return map
+    }, [cards])
 
     const activeColumn = activeColumnId
         ? columns.find((col) => col.id === activeColumnId) || null
@@ -236,7 +276,7 @@ export function ListColumnKanban({ board }: Props) {
                         <ListColumn
                             key={column.id}
                             column={column}
-                            cards={cards.filter((task) => task.listId === column.id)}
+                            cards={cardsByListId[column.id] ?? []}
                             setCards={setCards}
                         />
                     ))}

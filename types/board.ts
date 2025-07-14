@@ -125,7 +125,6 @@ export interface BoardDetailResponse {
         archivedAt: Date | null
         order: number
         lists: BoardListsResponse[]
-        cards: BoardCardsResponse[]
     }
 }
 
