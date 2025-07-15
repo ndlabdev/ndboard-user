@@ -3,7 +3,8 @@ import { z } from 'zod'
 // ** Schema
 export const cardCreateSchema = z.object({
     name: z.string().optional(),
-    listId: z.string()
+    listId: z.string(),
+    index: z.number().optional()
 })
 
 // ** State

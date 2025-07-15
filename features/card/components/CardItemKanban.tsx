@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useMemo, useState } from 'react'
+import React, { Dispatch, SetStateAction, useMemo, useState } from 'react'
 import { CardItem, useCardCreateMutation } from '@/features/card'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { BoardCardsResponse } from '@/types'
@@ -14,117 +14,145 @@ interface Props {
 }
 
 export function CardItemKanban({ listId, cards, setCards }: Props) {
-    const [addingCardListId, setAddingCardListId] = useState<string | null>(null)
-    const [newCardTitles, setNewCardTitles] = useState<Record<string, string>>({})
+    const [addingIndex, setAddingIndex] = useState<number | 'end' | null>(null)
+    const [newCardTitle, setNewCardTitle] = useState('')
     const cardsIds = useMemo(() => cards.map((col) => col.id), [cards])
     const { mutateAsync, isPending } = useCardCreateMutation()
 
-    function openAddCard(listId: string) {
-        setAddingCardListId(listId)
-        setNewCardTitles((prev) => ({
-            ...prev,
-            [listId]: ''
-        }))
-    }
+    async function submitAddCard(idx: number | 'end' | null) {
+        const title = newCardTitle.trim()
+        if (!title) {
+            setAddingIndex(null)
+            setNewCardTitle('')
+            
+            return
+        }
 
-    function closeAddCard(listId: string) {
-        setAddingCardListId(null)
-        setNewCardTitles((prev) => ({
-            ...prev,
-            [listId]: ''
-        }))
-    }
-
-    async function submitAddCard(listId: string) {
-        const title = newCardTitles[listId]?.trim()
-        if (!title) return closeAddCard(listId)
+        let index: number | undefined = undefined
+        if (typeof idx === 'number') {
+            index = idx
+        } else if (idx === 'end' || idx === null) {
+            index = cards.length
+        }
 
         await mutateAsync({
             listId,
-            name: title
+            name: title,
+            index
         }, {
             onSuccess: ({ data }) => {
-                toast.success('Card Created Successfully!', {
-                    description: 'Your new card has been added to the list.'
-                })
-
+                toast.success('Card Created Successfully!')
                 if (setCards) {
-                    setCards((prev) => [...prev, data])
+                    setCards((prev) => {
+                        const newCards = [...prev]
+                        if (idx === 'end' || idx === null) {
+                            newCards.push(data)
+                        } else {
+                            newCards.splice(idx, 0, data)
+                        }
+                        
+                        return newCards
+                    })
                 }
             },
             onError: (error) => {
-                const msg =
-                (error as { message?: string })?.message ||
-                'Create Card Failed'
-
+                const msg = (error as { message?: string })?.message || 'Create Card Failed'
                 toast.error(msg)
             }
         })
-
-        closeAddCard(listId)
+        setAddingIndex(null)
+        setNewCardTitle('')
     }
 
     return (
         <SortableContext items={cardsIds} strategy={verticalListSortingStrategy}>
-            <ul className="p-2 pb-0 space-y-2 overflow-y-auto overflow-x-hidden h-full">
-                {cards.map((card) => (
-                    <CardItem
-                        key={card.id}
-                        card={card}
-                    />
-                ))}
-
-                {addingCardListId === listId ? (
-                    <div className="flex flex-col gap-2">
-                        <Textarea
-                            value={newCardTitles[listId]}
-                            placeholder="Enter a title for this card"
-                            aria-placeholder="Enter a title for this card"
-                            autoFocus
-                            onChange={(e) => setNewCardTitles((prev) => ({
-                                ...prev,
-                                [listId]: e.target.value
-                            }))}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    submitAddCard(listId)
-                                }
+            <ul className="px-2 py-0 overflow-y-auto overflow-x-hidden h-full relative">
+                {cards.map((card, idx) => (
+                    <React.Fragment key={card.id}>
+                        <div
+                            className="flex items-center justify-center opacity-0 hover:opacity-100 -my-1 cursor-pointer"
+                            onClick={() => {
+                                setAddingIndex(idx)
+                                setNewCardTitle('')
                             }}
-                        />
-
-                        <div className="flex gap-1">
-                            <Button type="submit" size="sm" disabled={isPending} onClick={() => submitAddCard(listId)}>
-                                {isPending ? (
-                                    <>
-                                        <Loader2Icon className="animate-spin" />
-                                        Loading...
-                                    </>
-                                ) : 'Add Card'}
-                            </Button>
+                        >
+                            <div className="w-1/2 border-1 border-dashed border-muted" />
 
                             <Button
-                                type="reset"
-                                size="sm"
-                                variant="ghost"
-                                disabled={isPending}
-                                onClick={() => closeAddCard(listId)}
+                                size="icon"
+                                className="size-5 rounded-sm cursor-pointer"
+                                variant="default"
                             >
-                                Cancel
+                                <Plus className="size-3" />
                             </Button>
+
+                            <div className="w-1/2 border-1 border-dashed border-muted" />
                         </div>
-                    </div>
-                ) : (
-                    <li className="sticky bottom-0">
+
+                        {addingIndex === idx && (
+                            <div className="flex flex-col gap-2 my-2">
+                                <Textarea
+                                    value={newCardTitle}
+                                    placeholder="Enter a title for this card"
+                                    autoFocus
+                                    onChange={(e) => setNewCardTitle(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') submitAddCard(idx)
+                                    }}
+                                />
+                                <div className="flex gap-1">
+                                    <Button size="sm" disabled={isPending} onClick={() => submitAddCard(idx)}>
+                                        {isPending ? <><Loader2Icon className="animate-spin" /> Loading...</> : 'Add Card'}
+                                    </Button>
+
+                                    <Button size="sm" variant="ghost" disabled={isPending} onClick={() => setAddingIndex(null)}>
+                                        Cancel
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+
+                        <CardItem
+                            nearLastItem={idx === cards.length - 1}
+                            card={card}
+                        />
+                    </React.Fragment>
+                ))}
+
+                <li className="sticky bottom-0 mt-2 bg-white">
+                    {addingIndex === 'end' ? (
+                        <div className="flex flex-col gap-2 my-2">
+                            <Textarea
+                                value={newCardTitle}
+                                placeholder="Enter a title for this card"
+                                autoFocus
+                                onChange={(e) => setNewCardTitle(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') submitAddCard('end')
+                                }}
+                            />
+                            <div className="flex gap-1">
+                                <Button size="sm" disabled={isPending} onClick={() => submitAddCard('end')}>
+                                    {isPending ? <><Loader2Icon className="animate-spin" /> Loading...</> : 'Add Card'}
+                                </Button>
+                                <Button size="sm" variant="ghost" disabled={isPending} onClick={() => setAddingIndex(null)}>
+                                    Cancel
+                                </Button>
+                            </div>
+                        </div>
+                    ) : (
                         <Button
                             size="sm"
-                            variant="outline"
-                            onClick={() => openAddCard(listId)}
+                            onClick={() => {
+                                setAddingIndex('end')
+                                setNewCardTitle('')
+                            }}
                         >
-                            <Plus />
+                            <Plus className="mr-1" />
                             Add a card
                         </Button>
-                    </li>
-                )}
+                    )}
+                </li>
             </ul>
         </SortableContext>
     )

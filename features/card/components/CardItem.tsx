@@ -7,10 +7,11 @@ import { CSSProperties } from 'react'
 
 interface Props {
     card: BoardCardsResponse
+    nearLastItem?: boolean
     isOverlay?: boolean
 }
 
-export function CardItem({ card, isOverlay = false }: Props) {
+export function CardItem({ card, nearLastItem = false, isOverlay = false }: Props) {
     const {
         setNodeRef,
         attributes,
@@ -47,7 +48,7 @@ export function CardItem({ card, isOverlay = false }: Props) {
             style={style}
             {...attributes}
             {...listeners}
-            className="bg-white rounded-lg shadow border border-white hover:border-primary transition-all duration-200 group list-none cursor-pointer"
+            className={`bg-white rounded-lg shadow border border-white hover:border-primary transition-all duration-200 group list-none cursor-pointer ${nearLastItem ? 'mb-2' : ''}`}
         >
             {isUrl(card.name) && card.meta
                 ? <CardLinkPreview meta={card.meta} />
