@@ -7,7 +7,9 @@ export * from './components/ListColumnCreate'
 export * from './hooks/useListGetListQuery'
 export * from './hooks/useListReorderMutation'
 export * from './hooks/useListCreateMutation'
+export * from './hooks/useListUpdateMutation'
 
 // ** Schemas
 export * from './schemas/reorder'
 export * from './schemas/create'
+export * from './schemas/update'

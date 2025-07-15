@@ -1,5 +1,6 @@
 import { CSS } from '@dnd-kit/utilities'
 import { CardItemKanban } from '@/features/card'
+import { useListUpdateMutation } from '@/features/list'
 import { useSortable } from '@dnd-kit/sortable'
 import { BoardCardsResponse, BoardListsResponse } from '@/types'
 import { CSSProperties, Dispatch, memo, SetStateAction, useState } from 'react'
@@ -39,7 +40,8 @@ export const ListColumn = memo(function ListColumn({ column, cards, setCards, is
         })
     }
 
-    const [fold, setFold] = useState<boolean>(false)
+    const [fold, setFold] = useState<boolean>(column.isFold || false)
+    const { mutate } = useListUpdateMutation()
 
     return (
         <li
@@ -60,7 +62,13 @@ export const ListColumn = memo(function ListColumn({ column, cards, setCards, is
                             size="icon"
                             variant="ghost"
                             className="cursor-pointer"
-                            onClick={() => setFold(true)}
+                            onClick={() => {
+                                setFold(true)
+                                mutate({
+                                    id: column.id,
+                                    isFold: true
+                                })
+                            }}
                         >
                             <FoldHorizontal />
                         </Button>
@@ -71,7 +79,13 @@ export const ListColumn = memo(function ListColumn({ column, cards, setCards, is
                             size="icon"
                             variant="ghost"
                             className="cursor-pointer size-4 hover:bg-transparent"
-                            onClick={() => setFold(false)}
+                            onClick={() => {
+                                setFold(false)
+                                mutate({
+                                    id: column.id,
+                                    isFold: false
+                                })
+                            }}
                         >
                             <UnfoldHorizontal />
                         </Button>

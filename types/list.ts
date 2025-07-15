@@ -16,3 +16,7 @@ export interface ListGetListResponse {
 export interface ListCreateResponse {
     data: BoardListsResponse
 }
+
+export interface ListUpdateResponse {
+    data: BoardListsResponse
+}
