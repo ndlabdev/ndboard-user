@@ -3,7 +3,7 @@ import { CardItemKanban } from '@/features/card'
 import { ListArchive, ListArchiveAllCards, ListCopy, useListUpdateMutation } from '@/features/list'
 import { useSortable } from '@dnd-kit/sortable'
 import { BoardCardsResponse, BoardListsResponse } from '@/types'
-import { CSSProperties, Dispatch, memo, SetStateAction } from 'react'
+import { CSSProperties, Dispatch, memo, SetStateAction, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Ellipsis, FoldHorizontal, UnfoldHorizontal } from 'lucide-react'
 import {
@@ -55,6 +55,7 @@ export const ListColumn = memo(function ListColumn({
         })
     }
 
+    const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
     const { mutate } = useListUpdateMutation()
 
     const handleFoldCard = (isFold = false) => {
@@ -85,7 +86,7 @@ export const ListColumn = memo(function ListColumn({
             <header
                 className="cursor-grab active:cursor-grabbing select-none"
                 {...attributes}
-                {...listeners}
+                {...(isMenuOpen ? {} : listeners)}
             >
                 {!column.isFold ? (
                     <div className="flex items-center justify-between px-4 py-3">
@@ -101,7 +102,7 @@ export const ListColumn = memo(function ListColumn({
                                 <FoldHorizontal />
                             </Button>
 
-                            <DropdownMenu>
+                            <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                                 <DropdownMenuTrigger asChild>
                                     <Button
                                         size="icon"
