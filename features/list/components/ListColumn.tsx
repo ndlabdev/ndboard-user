@@ -124,6 +124,8 @@ export const ListColumn = memo(function ListColumn({
                                         <ListCopy
                                             column={column}
                                             setColumns={setColumns}
+                                            cards={cards}
+                                            setCards={setCards}
                                         />
 
                                         <DropdownMenuItem>

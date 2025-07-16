@@ -1,5 +1,5 @@
 import { ListCopyFormValues, listCopySchema, useListCopyMutation } from '@/features/list'
-import { BoardListsResponse } from '@/types'
+import { BoardCardsResponse, BoardListsResponse } from '@/types'
 import { Dispatch, memo, SetStateAction, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Loader2Icon } from 'lucide-react'
@@ -28,11 +28,15 @@ import { Input } from '@/components/ui/input'
 interface Props {
     column: BoardListsResponse
     setColumns: Dispatch<SetStateAction<BoardListsResponse[]>>
+    cards: BoardCardsResponse[]
+    setCards?: Dispatch<SetStateAction<BoardCardsResponse[]>>
 }
 
 export const ListCopy = memo(function ListColumn({
     column,
-    setColumns
+    setColumns,
+    cards,
+    setCards
 }: Props) {
     const [open, setOpen] = useState(false)
     const form = useForm<ListCopyFormValues>({
@@ -52,6 +56,26 @@ export const ListCopy = memo(function ListColumn({
 
                 return arr
             })
+            if (
+                setCards &&
+                cards &&
+                data.cardIds &&
+                data.cardIds.length === cards.filter((card) => card.listId === column.id).length
+            ) {
+                const oldListCards = cards.filter((card) => card.listId === column.id)
+                setCards((prevCards) => [
+                    ...prevCards,
+                    ...oldListCards.map((card, idx) => {
+                        console.log(data.cardIds[idx])
+
+                        return {
+                            ...card,
+                            id: data.cardIds[idx],
+                            listId: data.id
+                        }
+                    })
+                ])
+            }
             setOpen(false)
         }
     )
