@@ -252,6 +252,7 @@ export function ListColumnKanban({ board, allCards }: Props) {
                     {columns.map((column) => (
                         <ListColumn
                             key={column.id}
+                            workspaceId={board.workspaceId}
                             column={column}
                             setColumns={setColumns}
                             cards={cardsByListId[column.id] ?? []}
@@ -266,6 +267,7 @@ export function ListColumnKanban({ board, allCards }: Props) {
                 <DragOverlay>
                     {activeColumn && (
                         <ListColumn
+                            workspaceId={board.workspaceId}
                             column={activeColumn}
                             setColumns={setColumns}
                             cards={cards.filter((task) => task.listId === activeColumn.id)}

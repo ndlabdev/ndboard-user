@@ -1,6 +1,6 @@
 import { apiFetch } from '@/lib/fetcher'
-import type { ListGetListResponse, ListCreateResponse, ListUpdateResponse, ListCopyResponse } from '@/types'
-import { ListReorderFormValues, ListCreateFormValues, ListUpdateFormValues, ListCopyFormValues } from '@/features/list'
+import type { ListGetListResponse, ListCreateResponse, ListUpdateResponse, ListCopyResponse, ListMoveResponse } from '@/types'
+import { ListReorderFormValues, ListCreateFormValues, ListUpdateFormValues, ListCopyFormValues, ListMoveFormValues } from '@/features/list'
 
 export function listGetListApi(boardId: string): Promise<ListGetListResponse> {
     return apiFetch<ListGetListResponse>('/lists', {
@@ -47,5 +47,12 @@ export function listArchiveApi(payload: { id: string }) {
 export function listArchiveAllCardsApi(payload: { id: string }) {
     return apiFetch(`/lists/${payload.id}/archive-all-cards`, {
         method: 'PATCH'
+    })
+}
+
+export function listMoveApi(payload: ListMoveFormValues): Promise<ListMoveResponse> {
+    return apiFetch<ListMoveResponse>(`/lists/${payload.id}/move`, {
+        method: 'PATCH',
+        body: JSON.stringify(payload)
     })
 }

@@ -1,6 +1,6 @@
 import { CSS } from '@dnd-kit/utilities'
 import { CardItemKanban } from '@/features/card'
-import { ListArchive, ListArchiveAllCards, ListCopy, useListUpdateMutation } from '@/features/list'
+import { ListArchive, ListArchiveAllCards, ListCopy, ListMove, useListUpdateMutation } from '@/features/list'
 import { useSortable } from '@dnd-kit/sortable'
 import { BoardCardsResponse, BoardListsResponse } from '@/types'
 import { CSSProperties, Dispatch, memo, SetStateAction, useState } from 'react'
@@ -21,6 +21,7 @@ interface Props {
     cards: BoardCardsResponse[]
     setCards?: Dispatch<SetStateAction<BoardCardsResponse[]>>
     isOverlay?: boolean
+    workspaceId: string
 }
 
 export const ListColumn = memo(function ListColumn({
@@ -28,7 +29,8 @@ export const ListColumn = memo(function ListColumn({
     setColumns,
     cards,
     setCards,
-    isOverlay = false
+    isOverlay = false,
+    workspaceId
 }: Props) {
     const {
         setNodeRef,
@@ -129,9 +131,12 @@ export const ListColumn = memo(function ListColumn({
                                             setCards={setCards}
                                         />
 
-                                        <DropdownMenuItem>
-                                            Move list
-                                        </DropdownMenuItem>
+                                        <ListMove
+                                            column={column}
+                                            setColumns={setColumns}
+                                            setCards={setCards}
+                                            workspaceId={workspaceId}
+                                        />
 
                                         <DropdownMenuItem>
                                             Move all cards in this list

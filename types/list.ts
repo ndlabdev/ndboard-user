@@ -26,3 +26,7 @@ export interface ListCopyResponse {
         cardIds: string[]
     }
 }
+
+export interface ListMoveResponse {
+    data: BoardListsResponse
+}
