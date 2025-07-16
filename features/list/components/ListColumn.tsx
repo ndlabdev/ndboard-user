@@ -1,11 +1,19 @@
 import { CSS } from '@dnd-kit/utilities'
 import { CardItemKanban } from '@/features/card'
-import { useListUpdateMutation } from '@/features/list'
+import { ListCopy, useListUpdateMutation } from '@/features/list'
 import { useSortable } from '@dnd-kit/sortable'
 import { BoardCardsResponse, BoardListsResponse } from '@/types'
 import { CSSProperties, Dispatch, memo, SetStateAction } from 'react'
 import { Button } from '@/components/ui/button'
-import { FoldHorizontal, UnfoldHorizontal } from 'lucide-react'
+import { Ellipsis, FoldHorizontal, UnfoldHorizontal } from 'lucide-react'
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
 
 interface Props {
     column: BoardListsResponse
@@ -83,14 +91,64 @@ export const ListColumn = memo(function ListColumn({
                     <div className="flex items-center justify-between px-4 py-3">
                         <h3 className="font-semibold">{column.name}</h3>
 
-                        <Button
-                            size="icon"
-                            variant="ghost"
-                            className="cursor-pointer"
-                            onClick={() => handleFoldCard(true)}
-                        >
-                            <FoldHorizontal />
-                        </Button>
+                        <div>
+                            <Button
+                                size="icon"
+                                variant="ghost"
+                                className="cursor-pointer"
+                                onClick={() => handleFoldCard(true)}
+                            >
+                                <FoldHorizontal />
+                            </Button>
+
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button
+                                        size="icon"
+                                        variant="ghost"
+                                        className="cursor-pointer"
+                                    >
+                                        <Ellipsis />
+                                    </Button>
+                                </DropdownMenuTrigger>
+
+                                <DropdownMenuContent
+                                    align="end"
+                                    sideOffset={4}
+                                >
+                                    <DropdownMenuGroup>
+                                        <DropdownMenuItem>
+                                            Add card
+                                        </DropdownMenuItem>
+
+                                        <ListCopy
+                                            column={column}
+                                            setColumns={setColumns}
+                                        />
+
+                                        <DropdownMenuItem>
+                                            Move list
+                                        </DropdownMenuItem>
+
+                                        <DropdownMenuItem>
+                                            Move all cards in this list
+                                        </DropdownMenuItem>
+                                    </DropdownMenuGroup>
+
+                                    <DropdownMenuSeparator />
+
+                                    <DropdownMenuGroup>
+                                        <DropdownMenuItem>
+                                            Archive this list
+                                        </DropdownMenuItem>
+
+                                        <DropdownMenuItem>
+                                            Archive all cards in this list
+                                        </DropdownMenuItem>
+                                    </DropdownMenuGroup>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
                     </div>
                 ) : (
                     <div className="flex flex-col items-center gap-2 justify-center h-full">

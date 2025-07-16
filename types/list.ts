@@ -20,3 +20,7 @@ export interface ListCreateResponse {
 export interface ListUpdateResponse {
     data: BoardListsResponse
 }
+
+export interface ListCopyResponse {
+    data: BoardListsResponse
+}
