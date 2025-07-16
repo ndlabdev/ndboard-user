@@ -254,6 +254,7 @@ export function ListColumnKanban({ board, allCards }: Props) {
                             key={column.id}
                             workspaceId={board.workspaceId}
                             column={column}
+                            columns={columns}
                             setColumns={setColumns}
                             cards={cardsByListId[column.id] ?? []}
                             setCards={setCards}
@@ -269,6 +270,7 @@ export function ListColumnKanban({ board, allCards }: Props) {
                         <ListColumn
                             workspaceId={board.workspaceId}
                             column={activeColumn}
+                            columns={columns}
                             setColumns={setColumns}
                             cards={cards.filter((task) => task.listId === activeColumn.id)}
                             isOverlay
