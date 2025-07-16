@@ -2,6 +2,7 @@
 export * from './hooks/useBoardGetListQuery'
 export * from './hooks/useBoardDetailQuery'
 export * from './hooks/useBoardCreateMutation'
+export * from './hooks/useBoardUpdateMutation'
 
 // ** Components
 export * from './components/BoardList'
@@ -17,3 +18,4 @@ export * from './constants'
 
 // ** Schemas
 export * from './schemas/boardCreate'
+export * from './schemas/boardUpdate'

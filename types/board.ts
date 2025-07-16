@@ -150,3 +150,25 @@ export interface BoardCreateResponse {
         updatedById: string
     }
 }
+
+export interface BoardUpdateResponse {
+    data: {
+        name: string
+        slug: string
+        shortLink: string
+        id: string
+        createdAt: Date
+        updatedAt: Date
+        description: string | null
+        workspaceId: string
+        visibility: string
+        coverImageUrl: string | null
+        isTemplate: boolean
+        isArchived: boolean
+        archivedAt: Date | null
+        order: number
+        ownerId: string
+        createdById: string
+        updatedById: string
+    }
+}

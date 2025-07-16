@@ -1,12 +1,26 @@
 'use client'
 
 import { useParams } from 'next/navigation'
-import { BoardCoverImage, BoardDetailSkeleton, BoardNameEditable, useBoardWithCardsQuery } from '@/features/board'
+import { BoardCoverImage, BoardDetailSkeleton, BoardNameEditable, useBoardUpdateMutation, useBoardWithCardsQuery } from '@/features/board'
 import { ListColumnKanban } from '@/features/list'
+import { useQueryClient } from '@tanstack/react-query'
+import { BoardDetailResponse } from '@/types'
 
 export default function BoardDetailPage() {
     const params = useParams()
+    const queryClient = useQueryClient()
     const { data, allCards, isLoading, isError, isCardsLoading, isCardsError } = useBoardWithCardsQuery(params.shortLink as string)
+    const { mutate } = useBoardUpdateMutation(
+        (_data, variables) => {
+            queryClient.setQueryData(['boards', variables.shortLink], (old: BoardDetailResponse) => ({
+                ...old,
+                data: {
+                    ...old.data,
+                    name: variables.name
+                }
+            }))
+        }
+    )
 
     if (isLoading) {
         return <BoardDetailSkeleton />
@@ -30,6 +44,10 @@ export default function BoardDetailPage() {
                 <BoardNameEditable
                     name={board.name}
                     coverImageUrl={board.coverImageUrl as string}
+                    onUpdate={(newName) => mutate({
+                        shortLink: board.shortLink,
+                        name: newName
+                    })}
                 />
 
                 <div className="h-full w-full overflow-x-auto overflow-y-hidden max-h-[calc(100vh-108px)]">

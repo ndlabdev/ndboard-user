@@ -1,21 +1,12 @@
 import { memo, RefObject, useEffect, useRef, useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { useOnClickOutside } from '@/hooks/useOnClickOutside'
+import { getTextColorByBg } from '@/utils'
 
 interface Props {
     name: string
     coverImageUrl: string
     onUpdate?: (_newName: string) => void
-}
-
-function getTextColorByBg(hex: string): 'black' | 'white' {
-    hex = hex.replace('#', '')
-    const r = parseInt(hex.substring(0, 2), 16)
-    const g = parseInt(hex.substring(2, 4), 16)
-    const b = parseInt(hex.substring(4, 6), 16)
-    const brightness = (r * 299 + g * 587 + b * 114) / 1000
-
-    return brightness > 150 ? 'black' : 'white'
 }
 
 export const BoardNameEditable = memo(function BoardNameEditable({
@@ -31,10 +22,14 @@ export const BoardNameEditable = memo(function BoardNameEditable({
         setBoardName(name)
     }, [name])
 
-    useOnClickOutside(inputRef as RefObject<HTMLInputElement>, () => {
+    function handleDoneEdit() {
         setEditing(false)
-        setBoardName(name)
-    })
+        if (boardName.trim()) {
+            onUpdate?.(boardName.trim())
+        }
+    }
+
+    useOnClickOutside(inputRef as RefObject<HTMLInputElement>, handleDoneEdit)
 
     const textColor = getTextColorByBg(coverImageUrl)
 
@@ -52,12 +47,7 @@ export const BoardNameEditable = memo(function BoardNameEditable({
                         bg-transparent border-none shadow-none
                     `}
                     onChange={(e) => setBoardName(e.target.value)}
-                    onBlur={() => {
-                        setEditing(false)
-                        if (boardName.trim() && boardName !== name) {
-                            onUpdate?.(boardName.trim())
-                        }
-                    }}
+                    onBlur={handleDoneEdit}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                             (e.target as HTMLInputElement).blur()
