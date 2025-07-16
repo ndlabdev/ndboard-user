@@ -22,5 +22,7 @@ export interface ListUpdateResponse {
 }
 
 export interface ListCopyResponse {
-    data: BoardListsResponse
+    data: BoardListsResponse & {
+        cardIds: string[]
+    }
 }
