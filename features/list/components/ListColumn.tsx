@@ -1,6 +1,6 @@
 import { CSS } from '@dnd-kit/utilities'
 import { CardItemKanban } from '@/features/card'
-import { ListArchive, ListCopy, useListUpdateMutation } from '@/features/list'
+import { ListArchive, ListArchiveAllCards, ListCopy, useListUpdateMutation } from '@/features/list'
 import { useSortable } from '@dnd-kit/sortable'
 import { BoardCardsResponse, BoardListsResponse } from '@/types'
 import { CSSProperties, Dispatch, memo, SetStateAction } from 'react'
@@ -146,9 +146,10 @@ export const ListColumn = memo(function ListColumn({
                                             setCards={setCards}
                                         />
 
-                                        <DropdownMenuItem>
-                                            Archive all cards in this list
-                                        </DropdownMenuItem>
+                                        <ListArchiveAllCards
+                                            column={column}
+                                            setCards={setCards}
+                                        />
                                     </DropdownMenuGroup>
                                 </DropdownMenuContent>
                             </DropdownMenu>

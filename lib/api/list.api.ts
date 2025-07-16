@@ -43,3 +43,9 @@ export function listArchiveApi(payload: { id: string }) {
         method: 'PATCH'
     })
 }
+
+export function listArchiveAllCardsApi(payload: { id: string }) {
+    return apiFetch(`/lists/${payload.id}/archive-all-cards`, {
+        method: 'PATCH'
+    })
+}
