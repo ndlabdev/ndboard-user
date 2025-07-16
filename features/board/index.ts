@@ -10,6 +10,7 @@ export * from './components/BoardCoverImage'
 export * from './components/BoardDetailSkeleton'
 export * from './components/BoardBackgroundPicker'
 export * from './components/BoardCreateFirst'
+export * from './components/BoardNameEditable'
 
 // ** Constants
 export * from './constants'
