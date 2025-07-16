@@ -3,18 +3,25 @@ import { CardItemKanban } from '@/features/card'
 import { useListUpdateMutation } from '@/features/list'
 import { useSortable } from '@dnd-kit/sortable'
 import { BoardCardsResponse, BoardListsResponse } from '@/types'
-import { CSSProperties, Dispatch, memo, SetStateAction, useState } from 'react'
+import { CSSProperties, Dispatch, memo, SetStateAction } from 'react'
 import { Button } from '@/components/ui/button'
 import { FoldHorizontal, UnfoldHorizontal } from 'lucide-react'
 
 interface Props {
     column: BoardListsResponse
+    setColumns: Dispatch<SetStateAction<BoardListsResponse[]>>
     cards: BoardCardsResponse[]
     setCards?: Dispatch<SetStateAction<BoardCardsResponse[]>>
     isOverlay?: boolean
 }
 
-export const ListColumn = memo(function ListColumn({ column, cards, setCards, isOverlay = false }: Props) {
+export const ListColumn = memo(function ListColumn({
+    column,
+    setColumns,
+    cards,
+    setCards,
+    isOverlay = false
+}: Props) {
     const {
         setNodeRef,
         attributes,
@@ -40,21 +47,39 @@ export const ListColumn = memo(function ListColumn({ column, cards, setCards, is
         })
     }
 
-    const [fold, setFold] = useState<boolean>(column.isFold || false)
     const { mutate } = useListUpdateMutation()
+
+    const handleFoldCard = (isFold = false) => {
+        setColumns((prev) => {
+            return prev.map((tpl) => {
+                if (tpl.id === column.id) {
+                    return {
+                        ...tpl,
+                        isFold
+                    }
+                }
+
+                return tpl
+            })
+        })
+        mutate({
+            id: column.id,
+            isFold
+        })
+    }
 
     return (
         <li
             ref={setNodeRef}
             style={style}
-            className={`list-none flex-none flex flex-col transition-all duration-200 ease-in-out bg-white rounded-xl max-h-full ${fold ? 'w-14 min-w-10 max-w-10 items-center px-0 py-3' : 'w-72 pb-3'}`}
+            className={`list-none flex-none flex flex-col transition-all duration-200 ease-in-out bg-white rounded-xl max-h-full ${column.isFold ? 'w-14 min-w-10 max-w-10 items-center px-0 py-3' : 'w-72 pb-3'}`}
         >
             <header
                 className="cursor-grab active:cursor-grabbing select-none"
                 {...attributes}
                 {...listeners}
             >
-                {!fold ? (
+                {!column.isFold ? (
                     <div className="flex items-center justify-between px-4 py-3">
                         <h3 className="font-semibold">{column.name}</h3>
 
@@ -62,13 +87,7 @@ export const ListColumn = memo(function ListColumn({ column, cards, setCards, is
                             size="icon"
                             variant="ghost"
                             className="cursor-pointer"
-                            onClick={() => {
-                                setFold(true)
-                                mutate({
-                                    id: column.id,
-                                    isFold: true
-                                })
-                            }}
+                            onClick={() => handleFoldCard(true)}
                         >
                             <FoldHorizontal />
                         </Button>
@@ -79,13 +98,7 @@ export const ListColumn = memo(function ListColumn({ column, cards, setCards, is
                             size="icon"
                             variant="ghost"
                             className="cursor-pointer size-4 hover:bg-transparent"
-                            onClick={() => {
-                                setFold(false)
-                                mutate({
-                                    id: column.id,
-                                    isFold: false
-                                })
-                            }}
+                            onClick={() => handleFoldCard()}
                         >
                             <UnfoldHorizontal />
                         </Button>
@@ -100,7 +113,7 @@ export const ListColumn = memo(function ListColumn({ column, cards, setCards, is
                 )}
             </header>
 
-            {!fold && (
+            {!column.isFold && (
                 <CardItemKanban
                     listId={column.id}
                     cards={cards}
