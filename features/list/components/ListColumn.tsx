@@ -60,6 +60,8 @@ export const ListColumn = memo(function ListColumn({
     }
 
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
+    const [addingIndex, setAddingIndex] = useState<number | 'end' | null>(null)
+    const [newCardTitle, setNewCardTitle] = useState('')
     const { mutate } = useListUpdateMutation()
 
     const handleFoldCard = (isFold = false) => {
@@ -122,7 +124,13 @@ export const ListColumn = memo(function ListColumn({
                                     sideOffset={4}
                                 >
                                     <DropdownMenuGroup>
-                                        <DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            onClick={() => {
+                                                setAddingIndex('end')
+                                                setNewCardTitle('')
+                                                setIsMenuOpen(false)
+                                            }}
+                                        >
                                             Add card
                                         </DropdownMenuItem>
 
@@ -192,6 +200,10 @@ export const ListColumn = memo(function ListColumn({
                     listId={column.id}
                     cards={cards}
                     setCards={setCards}
+                    addingIndex={addingIndex}
+                    setAddingIndex={setAddingIndex}
+                    newCardTitle={newCardTitle}
+                    setNewCardTitle={setNewCardTitle}
                 />
             )}
         </li>

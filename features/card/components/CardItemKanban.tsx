@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useMemo, useState } from 'react'
+import React, { Dispatch, SetStateAction, useMemo } from 'react'
 import { CardItem, useCardCreateMutation } from '@/features/card'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { BoardCardsResponse } from '@/types'
@@ -11,11 +11,21 @@ interface Props {
     listId: string
     cards: BoardCardsResponse[]
     setCards?: Dispatch<SetStateAction<BoardCardsResponse[]>>
+    addingIndex: number | 'end' | null
+    setAddingIndex: (_idx: number | 'end' | null) => void
+    newCardTitle: string
+    setNewCardTitle: (_t: string) => void
 }
 
-export function CardItemKanban({ listId, cards, setCards }: Props) {
-    const [addingIndex, setAddingIndex] = useState<number | 'end' | null>(null)
-    const [newCardTitle, setNewCardTitle] = useState('')
+export function CardItemKanban({
+    listId,
+    cards,
+    setCards,
+    addingIndex,
+    setAddingIndex,
+    newCardTitle,
+    setNewCardTitle
+}: Props) {
     const cardsIds = useMemo(() => cards.map((col) => col.id), [cards])
     const { mutateAsync, isPending } = useCardCreateMutation()
 
@@ -24,7 +34,7 @@ export function CardItemKanban({ listId, cards, setCards }: Props) {
         if (!title) {
             setAddingIndex(null)
             setNewCardTitle('')
-            
+
             return
         }
 
@@ -50,7 +60,7 @@ export function CardItemKanban({ listId, cards, setCards }: Props) {
                         } else {
                             newCards.splice(idx, 0, data)
                         }
-                        
+
                         return newCards
                     })
                 }
