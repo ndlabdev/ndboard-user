@@ -1,10 +1,11 @@
 'use client'
 
 import { useParams } from 'next/navigation'
-import { BoardCoverImage, BoardDetailSkeleton, BoardNameEditable, useBoardUpdateMutation, useBoardWithCardsQuery } from '@/features/board'
+import { BoardCoverImage, BoardDetailSkeleton, BoardNameEditable, BoardStar, useBoardUpdateMutation, useBoardWithCardsQuery } from '@/features/board'
 import { ListColumnKanban } from '@/features/list'
 import { useQueryClient } from '@tanstack/react-query'
 import { BoardDetailResponse } from '@/types'
+import { getTextColorByBg } from '@/utils'
 
 export default function BoardDetailPage() {
     const params = useParams()
@@ -35,20 +36,33 @@ export default function BoardDetailPage() {
     }
 
     const board = data.data
+    const textColor = getTextColorByBg(board.coverImageUrl as string)
 
     return (
         <section className="relative w-full h-full">
             <BoardCoverImage coverImageUrl={board?.coverImageUrl} />
 
             <div className="relative z-20 flex flex-col h-full w-full">
-                <BoardNameEditable
-                    name={board.name}
-                    coverImageUrl={board.coverImageUrl as string}
-                    onUpdate={(newName) => mutate({
-                        shortLink: board.shortLink,
-                        name: newName
-                    })}
-                />
+                <div className="inline-block py-2.5 px-4 backdrop-blur-md bg-black/10 shadow-lg">
+                    <div className="flex justify-between">
+                        <BoardNameEditable
+                            name={board.name}
+                            textColor={textColor}
+                            onUpdate={(newName) => mutate({
+                                shortLink: board.shortLink,
+                                name: newName
+                            })}
+                        />
+
+                        <div>
+                            <BoardStar
+                                textColor={textColor}
+                                shortLink={board.shortLink}
+                                isFavorite={board.isFavorite}
+                            />
+                        </div>
+                    </div>
+                </div>
 
                 <div className="h-full w-full overflow-x-auto overflow-y-hidden max-h-[calc(100vh-108px)]">
                     {isCardsLoading ? (

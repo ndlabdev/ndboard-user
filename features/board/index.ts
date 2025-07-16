@@ -3,6 +3,8 @@ export * from './hooks/useBoardGetListQuery'
 export * from './hooks/useBoardDetailQuery'
 export * from './hooks/useBoardCreateMutation'
 export * from './hooks/useBoardUpdateMutation'
+export * from './hooks/useBoardFavoriteMutation'
+export * from './hooks/useBoardUnFavoriteMutation'
 
 // ** Components
 export * from './components/BoardList'
@@ -12,6 +14,7 @@ export * from './components/BoardDetailSkeleton'
 export * from './components/BoardBackgroundPicker'
 export * from './components/BoardCreateFirst'
 export * from './components/BoardNameEditable'
+export * from './components/BoardStar'
 
 // ** Constants
 export * from './constants'
@@ -19,3 +22,4 @@ export * from './constants'
 // ** Schemas
 export * from './schemas/boardCreate'
 export * from './schemas/boardUpdate'
+export * from './schemas/boardFavorite'

@@ -1,6 +1,6 @@
 import { apiFetch } from '@/lib/fetcher'
-import { BoardCreateFormValues, BoardUpdateFormValues } from '@/features/board'
-import type { BoardListResponse, BoardDetailResponse, BoardCreateResponse, BoardUpdateResponse } from '@/types'
+import { BoardCreateFormValues, BoardFavoriteFormValues, BoardUpdateFormValues } from '@/features/board'
+import type { BoardListResponse, BoardDetailResponse, BoardCreateResponse, BoardUpdateResponse, BoardFavoriteResponse } from '@/types'
 
 export function boardGetListApi(workspaceId: string): Promise<BoardListResponse> {
     return apiFetch<BoardListResponse>('/boards', {
@@ -26,5 +26,17 @@ export function boardUpdateApi(payload: BoardUpdateFormValues): Promise<BoardUpd
     return apiFetch<BoardUpdateResponse>(`/boards/${payload.shortLink}`, {
         method: 'PATCH',
         body: JSON.stringify(payload)
+    })
+}
+
+export function boardFavoriteApi(payload: BoardFavoriteFormValues): Promise<BoardFavoriteResponse> {
+    return apiFetch<BoardFavoriteResponse>(`/boards/${payload.shortLink}/favorite`, {
+        method: 'POST'
+    })
+}
+
+export function boardUnFavoriteApi(payload: BoardFavoriteFormValues): Promise<BoardFavoriteResponse> {
+    return apiFetch<BoardFavoriteResponse>(`/boards/${payload.shortLink}/favorite`, {
+        method: 'DELETE'
     })
 }

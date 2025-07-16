@@ -1,17 +1,16 @@
 import { memo, RefObject, useEffect, useRef, useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { useOnClickOutside } from '@/hooks/useOnClickOutside'
-import { getTextColorByBg } from '@/utils'
 
 interface Props {
     name: string
-    coverImageUrl: string
+    textColor: string
     onUpdate?: (_newName: string) => void
 }
 
 export const BoardNameEditable = memo(function BoardNameEditable({
     name,
-    coverImageUrl,
+    textColor,
     onUpdate
 }: Props) {
     const [editing, setEditing] = useState(false)
@@ -24,17 +23,17 @@ export const BoardNameEditable = memo(function BoardNameEditable({
 
     function handleDoneEdit() {
         setEditing(false)
-        if (boardName.trim()) {
-            onUpdate?.(boardName.trim())
+        const newName = boardName.trim()
+
+        if (newName && newName !== name) {
+            onUpdate?.(newName)
         }
     }
 
     useOnClickOutside(inputRef as RefObject<HTMLInputElement>, handleDoneEdit)
 
-    const textColor = getTextColorByBg(coverImageUrl)
-
     return (
-        <div className="inline-block py-2.5 px-4 backdrop-blur-md bg-black/10 shadow-lg">
+        <>
             {editing ? (
                 <Input
                     ref={inputRef}
@@ -42,7 +41,7 @@ export const BoardNameEditable = memo(function BoardNameEditable({
                     value={boardName}
                     className={`
                         ${textColor === 'white' ? 'text-white placeholder:text-white/80' : 'text-black placeholder:text-black/80'}
-                        font-semibold text-base px-1
+                        font-semibold text-base px-1 h-6
                         w-[220px] max-w-xs
                         bg-transparent border-none shadow-none
                     `}
@@ -67,6 +66,6 @@ export const BoardNameEditable = memo(function BoardNameEditable({
                     </h1>
                 </span>
             )}
-        </div>
+        </>
     )
 })

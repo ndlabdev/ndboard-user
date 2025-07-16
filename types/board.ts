@@ -126,6 +126,7 @@ export interface BoardDetailResponse {
         archivedAt: Date | null
         order: number
         lists: BoardListsResponse[]
+        isFavorite: boolean
     }
 }
 
@@ -170,5 +171,14 @@ export interface BoardUpdateResponse {
         ownerId: string
         createdById: string
         updatedById: string
+    }
+}
+
+export interface BoardFavoriteResponse {
+    data: {
+        boardId: string;
+        shortLink: string;
+        userId: string;
+        isFavorite: true;
     }
 }
