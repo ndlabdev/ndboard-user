@@ -1,0 +1,104 @@
+import { ListActions, useListUpdateMutation } from '@/features/list'
+import { BoardCardsResponse, BoardListsResponse } from '@/types'
+import { Dispatch, memo, SetStateAction } from 'react'
+import { Button } from '@/components/ui/button'
+import { FoldHorizontal, UnfoldHorizontal } from 'lucide-react'
+
+interface Props {
+    column: BoardListsResponse
+    setColumns: Dispatch<SetStateAction<BoardListsResponse[]>>
+    cards: BoardCardsResponse[]
+    setCards?: Dispatch<SetStateAction<BoardCardsResponse[]>>
+    workspaceId: string
+    columns: BoardListsResponse[]
+    setAddingIndex: Dispatch<SetStateAction<number | 'end' | null>>
+    setNewCardTitle: Dispatch<SetStateAction<string>>
+    isMenuOpen: boolean
+    setIsMenuOpen: Dispatch<SetStateAction<boolean>>
+}
+
+export const ListFold = memo(function ListFold({
+    column,
+    setColumns,
+    cards,
+    setCards,
+    workspaceId,
+    columns,
+    setAddingIndex,
+    setNewCardTitle,
+    isMenuOpen,
+    setIsMenuOpen
+}: Props) {
+    const { mutate } = useListUpdateMutation()
+
+    const handleFoldCard = (isFold = false) => {
+        setColumns((prev) => {
+            return prev.map((tpl) => {
+                if (tpl.id === column.id) {
+                    return {
+                        ...tpl,
+                        isFold
+                    }
+                }
+
+                return tpl
+            })
+        })
+        mutate({
+            id: column.id,
+            isFold
+        })
+    }
+
+    return (
+        <>
+            {!column.isFold ? (
+                <div className="flex items-center justify-between px-3 pt-2">
+                    <h3 className="font-semibold">{column.name}</h3>
+
+                    <div>
+                        <Button
+                            size="icon"
+                            variant="ghost"
+                            className="cursor-pointer"
+                            onClick={() => handleFoldCard(true)}
+                        >
+                            <FoldHorizontal />
+                        </Button>
+
+                        <ListActions
+                            column={column}
+                            setColumns={setColumns}
+                            cards={cards}
+                            setCards={setCards}
+                            workspaceId={workspaceId}
+                            columns={columns}
+                            setAddingIndex={setAddingIndex}
+                            setNewCardTitle={setNewCardTitle}
+                            isMenuOpen={isMenuOpen}
+                            setIsMenuOpen={setIsMenuOpen}
+                        />
+                    </div>
+                </div>
+            ) : (
+                <div className="flex flex-col items-center gap-2 justify-center h-full">
+                    <Button
+                        size="icon"
+                        variant="ghost"
+                        className="cursor-pointer size-4 hover:bg-transparent"
+                        onClick={() => handleFoldCard()}
+                    >
+                        <UnfoldHorizontal />
+                    </Button>
+
+                    <h3
+                        className="font-semibold whitespace-nowrap origin-bottom-left"
+                        style={{ writingMode: 'vertical-rl' }}
+                    >
+                        {column.name}
+                    </h3>
+                </div>
+            )}
+        </>
+    )
+})

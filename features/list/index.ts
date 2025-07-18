@@ -7,6 +7,8 @@ export * from './components/ListArchive'
 export * from './components/ListArchiveAllCards'
 export * from './components/ListMove'
 export * from './components/ListMoveAllCards'
+export * from './components/ListFold'
+export * from './components/ListActions'
 
 // ** Hooks
 export * from './hooks/useListGetListQuery'

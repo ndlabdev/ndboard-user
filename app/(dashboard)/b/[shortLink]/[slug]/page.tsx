@@ -10,7 +10,7 @@ import { getTextColorByBg } from '@/utils'
 export default function BoardDetailPage() {
     const params = useParams()
     const queryClient = useQueryClient()
-    const { data, allCards, isLoading, isError, isCardsLoading, isCardsError } = useBoardWithCardsQuery(params.shortLink as string)
+    const { data, allCards, isLoading, isError, listCards, isDragReady } = useBoardWithCardsQuery(params.shortLink as string)
     const { mutate } = useBoardUpdateMutation(
         (_data, variables) => {
             queryClient.setQueryData(['boards', variables.shortLink], (old: BoardDetailResponse) => ({
@@ -65,32 +65,12 @@ export default function BoardDetailPage() {
                 </div>
 
                 <div className="h-full w-full overflow-x-auto overflow-y-hidden max-h-[calc(100vh-108px)]">
-                    {isCardsLoading ? (
-                        <div className="flex gap-4 px-4 py-6">
-                            {[1, 2, 3].map((i) => (
-                                <div
-                                    key={i}
-                                    className="w-72 bg-muted/70 rounded-xl h-[400px] flex-shrink-0 animate-pulse"
-                                >
-                                    <div className="h-12 bg-muted rounded-t-xl mb-4" />
-                                    <div className="space-y-2 px-4">
-                                        {[1, 2, 3].map((j) => (
-                                            <div key={j} className="h-10 bg-muted rounded-lg" />
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    ) : isCardsError ? (
-                        <div className="p-8 text-center text-destructive">
-                            Cards load failed!
-                        </div>
-                    ) : (
-                        <ListColumnKanban
-                            board={board}
-                            allCards={allCards}
-                        />
-                    )}
+                    <ListColumnKanban
+                        board={board}
+                        allCards={allCards}
+                        listCards={listCards}
+                        isDragReady={isDragReady}
+                    />
                 </div>
             </div>
         </section>

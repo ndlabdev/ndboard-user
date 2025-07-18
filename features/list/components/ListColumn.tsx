@@ -1,19 +1,9 @@
 import { CSS } from '@dnd-kit/utilities'
 import { CardItemKanban } from '@/features/card'
-import { ListArchive, ListArchiveAllCards, ListCopy, ListMove, ListMoveAllCards, useListUpdateMutation } from '@/features/list'
+import { ListFold } from '@/features/list'
 import { useSortable } from '@dnd-kit/sortable'
 import { BoardCardsResponse, BoardListsResponse } from '@/types'
 import { CSSProperties, Dispatch, memo, SetStateAction, useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Ellipsis, FoldHorizontal, UnfoldHorizontal } from 'lucide-react'
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu'
 
 interface Props {
     column: BoardListsResponse
@@ -23,6 +13,7 @@ interface Props {
     isOverlay?: boolean
     workspaceId: string
     columns: BoardListsResponse[]
+    isCardsLoading?: boolean
 }
 
 export const ListColumn = memo(function ListColumn({
@@ -32,7 +23,8 @@ export const ListColumn = memo(function ListColumn({
     setCards,
     isOverlay = false,
     workspaceId,
-    columns
+    columns,
+    isCardsLoading = false
 }: Props) {
     const {
         setNodeRef,
@@ -62,26 +54,6 @@ export const ListColumn = memo(function ListColumn({
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
     const [addingIndex, setAddingIndex] = useState<number | 'end' | null>(null)
     const [newCardTitle, setNewCardTitle] = useState('')
-    const { mutate } = useListUpdateMutation()
-
-    const handleFoldCard = (isFold = false) => {
-        setColumns((prev) => {
-            return prev.map((tpl) => {
-                if (tpl.id === column.id) {
-                    return {
-                        ...tpl,
-                        isFold
-                    }
-                }
-
-                return tpl
-            })
-        })
-        mutate({
-            id: column.id,
-            isFold
-        })
-    }
 
     return (
         <li
@@ -94,105 +66,18 @@ export const ListColumn = memo(function ListColumn({
                 {...attributes}
                 {...(isMenuOpen ? {} : listeners)}
             >
-                {!column.isFold ? (
-                    <div className="flex items-center justify-between px-4 py-3">
-                        <h3 className="font-semibold">{column.name}</h3>
-
-                        <div>
-                            <Button
-                                size="icon"
-                                variant="ghost"
-                                className="cursor-pointer"
-                                onClick={() => handleFoldCard(true)}
-                            >
-                                <FoldHorizontal />
-                            </Button>
-
-                            <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-                                <DropdownMenuTrigger asChild>
-                                    <Button
-                                        size="icon"
-                                        variant="ghost"
-                                        className="cursor-pointer"
-                                    >
-                                        <Ellipsis />
-                                    </Button>
-                                </DropdownMenuTrigger>
-
-                                <DropdownMenuContent
-                                    align="end"
-                                    sideOffset={4}
-                                >
-                                    <DropdownMenuGroup>
-                                        <DropdownMenuItem
-                                            onClick={() => {
-                                                setAddingIndex('end')
-                                                setNewCardTitle('')
-                                                setIsMenuOpen(false)
-                                            }}
-                                        >
-                                            Add card
-                                        </DropdownMenuItem>
-
-                                        <ListCopy
-                                            column={column}
-                                            setColumns={setColumns}
-                                            cards={cards}
-                                            setCards={setCards}
-                                        />
-
-                                        <ListMove
-                                            column={column}
-                                            setColumns={setColumns}
-                                            setCards={setCards}
-                                            workspaceId={workspaceId}
-                                        />
-
-                                        <ListMoveAllCards
-                                            column={column}
-                                            columns={columns}
-                                            setCards={setCards}
-                                            setIsMenuOpen={setIsMenuOpen}
-                                        />
-                                    </DropdownMenuGroup>
-
-                                    <DropdownMenuSeparator />
-
-                                    <DropdownMenuGroup>
-                                        <ListArchive
-                                            column={column}
-                                            setColumns={setColumns}
-                                            setCards={setCards}
-                                        />
-
-                                        <ListArchiveAllCards
-                                            column={column}
-                                            setCards={setCards}
-                                        />
-                                    </DropdownMenuGroup>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="flex flex-col items-center gap-2 justify-center h-full">
-                        <Button
-                            size="icon"
-                            variant="ghost"
-                            className="cursor-pointer size-4 hover:bg-transparent"
-                            onClick={() => handleFoldCard()}
-                        >
-                            <UnfoldHorizontal />
-                        </Button>
-
-                        <h3
-                            className="font-semibold whitespace-nowrap origin-bottom-left"
-                            style={{ writingMode: 'vertical-rl' }}
-                        >
-                            {column.name}
-                        </h3>
-                    </div>
-                )}
+                <ListFold
+                    column={column}
+                    setColumns={setColumns}
+                    cards={cards}
+                    setCards={setCards}
+                    workspaceId={workspaceId}
+                    columns={columns}
+                    setAddingIndex={setAddingIndex}
+                    setNewCardTitle={setNewCardTitle}
+                    isMenuOpen={isMenuOpen}
+                    setIsMenuOpen={setIsMenuOpen}
+                />
             </header>
 
             {!column.isFold && (
@@ -204,6 +89,7 @@ export const ListColumn = memo(function ListColumn({
                     setAddingIndex={setAddingIndex}
                     newCardTitle={newCardTitle}
                     setNewCardTitle={setNewCardTitle}
+                    isCardsLoading={isCardsLoading}
                 />
             )}
         </li>

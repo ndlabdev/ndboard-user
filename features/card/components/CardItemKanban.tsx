@@ -6,6 +6,7 @@ import { Loader2Icon, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { Skeleton } from '@/components/ui/skeleton'
 
 interface Props {
     listId: string
@@ -15,6 +16,7 @@ interface Props {
     setAddingIndex: (_idx: number | 'end' | null) => void
     newCardTitle: string
     setNewCardTitle: (_t: string) => void
+    isCardsLoading?: boolean
 }
 
 export function CardItemKanban({
@@ -24,10 +26,21 @@ export function CardItemKanban({
     addingIndex,
     setAddingIndex,
     newCardTitle,
-    setNewCardTitle
+    setNewCardTitle,
+    isCardsLoading = false
 }: Props) {
     const cardsIds = useMemo(() => cards.map((col) => col.id), [cards])
     const { mutateAsync, isPending } = useCardCreateMutation()
+
+    if (isCardsLoading) {
+        return (
+            <div className="px-2 pt-1 pb-0 space-y-2 pb-4 min-h-[60px]">
+                <Skeleton className="h-10 rounded-lg" />
+                <Skeleton className="h-10 rounded-lg" />
+                <Skeleton className="h-10 rounded-lg" />
+            </div>
+        )
+    }
 
     async function submitAddCard(idx: number | 'end' | null) {
         const title = newCardTitle.trim()
@@ -76,7 +89,7 @@ export function CardItemKanban({
 
     return (
         <SortableContext items={cardsIds} strategy={verticalListSortingStrategy}>
-            <ul className="px-2 py-0 overflow-y-auto overflow-x-hidden h-full relative">
+            <ul className="px-2 pt-1 pb-0 overflow-y-auto overflow-x-hidden h-full relative">
                 {cards.map((card, idx) => (
                     <React.Fragment key={card.id}>
                         <div

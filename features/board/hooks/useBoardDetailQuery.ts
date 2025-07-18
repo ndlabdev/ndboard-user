@@ -24,20 +24,24 @@ export function useBoardWithCardsQuery(shortLink: string) {
             : []
     })
 
-    const allCards = cardsQueries
-        .filter((q) => q.isSuccess && q.data)
-        .flatMap((q) => q.data?.data ?? [])
+    const listCards = lists.map((list, idx) => {
+        const q = cardsQueries[idx]
 
-    const isCardsLoading = enabled
-        ? cardsQueries.some((q) => q.isLoading || q.isFetching)
-        : false
-    const isCardsError = cardsQueries.some((q) => q.isError)
+        return {
+            list,
+            cards: q?.data?.data ?? [],
+            isLoading: q?.isLoading || q?.isFetching,
+            isError: q?.isError
+        }
+    })
+
+    const allCards = listCards.flatMap((item) => item.cards)
+    const isDragReady = listCards.every((item) => !item.isLoading)
 
     return {
         ...boardDetail,
+        listCards,
         allCards,
-        isCardsLoading,
-        isCardsError,
-        cardsQueries
+        isDragReady
     }
 }

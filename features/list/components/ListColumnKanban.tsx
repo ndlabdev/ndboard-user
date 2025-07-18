@@ -20,9 +20,16 @@ import { CardItem, useCardBulkReorderMutation } from '@/features/card'
 interface Props {
     board: BoardDetailResponse['data']
     allCards: BoardCardsResponse[]
+    listCards: {
+        list: BoardListsResponse;
+        cards: BoardCardsResponse | never[];
+        isLoading: boolean;
+        isError: boolean;
+    }[]
+    isDragReady: boolean
 }
 
-export function ListColumnKanban({ board, allCards }: Props) {
+export function ListColumnKanban({ board, allCards, listCards, isDragReady }: Props) {
     const [columns, setColumns] = useState<BoardListsResponse[]>(board.lists)
     const [cards, setCards] = useState<BoardCardsResponse[]>(allCards)
 
@@ -240,6 +247,25 @@ export function ListColumnKanban({ board, allCards }: Props) {
         ? cards.find((card) => card.id === activeCardId) || null
         : null
 
+    if (!isDragReady) {
+        return (
+            <ul className="flex gap-4 items-start px-4 py-6 overflow-y-hidden h-full">
+                {listCards.map(({ list, cards, isLoading }) => (
+                    <ListColumn
+                        key={list.id}
+                        workspaceId={board.workspaceId}
+                        column={list}
+                        columns={columns}
+                        setColumns={setColumns}
+                        cards={cards as BoardCardsResponse[]}
+                        isCardsLoading={isLoading}
+                    />
+                ))}
+                <ListColumnCreate boardId={board.id} setColumns={setColumns} />
+            </ul>
+        )
+    }
+
     return (
         <DndContext
             sensors={sensors}
@@ -260,7 +286,10 @@ export function ListColumnKanban({ board, allCards }: Props) {
                             setCards={setCards}
                         />
                     ))}
-                    <ListColumnCreate boardId={board.id} setColumns={setColumns} />
+                    <ListColumnCreate
+                        boardId={board.id}
+                        setColumns={setColumns}
+                    />
                 </ul>
             </SortableContext>
 
@@ -277,7 +306,10 @@ export function ListColumnKanban({ board, allCards }: Props) {
                         />
                     )}
                     {activeCard && (
-                        <CardItem card={activeCard} isOverlay />
+                        <CardItem
+                            card={activeCard}
+                            isOverlay
+                        />
                     )}
                 </DragOverlay>,
                 document.body
