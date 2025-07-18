@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useQueries, useQuery, UseQueryResult } from '@tanstack/react-query'
 import { boardDetailApi, cardGetListApi } from '@/lib/api'
 import type { BoardDetailResponse } from '@/types'
@@ -11,7 +12,10 @@ export function useBoardDetailQuery(shortLink: string): UseQueryResult<BoardDeta
 
 export function useBoardWithCardsQuery(shortLink: string) {
     const boardDetail = useBoardDetailQuery(shortLink)
-    const lists = boardDetail.data?.data.lists ?? []
+    const lists = useMemo(
+        () => boardDetail.data?.data.lists ?? [],
+        [boardDetail.data?.data.lists]
+    )
 
     const enabled = !!(lists && lists.length > 0)
     const cardsQueries = useQueries({
@@ -24,7 +28,7 @@ export function useBoardWithCardsQuery(shortLink: string) {
             : []
     })
 
-    const listCards = lists.map((list, idx) => {
+    const listCards = useMemo(() => lists.map((list, idx) => {
         const q = cardsQueries[idx]
 
         return {
@@ -33,10 +37,10 @@ export function useBoardWithCardsQuery(shortLink: string) {
             isLoading: q?.isLoading || q?.isFetching,
             isError: q?.isError
         }
-    })
+    }), [lists, cardsQueries])
 
-    const allCards = listCards.flatMap((item) => item.cards)
-    const isDragReady = listCards.every((item) => !item.isLoading)
+    const allCards = useMemo(() => listCards.flatMap((item) => item.cards), [listCards])
+    const isDragReady = useMemo(() => listCards.every((item) => !item.isLoading), [listCards])
 
     return {
         ...boardDetail,

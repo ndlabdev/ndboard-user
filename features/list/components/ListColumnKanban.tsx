@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ListColumn, ListColumnCreate, useListReorderMutation } from '@/features/list'
 import { arrayMove, SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortable'
 import {
@@ -59,7 +59,7 @@ export function ListColumnKanban({ board, allCards, listCards, isDragReady }: Pr
         setCards(allCards)
     }, [allCards])
 
-    function onDragStart(event: DragStartEvent) {
+    const onDragStart = useCallback((event: DragStartEvent) => {
         const type = event.active.data.current?.type
         if (type === 'Column') setActiveColumnId(event.active.id as string)
         if (type === 'Card') {
@@ -69,9 +69,9 @@ export function ListColumnKanban({ board, allCards, listCards, isDragReady }: Pr
                 activeCardOriginListId: event.active.data.current?.listId
             })
         }
-    }
+    }, [])
 
-    function onDragOver(event: DragOverEvent) {
+    const onDragOver = useCallback((event: DragOverEvent) => {
         const { active, over } = event
         if (!over) return
 
@@ -128,9 +128,9 @@ export function ListColumnKanban({ board, allCards, listCards, isDragReady }: Pr
 
             return next
         })
-    }
+    }, [])
 
-    async function onDragEnd(event: DragEndEvent) {
+    const onDragEnd = useCallback(async (event: DragEndEvent) => {
         setActiveColumnId(null)
         setActiveCardId(null)
 
@@ -228,7 +228,7 @@ export function ListColumnKanban({ board, allCards, listCards, isDragReady }: Pr
         } else {
             setDragMeta(null)
         }
-    }
+    }, [columns, mutateListOrder, board.id, dragMeta, cards, mutateCardOrder])
 
     const cardsByListId = useMemo(() => {
         const map: Record<string, BoardCardsResponse[]> = {}
@@ -240,12 +240,8 @@ export function ListColumnKanban({ board, allCards, listCards, isDragReady }: Pr
         return map
     }, [cards])
 
-    const activeColumn = activeColumnId
-        ? columns.find((col) => col.id === activeColumnId) || null
-        : null
-    const activeCard = activeCardId
-        ? cards.find((card) => card.id === activeCardId) || null
-        : null
+    const activeColumn = useMemo(() => activeColumnId ? columns.find((col) => col.id === activeColumnId) || null : null, [columns, activeColumnId])
+    const activeCard = useMemo(() => activeCardId ? cards.find((card) => card.id === activeCardId) || null : null, [cards, activeCardId])
 
     if (!isDragReady) {
         return (

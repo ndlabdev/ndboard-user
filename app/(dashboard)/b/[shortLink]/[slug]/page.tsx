@@ -1,5 +1,6 @@
 'use client'
 
+import { useCallback, useMemo } from 'react'
 import { useParams } from 'next/navigation'
 import { BoardCoverImage, BoardDetailSkeleton, BoardNameEditable, BoardStar, useBoardUpdateMutation, useBoardWithCardsQuery } from '@/features/board'
 import { ListColumnKanban } from '@/features/list'
@@ -23,11 +24,30 @@ export default function BoardDetailPage() {
         }
     )
 
+    const board = data?.data
+
+    const textColor = useMemo(
+        () => getTextColorByBg(board?.coverImageUrl),
+        [board?.coverImageUrl]
+    )
+
+    const handleUpdateBoardName = useCallback(
+        (newName: string) => {
+            if (board) {
+                mutate({
+                    shortLink: board.shortLink,
+                    name: newName
+                })
+            }
+        },
+        [mutate, board]
+    )
+
     if (isLoading) {
         return <BoardDetailSkeleton />
     }
 
-    if (isError || !data?.data) {
+    if (isError || !board) {
         return (
             <div className="p-8 text-center text-destructive">
                 Board not found!
@@ -35,12 +55,9 @@ export default function BoardDetailPage() {
         )
     }
 
-    const board = data.data
-    const textColor = getTextColorByBg(board.coverImageUrl as string)
-
     return (
         <section className="relative w-full h-full">
-            <BoardCoverImage coverImageUrl={board?.coverImageUrl} />
+            <BoardCoverImage coverImageUrl={board.coverImageUrl} />
 
             <div className="relative z-20 flex flex-col h-full w-full">
                 <div className="inline-block py-2.5 px-4 backdrop-blur-md bg-black/10 shadow-lg">
@@ -48,10 +65,7 @@ export default function BoardDetailPage() {
                         <BoardNameEditable
                             name={board.name}
                             textColor={textColor}
-                            onUpdate={(newName) => mutate({
-                                shortLink: board.shortLink,
-                                name: newName
-                            })}
+                            onUpdate={handleUpdateBoardName}
                         />
 
                         <div>

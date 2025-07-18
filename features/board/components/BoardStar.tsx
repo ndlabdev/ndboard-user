@@ -1,3 +1,4 @@
+import { memo, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Star } from 'lucide-react'
 import {
@@ -15,7 +16,7 @@ interface Props {
     isFavorite: boolean
 }
 
-export function BoardStar({
+export const BoardStar = memo(function BoardStar({
     shortLink,
     textColor,
     isFavorite
@@ -40,28 +41,31 @@ export function BoardStar({
         }))
     })
 
-    const handleClick = () => {
+    const handleClick = useCallback(() => {
         if (isFavorite) {
-            unFavorite({ shortLink } )
+            unFavorite({ shortLink })
         } else {
             favorite({ shortLink })
         }
-    }
+    }, [isFavorite, favorite, unFavorite, shortLink])
+
+    const iconFill = isFavorite ? '#facc15' : 'none'
+    const iconStroke = textColor === 'white' ? '#fff' : '#000'
 
     return (
         <Tooltip>
             <TooltipTrigger asChild>
                 <Button
                     variant="link"
-                    className={`size-6 cursor-pointer text-white ${textColor === 'white' ? 'text-white' : 'text-black'}`}
+                    className={`size-6 cursor-pointer ${textColor === 'white' ? 'text-white' : 'text-black'}`}
                     onClick={handleClick}
                     tabIndex={0}
                     aria-label={isFavorite ? 'Unstar board' : 'Star board'}
                 >
                     <Star
                         className="size-4"
-                        fill={isFavorite ? '#facc15' : 'none'}
-                        stroke={textColor === 'white' ? '#fff' : '#000'}
+                        fill={iconFill}
+                        stroke={iconStroke}
                         strokeWidth={isFavorite ? 0 : 2}
                     />
                 </Button>
@@ -73,4 +77,4 @@ export function BoardStar({
             </TooltipContent>
         </Tooltip>
     )
-}
+})
