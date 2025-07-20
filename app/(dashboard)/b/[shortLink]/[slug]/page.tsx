@@ -4,27 +4,19 @@ import { useCallback, useMemo } from 'react'
 import { useParams } from 'next/navigation'
 import { BoardCoverImage, BoardDetailSkeleton, BoardNameEditable, BoardStar, useBoardUpdateMutation, useBoardWithCardsQuery } from '@/features/board'
 import { ListColumnKanban } from '@/features/list'
-import { useQueryClient } from '@tanstack/react-query'
-import { BoardDetailResponse } from '@/types'
 import { getTextColorByBg } from '@/utils'
 
 export default function BoardDetailPage() {
     const params = useParams()
-    const queryClient = useQueryClient()
-    const { data, allCards, isLoading, isError, listCards, isDragReady } = useBoardWithCardsQuery(params.shortLink as string)
-    const { mutate } = useBoardUpdateMutation(
-        (_data, variables) => {
-            queryClient.setQueryData(['boards', variables.shortLink], (old: BoardDetailResponse) => ({
-                ...old,
-                data: {
-                    ...old.data,
-                    name: variables.name
-                }
-            }))
-        }
-    )
-
-    const board = data?.data
+    const {
+        board,
+        allCards,
+        isLoading,
+        isError,
+        listCards,
+        isDragReady
+    } = useBoardWithCardsQuery(params.shortLink as string)
+    const { mutate } = useBoardUpdateMutation()
 
     const textColor = useMemo(
         () => getTextColorByBg(board?.coverImageUrl),

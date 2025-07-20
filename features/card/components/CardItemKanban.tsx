@@ -34,7 +34,7 @@ export function CardItemKanban({
 
     if (isCardsLoading) {
         return (
-            <div className="px-2 pt-1 pb-0 space-y-2 pb-4 min-h-[60px]">
+            <div className="px-2 pt-1 space-y-2 pb-4 min-h-[60px]">
                 <Skeleton className="h-10 rounded-lg" />
                 <Skeleton className="h-10 rounded-lg" />
                 <Skeleton className="h-10 rounded-lg" />

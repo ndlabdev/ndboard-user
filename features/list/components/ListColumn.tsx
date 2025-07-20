@@ -59,7 +59,7 @@ export const ListColumn = memo(function ListColumn({
         <li
             ref={setNodeRef}
             style={style}
-            className={`list-none flex-none flex flex-col transition-all duration-200 ease-in-out bg-white rounded-xl max-h-full ${column.isFold ? 'w-14 min-w-10 max-w-10 items-center px-0 py-3' : 'w-72 pb-3'}`}
+            className={`list-none flex-none flex flex-col transition-all duration-200 ease-in-out bg-white rounded-xl max-h-full ${column.isFold ? 'w-14 min-w-10 max-w-10 items-center px-0 py-3' : 'w-72 pb-2'}`}
         >
             <header
                 className="cursor-grab active:cursor-grabbing select-none"

@@ -11,10 +11,10 @@ export function useBoardDetailQuery(shortLink: string): UseQueryResult<BoardDeta
 }
 
 export function useBoardWithCardsQuery(shortLink: string) {
-    const boardDetail = useBoardDetailQuery(shortLink)
+    const { data, ...boardDetail } = useBoardDetailQuery(shortLink)
     const lists = useMemo(
-        () => boardDetail.data?.data.lists ?? [],
-        [boardDetail.data?.data.lists]
+        () => data?.data.lists ?? [],
+        [data?.data.lists]
     )
 
     const enabled = !!(lists && lists.length > 0)
@@ -39,11 +39,13 @@ export function useBoardWithCardsQuery(shortLink: string) {
         }
     }), [lists, cardsQueries])
 
+    const board = data?.data
     const allCards = useMemo(() => listCards.flatMap((item) => item.cards), [listCards])
     const isDragReady = useMemo(() => listCards.every((item) => !item.isLoading), [listCards])
 
     return {
         ...boardDetail,
+        board,
         listCards,
         allCards,
         isDragReady
