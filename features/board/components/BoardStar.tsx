@@ -7,8 +7,6 @@ import {
     TooltipTrigger
 } from '@/components/ui/tooltip'
 import { useBoardFavoriteMutation, useBoardUnFavoriteMutation } from '@/features/board'
-import { useQueryClient } from '@tanstack/react-query'
-import { BoardDetailResponse } from '@/types'
 
 interface Props {
     shortLink: string
@@ -21,25 +19,8 @@ export const BoardStar = memo(function BoardStar({
     textColor,
     isFavorite
 }: Props) {
-    const queryClient = useQueryClient()
-    const { mutate: favorite } = useBoardFavoriteMutation((_data, variables) => {
-        queryClient.setQueryData(['boards', variables.shortLink], (old: BoardDetailResponse) => ({
-            ...old,
-            data: {
-                ...old.data,
-                isFavorite: true
-            }
-        }))
-    })
-    const { mutate: unFavorite } = useBoardUnFavoriteMutation((_data, variables) => {
-        queryClient.setQueryData(['boards', variables.shortLink], (old: BoardDetailResponse) => ({
-            ...old,
-            data: {
-                ...old.data,
-                isFavorite: false
-            }
-        }))
-    })
+    const { mutate: favorite } = useBoardFavoriteMutation()
+    const { mutate: unFavorite } = useBoardUnFavoriteMutation()
 
     const handleClick = useCallback(() => {
         if (isFavorite) {

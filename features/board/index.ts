@@ -15,6 +15,9 @@ export * from './components/BoardBackgroundPicker'
 export * from './components/BoardCreateFirst'
 export * from './components/BoardNameEditable'
 export * from './components/BoardStar'
+export * from './components/BoardMenu'
+export * from './components/BoardMenuStar'
+export * from './components/BoardMenuArchive'
 
 // ** Constants
 export * from './constants'

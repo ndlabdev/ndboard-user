@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo } from 'react'
 import { useParams } from 'next/navigation'
-import { BoardCoverImage, BoardDetailSkeleton, BoardNameEditable, BoardStar, useBoardUpdateMutation, useBoardWithCardsQuery } from '@/features/board'
+import { BoardCoverImage, BoardDetailSkeleton, BoardMenu, BoardNameEditable, BoardStar, useBoardUpdateMutation, useBoardWithCardsQuery } from '@/features/board'
 import { ListColumnKanban } from '@/features/list'
 import { getTextColorByBg } from '@/utils'
 
@@ -65,6 +65,11 @@ export default function BoardDetailPage() {
                                 textColor={textColor}
                                 shortLink={board.shortLink}
                                 isFavorite={board.isFavorite}
+                            />
+
+                            <BoardMenu
+                                board={board}
+                                textColor={textColor}
                             />
                         </div>
                     </div>
