@@ -192,7 +192,6 @@ export function ListColumnKanban({ board, allCards, listCards, isDragReady }: Pr
                 const overCard = prevCards.find((card) => card.id === overId)
                 if (!overCard) return prevCards
 
-                // Khác list: remove khỏi list cũ, chèn vào list mới tại vị trí overCard
                 if (activeCard.listId !== overCard.listId) {
                     let next = prevCards.filter((card) => card.id !== activeCard.id)
                     const newCard = { ...activeCard, listId: overCard.listId }
@@ -205,7 +204,6 @@ export function ListColumnKanban({ board, allCards, listCards, isDragReady }: Pr
                     
                     return next
                 } else {
-                    // Cùng list: move trong cùng list
                     const cardsInList = prevCards.filter((card) => card.listId === activeCard.listId)
                     const from = cardsInList.findIndex((card) => card.id === activeCard.id)
                     const to = cardsInList.findIndex((card) => card.id === overCard.id)
@@ -220,11 +218,10 @@ export function ListColumnKanban({ board, allCards, listCards, isDragReady }: Pr
                 }
             }
 
-            // Kéo vào tiêu đề column (chèn lên đầu list)
             if (isOverColumn) {
                 if (activeCard.listId !== overId) {
                     let next = prevCards.filter((card) => card.id !== activeCard.id)
-                    const newCard = { ...activeCard, listId: overId }
+                    const newCard = { ...activeCard, listId: overId.toString() }
                     const firstIdx = next.findIndex((card) => card.listId === overId)
                     if (firstIdx === -1) {
                         next = [...next, newCard]
