@@ -1,64 +1,43 @@
 import { isUrl } from '@/lib/utils'
 import { CardLinkPreview } from '@/features/card'
-import { defaultAnimateLayoutChanges, useSortable } from '@dnd-kit/sortable'
 import { BoardCardsResponse } from '@/types'
-import { CSS } from '@dnd-kit/utilities'
-import { CSSProperties } from 'react'
+import { Draggable } from '@hello-pangea/dnd'
 
 interface Props {
     card: BoardCardsResponse
     nearLastItem?: boolean
-    isOverlay?: boolean
+    index: number
 }
 
-export function CardItem({ card, nearLastItem = false, isOverlay = false }: Props) {
-    const {
-        setNodeRef,
-        attributes,
-        listeners,
-        transform,
-        transition
-    } = useSortable({
-        id: card.id,
-        data: {
-            type: 'Card',
-            card,
-            listId: card.listId
-        },
-        animateLayoutChanges: (args) =>
-            defaultAnimateLayoutChanges({ ...args, wasDragging: true })
-    })
-
-    const style: CSSProperties = {
-        transform: CSS.Transform.toString(transform),
-        transition,
-        ...(isOverlay
-            ? {
-                opacity: 0.9,
-                pointerEvents: 'none',
-                boxShadow: '0 2px 12px #0004'
-            }
-            : {})
-    }
-
+export function CardItem({
+    card,
+    nearLastItem = false,
+    index = 0
+}: Props) {
     return (
-        <li
+        <Draggable
             key={card.id}
-            ref={setNodeRef}
-            style={style}
-            {...attributes}
-            {...listeners}
-            className={`bg-white rounded-lg shadow border border-white hover:border-primary transition-all duration-200 group list-none cursor-pointer ${nearLastItem ? 'mb-2' : ''}`}
+            draggableId={card.id}
+            index={index}
         >
-            {isUrl(card.name) && card.meta
-                ? <CardLinkPreview meta={card.meta} />
-                : (
-                    <div className="p-3">
-                        <h4 className="font-semibold text-sm">
-                            {card.name}
-                        </h4>
-                    </div>
-                )}
-        </li>
+            {(provided) => (
+                <li
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                    className={`bg-white rounded-lg shadow border border-white hover:border-primary group list-none cursor-pointer ${nearLastItem ? 'mb-2' : ''}`}
+                >
+                    {isUrl(card.name) && card.meta
+                        ? <CardLinkPreview meta={card.meta} />
+                        : (
+                            <div className="p-3">
+                                <h4 className="font-semibold text-sm">
+                                    {card.name}
+                                </h4>
+                            </div>
+                        )}
+                </li>
+            )}
+        </Draggable>
     )
 }

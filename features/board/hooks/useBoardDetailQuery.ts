@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useQueries, useQuery, UseQueryResult } from '@tanstack/react-query'
 import { boardDetailApi, cardGetListApi } from '@/lib/api'
-import type { BoardDetailResponse } from '@/types'
+import type { BoardCardsResponse, BoardDetailResponse } from '@/types'
 
 export function useBoardDetailQuery(shortLink: string): UseQueryResult<BoardDetailResponse, unknown> {
     return useQuery({
@@ -11,43 +11,47 @@ export function useBoardDetailQuery(shortLink: string): UseQueryResult<BoardDeta
 }
 
 export function useBoardWithCardsQuery(shortLink: string) {
-    const { data, ...boardDetail } = useBoardDetailQuery(shortLink)
-    const lists = useMemo(
-        () => data?.data.lists ?? [],
-        [data?.data.lists]
-    )
+    const boardDetailQuery = useBoardDetailQuery(shortLink)
+    const board = boardDetailQuery.data?.data
+    const lists = useMemo(() => board?.lists ?? [], [board?.lists])
 
-    const enabled = !!(lists && lists.length > 0)
     const cardsQueries = useQueries({
-        queries: enabled
-            ? lists.map((list) => ({
-                queryKey: ['cards', list.id],
-                queryFn: () => cardGetListApi(list.id),
-                enabled: !!list.id
-            }))
-            : []
+        queries: lists.map((list) => ({
+            queryKey: ['cards', list.id],
+            queryFn: () => cardGetListApi(list.id),
+            enabled: !!list.id
+        }))
     })
 
-    const listCards = useMemo(() => lists.map((list, idx) => {
-        const q = cardsQueries[idx]
+    const isCardsLoading = cardsQueries.some((q) => q.isLoading || q.isFetching)
+    const isCardsError = cardsQueries.some((q) => q.isError)
 
-        return {
+    const listCards = useMemo(() =>
+        lists.map((list, idx) => ({
             list,
-            cards: q?.data?.data ?? [],
-            isLoading: q?.isLoading || q?.isFetching,
-            isError: q?.isError
-        }
-    }), [lists, cardsQueries])
+            cards: cardsQueries[idx]?.data?.data ?? [],
+            isLoading: cardsQueries[idx]?.isLoading || cardsQueries[idx]?.isFetching,
+            isError: cardsQueries[idx]?.isError
+        })), [lists, cardsQueries]
+    )
 
-    const board = data?.data
-    const allCards = useMemo(() => listCards.flatMap((item) => item.cards), [listCards])
-    const isDragReady = useMemo(() => listCards.every((item) => !item.isLoading), [listCards])
+    const listCardsMap = useMemo(() => {
+        const map: Record<string, BoardCardsResponse[]> = {}
+        for (const item of listCards) {
+            map[item.list.id] = item.cards as BoardCardsResponse[]
+        }
+
+        return map
+    }, [listCards])
+
+    const isDragReady = !isCardsLoading && !boardDetailQuery.isLoading
 
     return {
-        ...boardDetail,
+        ...boardDetailQuery,
         board,
-        listCards,
-        allCards,
-        isDragReady
+        listCardsMap,
+        isDragReady,
+        isCardsLoading,
+        isCardsError
     }
 }

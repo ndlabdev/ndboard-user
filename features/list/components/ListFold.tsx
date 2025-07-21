@@ -1,16 +1,17 @@
 import { ListActions, useListUpdateMutation } from '@/features/list'
-import { BoardCardsResponse, BoardListsResponse } from '@/types'
-import { Dispatch, memo, SetStateAction } from 'react'
+import { BoardCardsResponse, BoardDetailResponse, BoardListsResponse } from '@/types'
+import { Dispatch, memo, SetStateAction, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { FoldHorizontal, UnfoldHorizontal } from 'lucide-react'
 
 interface Props {
+    board: BoardDetailResponse['data']
     column: BoardListsResponse
-    setColumns: Dispatch<SetStateAction<BoardListsResponse[]>>
+    setColumns: Dispatch<SetStateAction<Record<string, BoardCardsResponse[]>>>
     cards: BoardCardsResponse[]
     setCards?: Dispatch<SetStateAction<BoardCardsResponse[]>>
     workspaceId: string
-    columns: BoardListsResponse[]
+    columns: Record<string, BoardCardsResponse[]>
     setAddingIndex: Dispatch<SetStateAction<number | 'end' | null>>
     setNewCardTitle: Dispatch<SetStateAction<string>>
     isMenuOpen: boolean
@@ -18,6 +19,7 @@ interface Props {
 }
 
 export const ListFold = memo(function ListFold({
+    board,
     column,
     setColumns,
     cards,
@@ -29,26 +31,14 @@ export const ListFold = memo(function ListFold({
     isMenuOpen,
     setIsMenuOpen
 }: Props) {
-    const { mutate } = useListUpdateMutation()
+    const { mutate } = useListUpdateMutation(column.id, board.shortLink)
 
-    const handleFoldCard = (isFold = false) => {
-        setColumns((prev) => {
-            return prev.map((tpl) => {
-                if (tpl.id === column.id) {
-                    return {
-                        ...tpl,
-                        isFold
-                    }
-                }
-
-                return tpl
-            })
-        })
+    const handleFoldCard = useCallback((isFold = false) => {
         mutate({
             id: column.id,
             isFold
         })
-    }
+    }, [mutate, column.id])
 
     return (
         <>

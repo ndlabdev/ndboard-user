@@ -1,15 +1,27 @@
-import { useMutation, UseMutationResult } from '@tanstack/react-query'
+import { useMutation, UseMutationResult, useQueryClient } from '@tanstack/react-query'
 import { listUpdateApi } from '@/lib/api'
-import type { ListUpdateResponse } from '@/types'
+import type { BoardDetailResponse, ListUpdateResponse } from '@/types'
 import type { ListUpdateFormValues } from '@/features/list'
 
 export function useListUpdateMutation(
-    onSuccess?: (_data: ListUpdateResponse) => void,
-    onError?: (_error: unknown) => void
+    listId: string,
+    shortLink: string
 ): UseMutationResult<ListUpdateResponse, unknown, ListUpdateFormValues, unknown> {
+    const queryClient = useQueryClient()
+
     return useMutation<ListUpdateResponse, unknown, ListUpdateFormValues>({
         mutationFn: listUpdateApi,
-        onSuccess,
-        onError
+        onSuccess: () => {
+            queryClient.setQueryData(['boards', shortLink], (old: BoardDetailResponse) => ({
+                ...old,
+                data: {
+                    ...old.data,
+                    lists: old.data.lists.map((list) => ({
+                        ...list,
+                        isFold: list.id === listId ? !list.isFold : list.isFold
+                    }))
+                }
+            }))
+        }
     })
 }
