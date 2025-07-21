@@ -1,5 +1,5 @@
 import { memo, useCallback, useState } from 'react'
-import { Check, Users } from 'lucide-react'
+import { Check } from 'lucide-react'
 import {
     DropdownMenuItem,
     DropdownMenuPortal,
@@ -28,22 +28,26 @@ export const BoardMenuVisibility = memo(function BoardMenuVisibility({
 
     const { mutate, isPending, variables } = useBoardUpdateMutation()
 
+    const loadingOption = isPending ? variables?.visibility : null
+
     const handleChangeVisibility = useCallback(
         (visibility: string) => {
-            if (board) {
+            if (board && visibility !== board.visibility && !isPending) {
                 mutate({
                     shortLink: board.shortLink,
                     visibility
                 })
             }
         },
-        [mutate, board]
+        [mutate, board, isPending]
     )
+
+    const CurrentIcon = BOARD_VISIBILITY_ICONS[board.visibility]
 
     return (
         <DropdownMenuSub open={isMenuOpen} onOpenChange={setIsMenuOpen}>
             <DropdownMenuSubTrigger className="flex items-center gap-2">
-                <Users className="size-4" />
+                <CurrentIcon className="size-4" />
                 <span>
                     Visibility: <span className="capitalize">{board.visibility}</span>
                 </span>
@@ -54,13 +58,13 @@ export const BoardMenuVisibility = memo(function BoardMenuVisibility({
                     {BOARD_VISIBILITY_OPTIONS.map((option) => {
                         const Icon = BOARD_VISIBILITY_ICONS[option.id]
                         const isSelected = board.visibility === option.id
-                        const isChanging = isPending && variables?.visibility === option.id
+                        const isLoadingThis = loadingOption === option.id
 
                         return (
                             <DropdownMenuItem
                                 key={option.id}
-                                className={`flex flex-col items-start gap-1 ${isPending ? 'opacity-50 pointer-events-none' : ''}`}
-                                disabled={isPending}
+                                className={`flex flex-col items-start gap-1 ${isLoadingThis ? 'opacity-50 pointer-events-none' : ''}`}
+                                disabled={isLoadingThis}
                                 onSelect={(e) => {
                                     e.preventDefault()
                                     handleChangeVisibility(option.id)
@@ -69,10 +73,8 @@ export const BoardMenuVisibility = memo(function BoardMenuVisibility({
                                 <div className="flex items-center gap-2">
                                     <Icon className="size-4" />
                                     <h5>{option.label}</h5>
-                                    {isChanging ? (
-                                        <span className="ml-auto">
-                                            <Spinner size={16} />
-                                        </span>
+                                    {isLoadingThis ? (
+                                        <Spinner size={16} />
                                     ) : (
                                         isSelected && <Check className="size-4 ml-auto text-primary" />
                                     )}
