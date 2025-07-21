@@ -1,5 +1,5 @@
 import { ListMoveAllCardsFormValues, listMoveAllCardsSchema, useListMoveAllCardsMutation } from '@/features/list'
-import { BoardListsResponse, BoardCardsResponse } from '@/types'
+import { BoardListsResponse, BoardDetailResponse } from '@/types'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
@@ -18,16 +18,14 @@ import {
 } from '@/components/ui/select'
 
 interface Props {
+    board: BoardDetailResponse['data']
     column: BoardListsResponse
-    columns: BoardListsResponse[]
-    setCards?: Dispatch<SetStateAction<BoardCardsResponse[]>>
     setIsMenuOpen: Dispatch<SetStateAction<boolean>>
 }
 
 export const ListMoveAllCards = memo(function ListMove({
+    board,
     column,
-    columns,
-    setCards,
     setIsMenuOpen
 }: Props) {
     const [open, setOpen] = useState(false)
@@ -41,18 +39,9 @@ export const ListMoveAllCards = memo(function ListMove({
 
     const { mutate, isPending } = useListMoveAllCardsMutation(
         (_data, variables) => {
-            const fromList = columns.find((list) => list.id === variables.id)
-            const toList = columns.find((list) => list.id === variables.targetListId)
-            if (setCards) setCards((prev) =>
-                prev.map((card) =>
-                    card.listId === variables.id
-                        ? { ...card, listId: variables.targetListId }
-                        : card
-                )
-            )
-            toast.success(
-                `All cards have been moved from list "${fromList?.name}" to list "${toList?.name}".`
-            )
+            const fromList = board.lists.find((list) => list.id === variables.id)
+            const toList = board.lists.find((list) => list.id === variables.targetListId)
+            toast.success(`All cards have been moved from list "${fromList?.name}" to list "${toList?.name}".`)
             setOpen(false)
             setIsMenuOpen(false)
         },
@@ -61,9 +50,7 @@ export const ListMoveAllCards = memo(function ListMove({
         }
     )
 
-    const onSubmit = (values: ListMoveAllCardsFormValues) => {
-        mutate(values)
-    }
+    const onSubmit = (values: ListMoveAllCardsFormValues) => mutate(values)
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -99,7 +86,7 @@ export const ListMoveAllCards = memo(function ListMove({
                                                         <SelectValue placeholder="Select list" />
                                                     </SelectTrigger>
                                                     <SelectContent>
-                                                        {columns
+                                                        {board.lists
                                                             .filter((list) => list.id !== column.id)
                                                             .map((list) => (
                                                                 <SelectItem key={list.id} value={list.id}>

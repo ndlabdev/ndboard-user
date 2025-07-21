@@ -1,6 +1,6 @@
 import { useListArchiveAllCardsMutation } from '@/features/list'
-import { BoardCardsResponse, BoardListsResponse } from '@/types'
-import { Dispatch, memo, SetStateAction } from 'react'
+import { BoardListsResponse } from '@/types'
+import { memo } from 'react'
 import { Loader2Icon } from 'lucide-react'
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { toast } from 'sonner'
@@ -18,25 +18,18 @@ import {
 
 interface Props {
     column: BoardListsResponse
-    setCards?: Dispatch<SetStateAction<BoardCardsResponse[]>>
 }
 
 export const ListArchiveAllCards = memo(function ListColumn({
-    column,
-    setCards
+    column
 }: Props) {
     const { mutate, isPending } = useListArchiveAllCardsMutation(() => {
-        if (setCards) {
-            setCards((prev) => prev.filter((card) => card.listId !== column.id))
-        }
         toast.success(`All cards in list "${column.name}" have been archived!`)
     }, () => {
         toast.error('Failed to archive all cards. Please try again.')
     })
 
-    const handleArchiveAllCards = () => {
-        mutate({ id: column.id })
-    }
+    const handleArchiveAllCards = () => mutate({ id: column.id })
 
     return (
         <AlertDialog>

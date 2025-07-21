@@ -1,5 +1,5 @@
 import { ListArchive, ListArchiveAllCards, ListCopy, ListMove, ListMoveAllCards } from '@/features/list'
-import { BoardCardsResponse, BoardDetailResponse, BoardListsResponse } from '@/types'
+import { BoardDetailResponse, BoardListsResponse } from '@/types'
 import { Dispatch, memo, SetStateAction } from 'react'
 import { Button } from '@/components/ui/button'
 import { Ellipsis } from 'lucide-react'
@@ -15,11 +15,6 @@ import {
 interface Props {
     board: BoardDetailResponse['data']
     column: BoardListsResponse
-    columns: Record<string, {
-        isLoading: boolean;
-        cards: BoardCardsResponse[];
-    }>
-    setCards?: Dispatch<SetStateAction<BoardCardsResponse[]>>
     setAddingIndex: Dispatch<SetStateAction<number | 'end' | null>>
     setNewCardTitle: Dispatch<SetStateAction<string>>
     isMenuOpen: boolean
@@ -29,8 +24,6 @@ interface Props {
 export const ListActions = memo(function ListActions({
     board,
     column,
-    setCards,
-    columns,
     setAddingIndex,
     setNewCardTitle,
     isMenuOpen,
@@ -74,9 +67,8 @@ export const ListActions = memo(function ListActions({
                     />
 
                     <ListMoveAllCards
+                        board={board}
                         column={column}
-                        columns={columns}
-                        setCards={setCards}
                         setIsMenuOpen={setIsMenuOpen}
                     />
                 </DropdownMenuGroup>
@@ -89,10 +81,7 @@ export const ListActions = memo(function ListActions({
                         column={column}
                     />
 
-                    <ListArchiveAllCards
-                        column={column}
-                        setCards={setCards}
-                    />
+                    <ListArchiveAllCards column={column} />
                 </DropdownMenuGroup>
             </DropdownMenuContent>
         </DropdownMenu>

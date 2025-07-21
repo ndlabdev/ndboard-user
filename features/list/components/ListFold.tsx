@@ -1,5 +1,5 @@
 import { ListActions, useListUpdateMutation } from '@/features/list'
-import { BoardCardsResponse, BoardDetailResponse, BoardListsResponse } from '@/types'
+import { BoardDetailResponse, BoardListsResponse } from '@/types'
 import { Dispatch, memo, SetStateAction, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { FoldHorizontal, UnfoldHorizontal } from 'lucide-react'
@@ -7,16 +7,6 @@ import { FoldHorizontal, UnfoldHorizontal } from 'lucide-react'
 interface Props {
     board: BoardDetailResponse['data']
     column: BoardListsResponse
-    columns: Record<string, {
-        isLoading: boolean;
-        cards: BoardCardsResponse[];
-    }>
-    setColumns: Dispatch<SetStateAction<Record<string, {
-        isLoading: boolean;
-        cards: BoardCardsResponse[];
-    }>>>
-    cards: BoardCardsResponse[]
-    setCards?: Dispatch<SetStateAction<BoardCardsResponse[]>>
     setAddingIndex: Dispatch<SetStateAction<number | 'end' | null>>
     setNewCardTitle: Dispatch<SetStateAction<string>>
     isMenuOpen: boolean
@@ -26,10 +16,6 @@ interface Props {
 export const ListFold = memo(function ListFold({
     board,
     column,
-    setColumns,
-    cards,
-    setCards,
-    columns,
     setAddingIndex,
     setNewCardTitle,
     isMenuOpen,
@@ -63,10 +49,6 @@ export const ListFold = memo(function ListFold({
                         <ListActions
                             board={board}
                             column={column}
-                            setColumns={setColumns}
-                            cards={cards}
-                            setCards={setCards}
-                            columns={columns}
                             setAddingIndex={setAddingIndex}
                             setNewCardTitle={setNewCardTitle}
                             isMenuOpen={isMenuOpen}

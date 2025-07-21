@@ -174,8 +174,6 @@ export function ListColumnKanban({ board, isDragReady, listCardsMap }: Props) {
                                 index={index}
                                 board={board}
                                 column={listMap[key]}
-                                columns={columns}
-                                setColumns={setColumns}
                                 cards={columns[key].cards || []}
                                 isCardsLoading={columns[key].isLoading || false}
                             />

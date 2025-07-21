@@ -8,14 +8,6 @@ interface Props {
     index?: number
     board: BoardDetailResponse['data']
     column: BoardListsResponse
-    columns: Record<string, {
-        isLoading: boolean;
-        cards: BoardCardsResponse[];
-    }>
-    setColumns: Dispatch<SetStateAction<Record<string, {
-        isLoading: boolean;
-        cards: BoardCardsResponse[];
-    }>>>
     cards: BoardCardsResponse[]
     setCards?: Dispatch<SetStateAction<BoardCardsResponse[]>>
     isCardsLoading?: boolean
@@ -24,10 +16,8 @@ interface Props {
 export const ListColumn = memo(function ListColumn({
     board,
     column,
-    setColumns,
     cards,
     setCards,
-    columns,
     index = 0,
     isCardsLoading = false
 }: Props) {
@@ -54,10 +44,6 @@ export const ListColumn = memo(function ListColumn({
                         <ListFold
                             board={board}
                             column={column}
-                            setColumns={setColumns}
-                            cards={cards}
-                            setCards={setCards}
-                            columns={columns}
                             setAddingIndex={setAddingIndex}
                             setNewCardTitle={setNewCardTitle}
                             isMenuOpen={isMenuOpen}
