@@ -1,7 +1,7 @@
 import { CardItemKanban } from '@/features/card'
 import { ListFold } from '@/features/list'
 import { BoardCardsResponse, BoardDetailResponse, BoardListsResponse } from '@/types'
-import { Dispatch, memo, SetStateAction, useState } from 'react'
+import { memo, useState } from 'react'
 import { Draggable } from '@hello-pangea/dnd'
 
 interface Props {
@@ -9,7 +9,6 @@ interface Props {
     board: BoardDetailResponse['data']
     column: BoardListsResponse
     cards: BoardCardsResponse[]
-    setCards?: Dispatch<SetStateAction<BoardCardsResponse[]>>
     isCardsLoading?: boolean
 }
 
@@ -17,7 +16,6 @@ export const ListColumn = memo(function ListColumn({
     board,
     column,
     cards,
-    setCards,
     index = 0,
     isCardsLoading = false
 }: Props) {
@@ -55,7 +53,6 @@ export const ListColumn = memo(function ListColumn({
                         <CardItemKanban
                             listId={column.id}
                             cards={cards}
-                            setCards={setCards}
                             addingIndex={addingIndex}
                             setAddingIndex={setAddingIndex}
                             newCardTitle={newCardTitle}

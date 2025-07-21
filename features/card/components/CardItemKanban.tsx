@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from 'react'
+import React from 'react'
 import { CardItem, useCardCreateMutation } from '@/features/card'
 import { BoardCardsResponse } from '@/types'
 import { Loader2Icon, Plus } from 'lucide-react'
@@ -7,11 +7,11 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Droppable } from '@hello-pangea/dnd'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface Props {
     listId: string
     cards: BoardCardsResponse[]
-    setCards?: Dispatch<SetStateAction<BoardCardsResponse[]>>
     addingIndex: number | 'end' | null
     setAddingIndex: (_idx: number | 'end' | null) => void
     newCardTitle: string
@@ -22,14 +22,14 @@ interface Props {
 export function CardItemKanban({
     listId,
     cards,
-    setCards,
     addingIndex,
     setAddingIndex,
     newCardTitle,
     setNewCardTitle,
     isCardsLoading = false
 }: Props) {
-    const { mutateAsync, isPending } = useCardCreateMutation()
+    const queryClient = useQueryClient()
+    const { mutateAsync, isPending } = useCardCreateMutation(listId)
 
     if (isCardsLoading) {
         return (
@@ -63,19 +63,19 @@ export function CardItemKanban({
             index
         }, {
             onSuccess: ({ data }) => {
-                toast.success('Card Created Successfully!')
-                if (setCards) {
-                    setCards((prev) => {
-                        const newCards = [...prev]
-                        if (idx === 'end' || idx === null) {
-                            newCards.push(data)
-                        } else {
-                            newCards.splice(idx, 0, data)
-                        }
+                queryClient.setQueryData(['cards', listId], (old: { data: BoardCardsResponse[] }) => {
+                    const prevCards: BoardCardsResponse[] = old?.data || []
+                    const newCards = [...prevCards]
+                    if (idx === 'end' || idx === null) {
+                        newCards.push(data)
+                    } else {
+                        newCards.splice(idx, 0, data)
+                    }
 
-                        return newCards
-                    })
-                }
+                    return { ...old, data: newCards }
+                })
+                            
+                toast.success('Card Created Successfully!')
             },
             onError: (error) => {
                 const msg = (error as { message?: string })?.message || 'Create Card Failed'
