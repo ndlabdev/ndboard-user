@@ -39,7 +39,7 @@ function isCardsOrderChanged(
         arr.reduce<Record<string, string[]>>((acc, card) => {
             if (!acc[card.listId]) acc[card.listId] = []
             acc[card.listId].push(card.id)
-            
+
             return acc
         }, {})
 
@@ -56,14 +56,14 @@ function isCardsOrderChanged(
             if (prevIds[i] !== currIds[i]) return true
         }
     }
-    
+
     return false
 }
 
 export function ListColumnKanban({ board, allCards, listCards, isDragReady }: Props) {
     const columnsOrderRef = useRef<string[]>(board.lists.map((l) => l.id))
     const cardsBeforeDragRef = useRef<BoardCardsResponse[]>([])
-    
+
     const [columns, setColumns] = useState<BoardListsResponse[]>(board.lists)
     const [cards, setCards] = useState<BoardCardsResponse[]>(allCards)
     const [activeColumn, setActiveColumn] = useState<BoardListsResponse | null>(null)
@@ -90,7 +90,7 @@ export function ListColumnKanban({ board, allCards, listCards, isDragReady }: Pr
         const type = event.active.data.current?.type
         if (type === 'Column') setActiveColumn(event.active.data.current?.column)
         if (type === 'Card') setActiveCard(event.active.data.current?.card)
-            
+
         cardsBeforeDragRef.current = [...cards]
     }, [cards])
 
@@ -123,10 +123,10 @@ export function ListColumnKanban({ board, allCards, listCards, isDragReady }: Pr
                         }))
                     })
                 }
-                
+
                 return newColumns
             })
-            
+
             return
         }
 
@@ -201,7 +201,7 @@ export function ListColumnKanban({ board, allCards, listCards, isDragReady }: Pr
                         newCard,
                         ...next.slice(overIdx)
                     ]
-                    
+
                     return next
                 } else {
                     const cardsInList = prevCards.filter((card) => card.listId === activeCard.listId)
@@ -210,7 +210,7 @@ export function ListColumnKanban({ board, allCards, listCards, isDragReady }: Pr
                     if (from === -1 || to === -1 || from === to) return prevCards
                     const moved = arrayMove(cardsInList, from, to)
                     const rest = prevCards.filter((card) => card.listId !== activeCard.listId)
-                    
+
                     return [
                         ...rest,
                         ...moved
@@ -232,7 +232,7 @@ export function ListColumnKanban({ board, allCards, listCards, isDragReady }: Pr
                             ...next.slice(firstIdx)
                         ]
                     }
-                    
+
                     return next
                 }
             }

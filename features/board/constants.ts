@@ -1,4 +1,5 @@
 import type { BoardBackground } from '@/types'
+import { Users, Globe, LucideIcon, LockKeyhole } from 'lucide-react'
 
 export const BOARD_VISIBILITY = {
     PRIVATE: 'private',
@@ -13,10 +14,17 @@ export const BOARD_ROLE = {
     VIEWER: 'viewer'
 } as const
 
+export const BOARD_VISIBILITY_ICONS: Record<string, LucideIcon> = {
+    private: LockKeyhole,
+    workspace: Users,
+    public: Globe
+}
+
 export const BOARD_VISIBILITY_OPTIONS = [
     {
         id: BOARD_VISIBILITY.PRIVATE,
         label: 'Private',
+        icon: BOARD_VISIBILITY_ICONS.private,
         description: 'Only board members can view and edit. This board is invisible to anyone else.'
     },
     {

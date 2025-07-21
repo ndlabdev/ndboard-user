@@ -18,6 +18,7 @@ export * from './components/BoardStar'
 export * from './components/BoardMenu'
 export * from './components/BoardMenuStar'
 export * from './components/BoardMenuArchive'
+export * from './components/BoardMenuVisibility'
 
 // ** Constants
 export * from './constants'

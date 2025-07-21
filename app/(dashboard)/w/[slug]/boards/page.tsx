@@ -22,7 +22,7 @@ export default function BoardPage() {
     }
 
     return (
-        <section className="flex flex-col gap-4 px-4">
+        <section className="flex flex-col gap-4 px-4 overflow-y-auto">
             <WorkspaceHeader
                 id={workspace.id}
                 slug={workspace.slug}

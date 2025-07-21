@@ -1,6 +1,6 @@
 import { memo, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Settings, Users } from 'lucide-react'
+import { Settings } from 'lucide-react'
 import {
     Tooltip,
     TooltipContent,
@@ -10,11 +10,10 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuGroup,
-    DropdownMenuItem,
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { BoardMenuArchive, BoardMenuStar } from '@/features/board'
+import { BoardMenuArchive, BoardMenuStar, BoardMenuVisibility } from '@/features/board'
 import { BoardDetailResponse } from '@/types'
 
 interface Props {
@@ -49,10 +48,7 @@ export const BoardMenu = memo(function BoardMenu({
                         className="w-80"
                     >
                         <DropdownMenuGroup>
-                            <DropdownMenuItem>
-                                <Users />
-                                Visibility: <span className="capitalize">{board.visibility}</span>
-                            </DropdownMenuItem>
+                            <BoardMenuVisibility board={board} />
 
                             <BoardMenuStar
                                 board={board}
