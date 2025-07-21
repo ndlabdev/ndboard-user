@@ -1,5 +1,5 @@
 import { useListMoveMutation } from '@/features/list'
-import { BoardListsResponse, BoardCardsResponse } from '@/types'
+import { BoardListsResponse, BoardDetailResponse } from '@/types'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
@@ -8,7 +8,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, Dialog
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Loader2Icon } from 'lucide-react'
 import { toast } from 'sonner'
-import { Dispatch, memo, SetStateAction, useState } from 'react'
+import { memo, useState } from 'react'
 import { listMoveSchema, ListMoveFormValues } from '@/features/list'
 import { useBoardGetListQuery } from '@/features/board'
 import {
@@ -20,17 +20,13 @@ import {
 } from '@/components/ui/select'
 
 interface Props {
+    board: BoardDetailResponse['data']
     column: BoardListsResponse
-    setColumns: Dispatch<SetStateAction<BoardListsResponse[]>>
-    setCards?: Dispatch<SetStateAction<BoardCardsResponse[]>>
-    workspaceId: string
 }
 
 export const ListMove = memo(function ListMove({
-    column,
-    setColumns,
-    setCards,
-    workspaceId
+    board,
+    column
 }: Props) {
     const [open, setOpen] = useState(false)
     const form = useForm<ListMoveFormValues>({
@@ -41,25 +37,31 @@ export const ListMove = memo(function ListMove({
         }
     })
 
-    const { data: boards, isLoading } = useBoardGetListQuery(workspaceId)
+    const { data: boards, isLoading } = useBoardGetListQuery(board.workspaceId)
     const boardList = boards?.data ?? []
+    const getShortLink = (boardId: string) =>
+        boardList.find((b) => b.id === boardId)?.shortLink || ''
+
+    const oldShortLink = getShortLink(column.boardId)
+    const newShortLink = form.watch('boardId') ? getShortLink(form.watch('boardId')) : ''
 
     const { mutate, isPending } = useListMoveMutation(
-        (_data, variables) => {
+        oldShortLink,
+        newShortLink,
+        () => {
             const oldBoard = boardList.find((b) => b.id === column.boardId)
-            const newBoard = boardList.find((b) => b.id === variables.boardId)
-            setColumns((prev) => prev.filter((l) => l.id !== column.id))
-            if (setCards) setCards((prev) => prev.filter((card) => card.listId !== column.id))
+            const newBoard = boardList.find((b) => b.id === form.getValues('boardId'))
             toast.success(
                 `List "${column.name}" has been moved from board "${oldBoard?.name}" to board "${newBoard?.name}"!`
             )
             setOpen(false)
+        },
+        () => {
+            toast.error('Move list failed!')
         }
     )
 
-    const onSubmit = (values: ListMoveFormValues) => {
-        mutate(values)
-    }
+    const onSubmit = (values: ListMoveFormValues) => mutate(values)
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>

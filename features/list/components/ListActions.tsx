@@ -19,11 +19,6 @@ interface Props {
         isLoading: boolean;
         cards: BoardCardsResponse[];
     }>
-    setColumns: Dispatch<SetStateAction<Record<string, {
-        isLoading: boolean;
-        cards: BoardCardsResponse[];
-    }>>>
-    cards: BoardCardsResponse[]
     setCards?: Dispatch<SetStateAction<BoardCardsResponse[]>>
     setAddingIndex: Dispatch<SetStateAction<number | 'end' | null>>
     setNewCardTitle: Dispatch<SetStateAction<string>>
@@ -34,8 +29,6 @@ interface Props {
 export const ListActions = memo(function ListActions({
     board,
     column,
-    setColumns,
-    cards,
     setCards,
     columns,
     setAddingIndex,
@@ -71,16 +64,13 @@ export const ListActions = memo(function ListActions({
                     </DropdownMenuItem>
 
                     <ListCopy
+                        board={board}
                         column={column}
-                        setColumns={setColumns}
-                        cards={cards}
-                        setCards={setCards}
                     />
 
                     <ListMove
+                        board={board}
                         column={column}
-                        setColumns={setColumns}
-                        setCards={setCards}
                     />
 
                     <ListMoveAllCards
