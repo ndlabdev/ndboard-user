@@ -66,7 +66,7 @@ export function ListColumnKanban({ board, isDragReady, listCardsMap }: Props) {
         const keys = Object.keys(listCardsMap)
         setColumns(listCardsMap)
         setOrdered((prev) => {
-            if (prev.join(',') !== keys.join(',')) return keys
+            if (prev.length !== keys.length) return keys
 
             return prev
         })
@@ -88,7 +88,15 @@ export function ListColumnKanban({ board, isDragReady, listCardsMap }: Props) {
         }
 
         if (result.type === 'COLUMN') {
-            setOrdered((prev) => reorder(prev, source.index, destination.index))
+            const newOrdered = reorder(ordered, source.index, destination.index)
+
+            if (ordered.join(',') !== newOrdered.join(',')) {
+                setOrdered(newOrdered)
+                mutateListOrder({
+                    lists: newOrdered.map((id, order) => ({ id, order })),
+                    boardId: board.id
+                })
+            }
 
             return
         }
