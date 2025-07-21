@@ -1,32 +1,40 @@
 import { useListArchiveMutation } from '@/features/list'
-import { BoardCardsResponse, BoardListsResponse } from '@/types'
-import { Dispatch, memo, SetStateAction } from 'react'
+import { BoardDetailResponse, BoardListsResponse } from '@/types'
+import { memo, useCallback } from 'react'
 import { Loader2Icon } from 'lucide-react'
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { toast } from 'sonner'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface Props {
+    board: BoardDetailResponse['data']
     column: BoardListsResponse
-    setColumns: Dispatch<SetStateAction<BoardListsResponse[]>>
-    setCards?: Dispatch<SetStateAction<BoardCardsResponse[]>>
 }
 
 export const ListArchive = memo(function ListColumn({
-    column,
-    setColumns,
-    setCards
+    board,
+    column
 }: Props) {
+    const queryClient = useQueryClient()
+
     const { mutate, isPending } = useListArchiveMutation(() => {
-        setColumns((prev) => prev.filter((l) => l.id !== column.id))
-        if (setCards) {
-            setCards((prev) => prev.filter((card) => card.listId !== column.id))
-        }
+        queryClient.setQueryData(['boards', board.shortLink], (old: BoardDetailResponse) => {
+            if (!old?.data?.lists) return old
+
+            return {
+                ...old,
+                data: {
+                    ...old.data,
+                    lists: old.data.lists.filter((l) => l.id !== column.id)
+                }
+            }
+        })
         toast.success('List archived successfully!')
     })
 
-    const handleArchive = () => {
+    const handleArchive = useCallback(() => {
         mutate({ id: column.id })
-    }
+    }, [mutate, column.id])
 
     return (
         <DropdownMenuItem onClick={handleArchive} disabled={isPending}>

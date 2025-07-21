@@ -1,17 +1,18 @@
-import { Dispatch, SetStateAction, useState } from 'react'
+import { useState } from 'react'
 import { useListCreateMutation } from '@/features/list'
 import { Loader2Icon, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
-import { BoardListsResponse } from '@/types'
+import { BoardDetailResponse } from '@/types'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface Props {
-    boardId: string
-    setColumns: Dispatch<SetStateAction<BoardListsResponse[]>>
+    board: BoardDetailResponse['data']
 }
 
-export function ListColumnCreate({ boardId, setColumns }: Props) {
+export function ListColumnCreate({ board }: Props) {
+    const queryClient = useQueryClient()
     const [addingList, setAddingList] = useState<boolean>(false)
     const [newListTitle, setNewListTitle] = useState<string>('')
     const { mutateAsync, isPending } = useListCreateMutation()
@@ -21,7 +22,7 @@ export function ListColumnCreate({ boardId, setColumns }: Props) {
         if (!title) return
 
         await mutateAsync({
-            boardId,
+            boardId: board.id,
             name: title
         }, {
             onSuccess: ({ data }) => {
@@ -29,12 +30,22 @@ export function ListColumnCreate({ boardId, setColumns }: Props) {
                     description: 'Your new list has been created.'
                 })
 
-                setColumns((prev) => [...prev, data])
+                queryClient.setQueryData(['boards', board.shortLink], (old: BoardDetailResponse | undefined) => {
+                    if (!old || !old.data) return old
+
+                    return {
+                        ...old,
+                        data: {
+                            ...old.data,
+                            lists: [...old.data.lists, data]
+                        }
+                    }
+                })
             },
             onError: (error) => {
                 const msg =
-                (error as { message?: string })?.message ||
-                'Create List Failed'
+                    (error as { message?: string })?.message ||
+                    'Create List Failed'
 
                 toast.error(msg)
             }
@@ -43,7 +54,7 @@ export function ListColumnCreate({ boardId, setColumns }: Props) {
         setAddingList(false)
         setNewListTitle('')
     }
-    
+
     return (
         <li className="list-none flex-none flex flex-col w-72 bg-white/90 rounded-xl max-h-full">
             {!addingList ? (

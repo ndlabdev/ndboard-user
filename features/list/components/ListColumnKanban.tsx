@@ -128,20 +128,16 @@ export function ListColumnKanban({ board, isDragReady, listCardsMap }: Props) {
                         {ordered.map((key, index) => (
                             <ListColumn
                                 key={key}
+                                index={index}
                                 board={board}
-                                workspaceId={board.workspaceId}
                                 column={listMap[key]}
                                 columns={columns}
                                 setColumns={setColumns}
                                 cards={columns[key] || []}
-                                index={index}
                             />
                         ))}
                         {provided.placeholder}
-                        <ListColumnCreate
-                            boardId={board.id}
-                            setColumns={() => { }}
-                        />
+                        <ListColumnCreate board={board} />
                     </ul>
                 )
                 }

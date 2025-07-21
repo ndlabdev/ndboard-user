@@ -1,5 +1,5 @@
 import { ListArchive, ListArchiveAllCards, ListCopy, ListMove, ListMoveAllCards } from '@/features/list'
-import { BoardCardsResponse, BoardListsResponse } from '@/types'
+import { BoardCardsResponse, BoardDetailResponse, BoardListsResponse } from '@/types'
 import { Dispatch, memo, SetStateAction } from 'react'
 import { Button } from '@/components/ui/button'
 import { Ellipsis } from 'lucide-react'
@@ -13,12 +13,12 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 interface Props {
+    board: BoardDetailResponse['data']
     column: BoardListsResponse
-    setColumns: Dispatch<SetStateAction<BoardListsResponse[]>>
+    columns: Record<string, BoardCardsResponse[]>
+    setColumns: Dispatch<SetStateAction<Record<string, BoardCardsResponse[]>>>
     cards: BoardCardsResponse[]
     setCards?: Dispatch<SetStateAction<BoardCardsResponse[]>>
-    workspaceId: string
-    columns: BoardListsResponse[]
     setAddingIndex: Dispatch<SetStateAction<number | 'end' | null>>
     setNewCardTitle: Dispatch<SetStateAction<string>>
     isMenuOpen: boolean
@@ -26,11 +26,11 @@ interface Props {
 }
 
 export const ListActions = memo(function ListActions({
+    board,
     column,
     setColumns,
     cards,
     setCards,
-    workspaceId,
     columns,
     setAddingIndex,
     setNewCardTitle,
@@ -75,7 +75,6 @@ export const ListActions = memo(function ListActions({
                         column={column}
                         setColumns={setColumns}
                         setCards={setCards}
-                        workspaceId={workspaceId}
                     />
 
                     <ListMoveAllCards
@@ -90,9 +89,8 @@ export const ListActions = memo(function ListActions({
 
                 <DropdownMenuGroup>
                     <ListArchive
+                        board={board}
                         column={column}
-                        setColumns={setColumns}
-                        setCards={setCards}
                     />
 
                     <ListArchiveAllCards

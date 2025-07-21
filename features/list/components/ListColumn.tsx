@@ -5,15 +5,13 @@ import { Dispatch, memo, SetStateAction, useState } from 'react'
 import { Draggable } from '@hello-pangea/dnd'
 
 interface Props {
+    index?: number
     board: BoardDetailResponse['data']
     column: BoardListsResponse
+    columns: Record<string, BoardCardsResponse[]>
     setColumns: Dispatch<SetStateAction<Record<string, BoardCardsResponse[]>>>
     cards: BoardCardsResponse[]
     setCards?: Dispatch<SetStateAction<BoardCardsResponse[]>>
-    workspaceId: string
-    columns: Record<string, BoardCardsResponse[]>
-    isCardsLoading?: boolean
-    index?: number
 }
 
 export const ListColumn = memo(function ListColumn({
@@ -22,14 +20,14 @@ export const ListColumn = memo(function ListColumn({
     setColumns,
     cards,
     setCards,
-    workspaceId,
     columns,
-    isCardsLoading = false,
     index = 0
 }: Props) {
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
     const [addingIndex, setAddingIndex] = useState<number | 'end' | null>(null)
     const [newCardTitle, setNewCardTitle] = useState('')
+
+    if (!column) return null
 
     return (
         <Draggable
@@ -51,7 +49,6 @@ export const ListColumn = memo(function ListColumn({
                             setColumns={setColumns}
                             cards={cards}
                             setCards={setCards}
-                            workspaceId={workspaceId}
                             columns={columns}
                             setAddingIndex={setAddingIndex}
                             setNewCardTitle={setNewCardTitle}
@@ -69,7 +66,6 @@ export const ListColumn = memo(function ListColumn({
                             setAddingIndex={setAddingIndex}
                             newCardTitle={newCardTitle}
                             setNewCardTitle={setNewCardTitle}
-                            isCardsLoading={isCardsLoading}
                         />
                     )}
                 </li>

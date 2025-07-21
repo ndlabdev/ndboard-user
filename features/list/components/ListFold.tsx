@@ -7,11 +7,10 @@ import { FoldHorizontal, UnfoldHorizontal } from 'lucide-react'
 interface Props {
     board: BoardDetailResponse['data']
     column: BoardListsResponse
+    columns: Record<string, BoardCardsResponse[]>
     setColumns: Dispatch<SetStateAction<Record<string, BoardCardsResponse[]>>>
     cards: BoardCardsResponse[]
     setCards?: Dispatch<SetStateAction<BoardCardsResponse[]>>
-    workspaceId: string
-    columns: Record<string, BoardCardsResponse[]>
     setAddingIndex: Dispatch<SetStateAction<number | 'end' | null>>
     setNewCardTitle: Dispatch<SetStateAction<string>>
     isMenuOpen: boolean
@@ -24,7 +23,6 @@ export const ListFold = memo(function ListFold({
     setColumns,
     cards,
     setCards,
-    workspaceId,
     columns,
     setAddingIndex,
     setNewCardTitle,
@@ -57,11 +55,11 @@ export const ListFold = memo(function ListFold({
                         </Button>
 
                         <ListActions
+                            board={board}
                             column={column}
                             setColumns={setColumns}
                             cards={cards}
                             setCards={setCards}
-                            workspaceId={workspaceId}
                             columns={columns}
                             setAddingIndex={setAddingIndex}
                             setNewCardTitle={setNewCardTitle}
