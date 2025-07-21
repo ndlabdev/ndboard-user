@@ -9,7 +9,7 @@ import { DragDropContext, Droppable, DropResult, DraggableLocation } from '@hell
 interface Props {
     board: BoardDetailResponse['data']
     isDragReady: boolean
-    listCardsMap: Record<string, BoardCardsResponse[]>
+    listCardsMap: Record<string, { isLoading: boolean, cards: BoardCardsResponse[] }>
 }
 
 function reorder<TItem>(list: TItem[], startIndex: number, endIndex: number): TItem[] {
@@ -25,32 +25,41 @@ export const reorderQuoteMap = ({
     source,
     destination
 }: {
-    quoteMap: Record<string, BoardCardsResponse[]>,
+    quoteMap: Record<string, { isLoading: boolean, cards: BoardCardsResponse[] }>,
     source: DraggableLocation,
     destination: DraggableLocation
 }) => {
-    const current = [...quoteMap[source.droppableId]]
-    const next = [...quoteMap[destination.droppableId]]
-    const target = current[source.index]
+    const currentCards = [...(quoteMap[source.droppableId]?.cards ?? [])]
+    const nextCards = [...(quoteMap[destination.droppableId]?.cards ?? [])]
+    const target = currentCards[source.index]
 
     if (source.droppableId === destination.droppableId) {
-        const reordered = reorder(current, source.index, destination.index)
+        const reordered = reorder(currentCards, source.index, destination.index)
 
         return {
             quoteMap: {
                 ...quoteMap,
-                [source.droppableId]: reordered
+                [source.droppableId]: {
+                    ...quoteMap[source.droppableId],
+                    cards: reordered
+                }
             }
         }
     }
-    current.splice(source.index, 1)
-    next.splice(destination.index, 0, target)
+    currentCards.splice(source.index, 1)
+    nextCards.splice(destination.index, 0, target)
 
     return {
         quoteMap: {
             ...quoteMap,
-            [source.droppableId]: current,
-            [destination.droppableId]: next
+            [source.droppableId]: {
+                ...quoteMap[source.droppableId],
+                cards: currentCards
+            },
+            [destination.droppableId]: {
+                ...quoteMap[destination.droppableId],
+                cards: nextCards
+            }
         }
     }
 }
@@ -107,7 +116,33 @@ export function ListColumnKanban({ board, isDragReady, listCardsMap }: Props) {
             destination
         })
 
-        setColumns(data.quoteMap)
+        const prevColumns = columns
+        const nextColumns = data.quoteMap
+        const changedListIds = [source.droppableId, destination.droppableId]
+            .filter((v, i, arr) => arr.indexOf(v) === i)
+
+        const listsPayload = changedListIds.map((listId) => ({
+            listId,
+            cards: (nextColumns[listId]?.cards ?? []).map((card, order) => ({
+                id: card.id,
+                order
+            }))
+        }))
+
+        const hasChanged = changedListIds.some((listId) => {
+            const oldIds = (prevColumns[listId]?.cards ?? []).map((c) => c.id).join(',')
+            const newIds = (nextColumns[listId]?.cards ?? []).map((c) => c.id).join(',')
+
+            return oldIds !== newIds
+        })
+
+        if (hasChanged) {
+            mutateCardOrder({
+                lists: listsPayload
+            })
+        }
+
+        setColumns(nextColumns)
     }
 
     const listMap = useMemo(() => {
@@ -141,7 +176,8 @@ export function ListColumnKanban({ board, isDragReady, listCardsMap }: Props) {
                                 column={listMap[key]}
                                 columns={columns}
                                 setColumns={setColumns}
-                                cards={columns[key] || []}
+                                cards={columns[key].cards || []}
+                                isCardsLoading={columns[key].isLoading || false}
                             />
                         ))}
                         {provided.placeholder}

@@ -36,9 +36,15 @@ export function useBoardWithCardsQuery(shortLink: string) {
     )
 
     const listCardsMap = useMemo(() => {
-        const map: Record<string, BoardCardsResponse[]> = {}
+        const map: Record<string, {
+            isLoading: boolean,
+            cards: BoardCardsResponse[]
+        }> = {}
         for (const item of listCards) {
-            map[item.list.id] = item.cards as BoardCardsResponse[]
+            map[item.list.id] = {
+                isLoading: item.isLoading,
+                cards: item.cards as BoardCardsResponse[]
+            }
         }
 
         return map

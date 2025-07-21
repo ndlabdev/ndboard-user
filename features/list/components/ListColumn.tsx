@@ -8,10 +8,17 @@ interface Props {
     index?: number
     board: BoardDetailResponse['data']
     column: BoardListsResponse
-    columns: Record<string, BoardCardsResponse[]>
-    setColumns: Dispatch<SetStateAction<Record<string, BoardCardsResponse[]>>>
+    columns: Record<string, {
+        isLoading: boolean;
+        cards: BoardCardsResponse[];
+    }>
+    setColumns: Dispatch<SetStateAction<Record<string, {
+        isLoading: boolean;
+        cards: BoardCardsResponse[];
+    }>>>
     cards: BoardCardsResponse[]
     setCards?: Dispatch<SetStateAction<BoardCardsResponse[]>>
+    isCardsLoading?: boolean
 }
 
 export const ListColumn = memo(function ListColumn({
@@ -21,7 +28,8 @@ export const ListColumn = memo(function ListColumn({
     cards,
     setCards,
     columns,
-    index = 0
+    index = 0,
+    isCardsLoading = false
 }: Props) {
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
     const [addingIndex, setAddingIndex] = useState<number | 'end' | null>(null)
@@ -66,6 +74,7 @@ export const ListColumn = memo(function ListColumn({
                             setAddingIndex={setAddingIndex}
                             newCardTitle={newCardTitle}
                             setNewCardTitle={setNewCardTitle}
+                            isCardsLoading={isCardsLoading}
                         />
                     )}
                 </li>

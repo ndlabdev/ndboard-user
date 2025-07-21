@@ -15,8 +15,14 @@ import {
 interface Props {
     board: BoardDetailResponse['data']
     column: BoardListsResponse
-    columns: Record<string, BoardCardsResponse[]>
-    setColumns: Dispatch<SetStateAction<Record<string, BoardCardsResponse[]>>>
+    columns: Record<string, {
+        isLoading: boolean;
+        cards: BoardCardsResponse[];
+    }>
+    setColumns: Dispatch<SetStateAction<Record<string, {
+        isLoading: boolean;
+        cards: BoardCardsResponse[];
+    }>>>
     cards: BoardCardsResponse[]
     setCards?: Dispatch<SetStateAction<BoardCardsResponse[]>>
     setAddingIndex: Dispatch<SetStateAction<number | 'end' | null>>
