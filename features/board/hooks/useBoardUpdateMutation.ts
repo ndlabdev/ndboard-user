@@ -13,8 +13,8 @@ export function useBoardUpdateMutation(): UseMutationResult<BoardUpdateResponse,
                 ...old,
                 data: {
                     ...old.data,
-                    name: variables.name,
-                    visibility: variables.visibility
+                    ...variables.name && { name: variables.name },
+                    ...variables.visibility && { visibility: variables.visibility }
                 }
             }))
         }
