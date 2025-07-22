@@ -74,7 +74,7 @@ export function CardItemKanban({
 
                     return { ...old, data: newCards }
                 })
-                            
+
                 toast.success('Card Created Successfully!')
             },
             onError: (error) => {
@@ -152,13 +152,14 @@ export function CardItemKanban({
 
                     {dropProvided.placeholder}
 
-                    <li className="sticky bottom-0 mt-2 bg-white">
+                    <li className="sticky bottom-0 mt-2 pb-2">
                         {addingIndex === 'end' ? (
-                            <div className="flex flex-col gap-2 my-2">
+                            <div className="flex flex-col gap-2 mt-2">
                                 <Textarea
                                     value={newCardTitle}
                                     placeholder="Enter a title for this card"
                                     autoFocus
+                                    className="bg-white"
                                     onChange={(e) => setNewCardTitle(e.target.value)}
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter') submitAddCard('end')
@@ -168,7 +169,7 @@ export function CardItemKanban({
                                     <Button size="sm" disabled={isPending} onClick={() => submitAddCard('end')}>
                                         {isPending ? <><Loader2Icon className="animate-spin" /> Loading...</> : 'Add Card'}
                                     </Button>
-                                    <Button size="sm" variant="ghost" disabled={isPending} onClick={() => setAddingIndex(null)}>
+                                    <Button size="sm" variant="destructive" disabled={isPending} onClick={() => setAddingIndex(null)}>
                                         Cancel
                                     </Button>
                                 </div>
