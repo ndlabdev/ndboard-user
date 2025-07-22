@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { useListCreateMutation } from '@/features/list'
 import { Loader2Icon, Plus } from 'lucide-react'
 import { toast } from 'sonner'
@@ -11,7 +11,7 @@ interface Props {
     board: BoardDetailResponse['data']
 }
 
-export function ListColumnCreate({ board }: Props) {
+export const ListColumnCreate = memo(function ListColumnCreate({ board }: Props) {
     const queryClient = useQueryClient()
     const [addingList, setAddingList] = useState<boolean>(false)
     const [newListTitle, setNewListTitle] = useState<string>('')
@@ -109,4 +109,4 @@ export function ListColumnCreate({ board }: Props) {
             )}
         </li>
     )
-}
+})

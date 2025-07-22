@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { CardItem, useCardCreateMutation } from '@/features/card'
 import { BoardCardsResponse } from '@/types'
 import { Loader2Icon, Plus } from 'lucide-react'
@@ -19,7 +19,7 @@ interface Props {
     isCardsLoading?: boolean
 }
 
-export function CardItemKanban({
+export const CardItemKanban = memo(function CardItemKanban({
     listId,
     cards,
     addingIndex,
@@ -33,7 +33,7 @@ export function CardItemKanban({
 
     if (isCardsLoading) {
         return (
-            <div className="px-2 pt-1 space-y-2 pb-4 min-h-[60px]">
+            <div className="px-2 pt-1 space-y-2 pb-2 min-h-[60px]">
                 <Skeleton className="h-8 rounded-lg" />
                 <Skeleton className="h-8 rounded-lg" />
                 <Skeleton className="h-8 rounded-lg" />
@@ -191,4 +191,4 @@ export function CardItemKanban({
             )}
         </Droppable>
     )
-}
+})

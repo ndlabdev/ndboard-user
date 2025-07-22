@@ -34,7 +34,7 @@ export const ListFold = memo(function ListFold({
         <>
             {!column.isFold ? (
                 <div className="flex items-center justify-between px-3 pt-2">
-                    <h3 className="font-semibold">{column.name}</h3>
+                    <h3 className="font-semibold truncate w-2/3">{column.name}</h3>
 
                     <div>
                         <Button

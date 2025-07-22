@@ -166,7 +166,7 @@ export function ListColumnKanban({ board, isDragReady, listCardsMap }: Props) {
                     <ul
                         ref={provided.innerRef}
                         {...provided.droppableProps}
-                        className="flex gap-4 items-start px-4 py-6 overflow-y-hidden h-full"
+                        className="flex gap-4 items-start px-4 py-6 h-full"
                     >
                         {ordered.map((key, index) => (
                             <ListColumn
@@ -181,8 +181,7 @@ export function ListColumnKanban({ board, isDragReady, listCardsMap }: Props) {
                         {provided.placeholder}
                         <ListColumnCreate board={board} />
                     </ul>
-                )
-                }
+                )}
             </Droppable>
         </DragDropContext>
     )

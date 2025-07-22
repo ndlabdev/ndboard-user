@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { isUrl } from '@/lib/utils'
 import { CardLinkPreview } from '@/features/card'
 import { BoardCardsResponse } from '@/types'
@@ -9,7 +10,7 @@ interface Props {
     index: number
 }
 
-export function CardItem({
+export const CardItem = memo(function CardItem({
     card,
     nearLastItem = false,
     index = 0
@@ -40,4 +41,4 @@ export function CardItem({
             )}
         </Draggable>
     )
-}
+})

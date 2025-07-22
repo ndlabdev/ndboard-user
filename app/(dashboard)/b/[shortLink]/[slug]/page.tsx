@@ -47,10 +47,10 @@ export default function BoardDetailPage() {
     }
 
     return (
-        <section className="relative w-full h-full">
+        <section className="relative h-full">
             <BoardCoverImage coverImageUrl={board.coverImageUrl} />
 
-            <div className="relative z-20 flex flex-col h-full w-full">
+            <div className="relative z-20 flex flex-col h-full">
                 <div className="inline-block py-2.5 px-4 backdrop-blur-md bg-black/10 shadow-lg">
                     <div className="flex justify-between">
                         <BoardNameEditable
@@ -74,7 +74,7 @@ export default function BoardDetailPage() {
                     </div>
                 </div>
 
-                <div className="h-full w-full overflow-x-auto overflow-y-hidden max-h-[calc(100vh-108px)]">
+                <div className="h-full overflow-y-hidden max-h-[calc(100vh-108px)]">
                     <ListColumnKanban
                         board={board}
                         isDragReady={isDragReady}
