@@ -20,6 +20,7 @@ export * from './hooks/useListArchiveMutation'
 export * from './hooks/useListArchiveAllCardsMutation'
 export * from './hooks/useListMoveMutation'
 export * from './hooks/useListMoveAllCardsMutation'
+export * from './hooks/useListRestoreMutation'
 
 // ** Schemas
 export * from './schemas/reorder'
