@@ -12,7 +12,7 @@ export const BoardMenuArchive = memo(function BoardMenuArchive({
 }: Props) {
     return (
         <DropdownMenuItem>
-            <Archive />
+            <Archive className="size-5" />
             Archived items
         </DropdownMenuItem>
     )

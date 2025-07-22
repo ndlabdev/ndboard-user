@@ -14,7 +14,8 @@ export function useBoardUpdateMutation(): UseMutationResult<BoardUpdateResponse,
                 data: {
                     ...old.data,
                     ...variables.name && { name: variables.name },
-                    ...variables.visibility && { visibility: variables.visibility }
+                    ...variables.visibility && { visibility: variables.visibility },
+                    ...variables.coverImageUrl && { coverImageUrl: variables.coverImageUrl }
                 }
             }))
         }

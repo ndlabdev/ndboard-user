@@ -16,7 +16,7 @@ export const BoardMenuStar = memo(function BoardMenuStar({
     const { isFavorite, shortLink } = board
     const { mutate: favorite } = useBoardFavoriteMutation()
     const { mutate: unFavorite } = useBoardUnFavoriteMutation()
-    
+
     const handleClick = useCallback(() => {
         if (isFavorite) {
             unFavorite({ shortLink })
@@ -34,6 +34,7 @@ export const BoardMenuStar = memo(function BoardMenuStar({
                 fill={iconFill}
                 stroke={iconStroke}
                 strokeWidth={isFavorite ? 0 : 2}
+                className="size-5"
             />
             {isFavorite ? 'Unstar' : 'Star'}
         </DropdownMenuItem>

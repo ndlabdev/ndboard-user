@@ -47,7 +47,7 @@ export const BoardMenuVisibility = memo(function BoardMenuVisibility({
     return (
         <DropdownMenuSub open={isMenuOpen} onOpenChange={setIsMenuOpen}>
             <DropdownMenuSubTrigger className="flex items-center gap-2">
-                <CurrentIcon className="size-4" />
+                <CurrentIcon className="size-5" />
                 <span>
                     Visibility: <span className="capitalize">{board.visibility}</span>
                 </span>
