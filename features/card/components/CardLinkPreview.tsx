@@ -40,15 +40,15 @@ export function CardLinkPreview({ meta }: BoardLinkCardProps) {
     const description = meta.ogDescription || meta.twitterDescription
 
     return (
-        <Card className="border-0 relative group rounded-lg bg-muted/90 p-0 overflow-hidden">
+        <Card className="border-0 relative group rounded-md bg-muted/90 p-0 overflow-hidden">
             <Link
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block focus:outline-none rounded-lg"
+                className="block focus:outline-none rounded-md"
             >
                 {meta.ogImage?.[0]?.url && (
-                    <div className="w-full max-h-44 overflow-hidden rounded-t-lg">
+                    <div className="w-full max-h-44 overflow-hidden rounded-t-md">
                         <Image
                             src={meta.ogImage[0].url}
                             alt={title}
