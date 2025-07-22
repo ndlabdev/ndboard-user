@@ -29,7 +29,7 @@ export function CardItemKanban({
     isCardsLoading = false
 }: Props) {
     const queryClient = useQueryClient()
-    const { mutateAsync, isPending } = useCardCreateMutation(listId)
+    const { mutateAsync, isPending } = useCardCreateMutation()
 
     if (isCardsLoading) {
         return (

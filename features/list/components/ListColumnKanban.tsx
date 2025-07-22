@@ -183,7 +183,7 @@ export function ListColumnKanban({ board, isDragReady, listCardsMap }: Props) {
                     </ul>
                 )
                 }
-            </Droppable >
-        </DragDropContext >
+            </Droppable>
+        </DragDropContext>
     )
 }
