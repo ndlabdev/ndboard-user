@@ -62,7 +62,7 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-    const { user, isLoading } = useAuth()
+    const { user } = useAuth()
 
     return (
         <Sidebar {...props}>

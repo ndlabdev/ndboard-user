@@ -1,12 +1,13 @@
 import { ListActions, useListUpdateMutation } from '@/features/list'
 import { BoardDetailResponse, BoardListsResponse } from '@/types'
-import { Dispatch, memo, SetStateAction, useCallback } from 'react'
+import { Dispatch, memo, RefObject, SetStateAction, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { FoldHorizontal, UnfoldHorizontal } from 'lucide-react'
 
 interface Props {
     board: BoardDetailResponse['data']
     column: BoardListsResponse
+    headerRef: RefObject<HTMLDivElement | null>
     setAddingIndex: Dispatch<SetStateAction<number | 'end' | null>>
     setNewCardTitle: Dispatch<SetStateAction<string>>
     isMenuOpen: boolean
@@ -16,6 +17,7 @@ interface Props {
 export const ListFold = memo(function ListFold({
     board,
     column,
+    headerRef,
     setAddingIndex,
     setNewCardTitle,
     isMenuOpen,
@@ -33,7 +35,7 @@ export const ListFold = memo(function ListFold({
     return (
         <>
             {!column.isFold ? (
-                <div className="flex items-center justify-between px-3 pt-2">
+                <div className="flex items-center justify-between px-3 pt-2" ref={headerRef}>
                     <h3 className="font-semibold truncate w-2/3">{column.name}</h3>
 
                     <div>
@@ -41,6 +43,7 @@ export const ListFold = memo(function ListFold({
                             size="icon"
                             variant="ghost"
                             className="cursor-pointer"
+                            aria-label="Fold column"
                             onClick={() => handleFoldCard(true)}
                         >
                             <FoldHorizontal />
@@ -62,6 +65,7 @@ export const ListFold = memo(function ListFold({
                         size="icon"
                         variant="ghost"
                         className="cursor-pointer size-4 hover:bg-transparent"
+                        aria-label="Unfold column"
                         onClick={() => handleFoldCard()}
                     >
                         <UnfoldHorizontal />

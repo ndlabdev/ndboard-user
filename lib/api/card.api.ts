@@ -2,8 +2,8 @@ import { apiFetch } from '@/lib/fetcher'
 import type { BoardCardsResponse, CardCreateResponse } from '@/types'
 import { CardCreateFormValues, CardReorderFormValues, CardBulkReorderFormValues } from '@/features/card'
 
-export function cardGetListApi(listId: string): Promise<{ data: BoardCardsResponse }> {
-    return apiFetch<{ data: BoardCardsResponse }>(`/cards/l/${listId}`)
+export function cardGetListApi(listId: string): Promise<{ data: BoardCardsResponse[] }> {
+    return apiFetch<{ data: BoardCardsResponse[] }>(`/cards/l/${listId}`)
 }
 
 export function cardCreateApi(payload: CardCreateFormValues): Promise<CardCreateResponse> {

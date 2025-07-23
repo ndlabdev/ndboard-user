@@ -36,6 +36,7 @@ export const ListActions = memo(function ListActions({
                     size="icon"
                     variant="ghost"
                     className="cursor-pointer"
+                    aria-label="More actions"
                 >
                     <Ellipsis />
                 </Button>

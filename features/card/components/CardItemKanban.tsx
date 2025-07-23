@@ -1,16 +1,32 @@
-import React, { memo } from 'react'
-import { CardItem, useCardCreateMutation } from '@/features/card'
+import React, { memo, RefObject, useEffect, useRef, useState } from 'react'
+import { CardDisplay, CardItem, useCardCreateMutation } from '@/features/card'
 import { BoardCardsResponse } from '@/types'
 import { Loader2Icon, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Droppable } from '@hello-pangea/dnd'
 import { useQueryClient } from '@tanstack/react-query'
+import { getCardData, getCardDropTargetData, isCardData, isDraggingACard, TCard, TCardState, TColumn } from '@/shared/data'
+import invariant from 'tiny-invariant'
+import { isSafari } from '@/shared/is-safari'
+import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine'
+import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview'
+import { preserveOffsetOnSource } from '@atlaskit/pragmatic-drag-and-drop/element/preserve-offset-on-source'
+import {
+    draggable,
+    dropTargetForElements
+} from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import { isShallowEqual } from '@/shared/is-shallow-equal'
+import {
+    attachClosestEdge,
+    extractClosestEdge
+} from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
+import { createPortal } from 'react-dom'
 
 interface Props {
     listId: string
+    column: TColumn
     cards: BoardCardsResponse[]
     addingIndex: number | 'end' | null
     setAddingIndex: (_idx: number | 'end' | null) => void
@@ -19,17 +35,122 @@ interface Props {
     isCardsLoading?: boolean
 }
 
+const idle: TCardState = { type: 'idle' }
+
 export const CardItemKanban = memo(function CardItemKanban({
     listId,
+    column,
     cards,
     addingIndex,
     setAddingIndex,
     newCardTitle,
     setNewCardTitle,
+    card,
+    columnId,
     isCardsLoading = false
 }: Props) {
+    // const { cards } = column
     const queryClient = useQueryClient()
     const { mutateAsync, isPending } = useCardCreateMutation()
+
+    const outerRef = useRef<HTMLDivElement | null>(null)
+    const innerRef = useRef<HTMLDivElement | null>(null)
+    const [state, setState] = useState<TCardState>(idle)
+
+    useEffect(() => {
+        const outer = outerRef.current
+        const inner = innerRef.current
+        invariant(outer && inner)
+
+        return combine(
+            draggable({
+                element: inner,
+                getInitialData: ({ element }) =>
+                    getCardData({ card, columnId, rect: element.getBoundingClientRect() }),
+                onGenerateDragPreview({ nativeSetDragImage, location, source }) {
+                    const data = source.data
+                    invariant(isCardData(data))
+                    setCustomNativeDragPreview({
+                        nativeSetDragImage,
+                        getOffset: preserveOffsetOnSource({ element: inner, input: location.current.input }),
+                        render({ container }) {
+                            // Demonstrating using a react portal to generate a preview
+                            setState({
+                                type: 'preview',
+                                container,
+                                dragging: inner.getBoundingClientRect()
+                            })
+                        }
+                    })
+                },
+                onDragStart() {
+                    setState({ type: 'is-dragging' })
+                },
+                onDrop() {
+                    setState(idle)
+                }
+            }),
+            dropTargetForElements({
+                element: outer,
+                getIsSticky: () => true,
+                canDrop: isDraggingACard,
+                getData: ({ element, input }) => {
+                    const data = getCardDropTargetData({ card, columnId })
+
+                    return attachClosestEdge(data, { element, input, allowedEdges: ['top', 'bottom'] })
+                },
+                onDragEnter({ source, self }) {
+                    if (!isCardData(source.data)) {
+                        return
+                    }
+                    if (source.data.card.id === card.id) {
+                        return
+                    }
+                    const closestEdge = extractClosestEdge(self.data)
+                    if (!closestEdge) {
+                        return
+                    }
+
+                    setState({ type: 'is-over', dragging: source.data.rect, closestEdge })
+                },
+                onDrag({ source, self }) {
+                    if (!isCardData(source.data)) {
+                        return
+                    }
+                    if (source.data.card.id === card.id) {
+                        return
+                    }
+                    const closestEdge = extractClosestEdge(self.data)
+                    if (!closestEdge) {
+                        return
+                    }
+                    // optimization - Don't update react state if we don't need to.
+                    const proposed: TCardState = { type: 'is-over', dragging: source.data.rect, closestEdge }
+                    setState((current) => {
+                        if (isShallowEqual(proposed, current)) {
+                            return current
+                        }
+
+                        return proposed
+                    })
+                },
+                onDragLeave({ source }) {
+                    if (!isCardData(source.data)) {
+                        return
+                    }
+                    if (source.data.card.id === card.id) {
+                        setState({ type: 'is-dragging-and-left-self' })
+
+                        return
+                    }
+                    setState(idle)
+                },
+                onDrop() {
+                    setState(idle)
+                }
+            })
+        )
+    }, [card, columnId])
 
     if (isCardsLoading) {
         return (
@@ -42,153 +163,56 @@ export const CardItemKanban = memo(function CardItemKanban({
     }
 
     async function submitAddCard(idx: number | 'end' | null) {
-        const title = newCardTitle.trim()
-        if (!title) {
-            setAddingIndex(null)
-            setNewCardTitle('')
+        // const title = newCardTitle.trim()
+        // if (!title) {
+        //     setAddingIndex(null)
+        //     setNewCardTitle('')
 
-            return
-        }
+        //     return
+        // }
 
-        let index: number | undefined = undefined
-        if (typeof idx === 'number') {
-            index = idx
-        } else if (idx === 'end' || idx === null) {
-            index = cards.length
-        }
+        // let index: number | undefined = undefined
+        // if (typeof idx === 'number') {
+        //     index = idx
+        // } else if (idx === 'end' || idx === null) {
+        //     index = cards.length
+        // }
 
-        await mutateAsync({
-            listId,
-            name: title,
-            index
-        }, {
-            onSuccess: ({ data }) => {
-                queryClient.setQueryData(['cards', listId], (old: { data: BoardCardsResponse[] }) => {
-                    const prevCards: BoardCardsResponse[] = old?.data || []
-                    const newCards = [...prevCards]
-                    if (idx === 'end' || idx === null) {
-                        newCards.push(data)
-                    } else {
-                        newCards.splice(idx, 0, data)
-                    }
+        // await mutateAsync({
+        //     listId,
+        //     name: title,
+        //     index
+        // }, {
+        //     onSuccess: ({ data }) => {
+        //         queryClient.setQueryData(['cards', listId], (old: { data: BoardCardsResponse[] }) => {
+        //             const prevCards: BoardCardsResponse[] = old?.data || []
+        //             const newCards = [...prevCards]
+        //             if (idx === 'end' || idx === null) {
+        //                 newCards.push(data)
+        //             } else {
+        //                 newCards.splice(idx, 0, data)
+        //             }
 
-                    return { ...old, data: newCards }
-                })
+        //             return { ...old, data: newCards }
+        //         })
 
-                toast.success('Card Created Successfully!')
-            },
-            onError: (error) => {
-                const msg = (error as { message?: string })?.message || 'Create Card Failed'
-                toast.error(msg)
-            }
-        })
-        setAddingIndex(null)
-        setNewCardTitle('')
+        //         toast.success('Card Created Successfully!')
+        //     },
+        //     onError: (error) => {
+        //         const msg = (error as { message?: string })?.message || 'Create Card Failed'
+        //         toast.error(msg)
+        //     }
+        // })
+        // setAddingIndex(null)
+        // setNewCardTitle('')
     }
 
     return (
-        <Droppable
-            droppableId={listId}
-            type="CARD"
-        >
-            {(dropProvided) => (
-                <ul
-                    ref={dropProvided.innerRef}
-                    {...dropProvided.droppableProps}
-                    className="px-2 pt-1 pb-0 overflow-y-auto overflow-x-hidden h-full relative"
-                >
-                    {cards.map((card, idx) => (
-                        <React.Fragment key={card.id}>
-                            <div
-                                className="flex items-center justify-center opacity-0 hover:opacity-100 -my-0.75 cursor-pointer"
-                                onClick={() => {
-                                    setAddingIndex(idx)
-                                    setNewCardTitle('')
-                                }}
-                            >
-                                <div className="w-1/2 border-1 border-dashed border-muted" />
-
-                                <Button
-                                    size="icon"
-                                    className="size-5 rounded-sm cursor-pointer"
-                                    variant="default"
-                                >
-                                    <Plus className="size-3" />
-                                </Button>
-
-                                <div className="w-1/2 border-1 border-dashed border-muted" />
-                            </div>
-
-                            {addingIndex === idx && (
-                                <div className="flex flex-col gap-2 my-2">
-                                    <Textarea
-                                        value={newCardTitle}
-                                        placeholder="Enter a title for this card"
-                                        autoFocus
-                                        onChange={(e) => setNewCardTitle(e.target.value)}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') submitAddCard(idx)
-                                        }}
-                                    />
-                                    <div className="flex gap-1">
-                                        <Button size="sm" disabled={isPending} onClick={() => submitAddCard(idx)}>
-                                            {isPending ? <><Loader2Icon className="animate-spin" /> Loading...</> : 'Add Card'}
-                                        </Button>
-
-                                        <Button size="sm" variant="ghost" disabled={isPending} onClick={() => setAddingIndex(null)}>
-                                            Cancel
-                                        </Button>
-                                    </div>
-                                </div>
-                            )}
-
-                            <CardItem
-                                nearLastItem={idx === cards.length - 1}
-                                card={card}
-                                index={idx}
-                            />
-                        </React.Fragment>
-                    ))}
-
-                    {dropProvided.placeholder}
-
-                    <li className="sticky bottom-0 mt-2 pb-2">
-                        {addingIndex === 'end' ? (
-                            <div className="flex flex-col gap-2 mt-2">
-                                <Textarea
-                                    value={newCardTitle}
-                                    placeholder="Enter a title for this card"
-                                    autoFocus
-                                    className="bg-white"
-                                    onChange={(e) => setNewCardTitle(e.target.value)}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') submitAddCard('end')
-                                    }}
-                                />
-                                <div className="flex gap-1">
-                                    <Button size="sm" disabled={isPending} onClick={() => submitAddCard('end')}>
-                                        {isPending ? <><Loader2Icon className="animate-spin" /> Loading...</> : 'Add Card'}
-                                    </Button>
-                                    <Button size="sm" variant="destructive" disabled={isPending} onClick={() => setAddingIndex(null)}>
-                                        Cancel
-                                    </Button>
-                                </div>
-                            </div>
-                        ) : (
-                            <Button
-                                size="sm"
-                                onClick={() => {
-                                    setAddingIndex('end')
-                                    setNewCardTitle('')
-                                }}
-                            >
-                                <Plus className="mr-1" />
-                                Add a card
-                            </Button>
-                        )}
-                    </li>
-                </ul>
-            )}
-        </Droppable>
+        <>
+            <CardDisplay outerRef={outerRef} innerRef={innerRef} state={state} card={card} />
+            {state.type === 'preview'
+                ? createPortal(<CardDisplay state={state} card={card} />, state.container)
+                : null}
+        </>
     )
 })
