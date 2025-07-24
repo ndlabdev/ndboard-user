@@ -27,6 +27,8 @@ import { createPortal } from 'react-dom'
 interface Props {
     listId: string
     column: TColumn
+    card: TCard
+    columnId: string
     cards: BoardCardsResponse[]
     addingIndex: number | 'end' | null
     setAddingIndex: (_idx: number | 'end' | null) => void

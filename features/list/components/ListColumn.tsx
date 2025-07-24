@@ -203,7 +203,7 @@ export const ListColumn = memo(function ListColumn({
     if (!column) return null
 
     return (
-        <div className={`flex flex-shrink-0 select-none flex-col ${column.isFold ? 'w-14 px-0 py-3' : 'w-72'}`} ref={outerFullHeightRef}>
+        <div className={`flex flex-shrink-0 select-none flex-col h-full ${column.isFold ? 'w-14 px-0 py-3' : 'w-72'}`} ref={outerFullHeightRef}>
             <div
                 className={`flex max-h-full flex-col rounded-lg bg-white ${stateStyles[state.type]}`}
                 ref={innerRef}

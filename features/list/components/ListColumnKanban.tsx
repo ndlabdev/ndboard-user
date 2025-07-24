@@ -355,7 +355,7 @@ export function ListColumnKanban({ board, isDragReady, listCards }: Props) {
     return (
         <div
             ref={scrollableRef}
-            className="flex h-full flex-row gap-3 overflow-x-auto"
+            className="flex h-full flex-row gap-3 overflow-x-auto overflow-y-hidden"
         >
             <div className="flex gap-4 items-start px-4 py-6 h-full">
                 {data.columns.map((column, index) => (

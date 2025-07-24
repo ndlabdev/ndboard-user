@@ -6,13 +6,11 @@ import { BoardCardsResponse } from '@/types'
 interface Props {
     card: BoardCardsResponse
     nearLastItem?: boolean
-    index: number
 }
 
 export const CardItem = memo(function CardItem({
     card,
-    nearLastItem = false,
-    index = 0
+    nearLastItem = false
 }: Props) {
     return (
         <div className={`bg-white rounded-lg shadow border border-white hover:border-primary group list-none cursor-pointer ${nearLastItem ? 'mb-2' : ''}`}>
