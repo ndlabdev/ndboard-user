@@ -29,14 +29,14 @@ export function CardDisplay({
     return (
         <div
             ref={outerRef}
-            className={`flex flex-shrink-0 flex-col gap-2 px-3 py-1 ${outerStyles[state.type]}`}
+            className={`flex flex-shrink-0 flex-col gap-2 px-3 py-1 ${outerStyles[state.type] || ''}`}
         >
             {/* Put a shadow before the item if closer to the top edge */}
             {state.type === 'is-over' && state.closestEdge === 'top' ? (
                 <CardShadow dragging={state.dragging} />
             ) : null}
             <div
-                className={`rounded-lg group ${innerStyles[state.type]}`}
+                className={`rounded-lg group ${innerStyles[state.type] || ''}`}
                 ref={innerRef}
                 style={
                     state.type === 'preview'

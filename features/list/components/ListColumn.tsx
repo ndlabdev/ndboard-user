@@ -27,7 +27,7 @@ const stateStyles = {
     idle: 'cursor-grab',
     'is-card-over': 'outline outline-2 outline-neutral-50',
     'is-dragging': 'opacity-40',
-    'is-column-over': '!bg-slate-900'
+    'is-column-over': '!bg-secondary'
 }
 
 const idle = { type: 'idle' } satisfies TColumnState
@@ -64,12 +64,13 @@ export const ListColumn = memo(function ListColumn({
     const [state, setState] = useState<TColumnState>(idle)
 
     useEffect(() => {
-        if (column.isFold) return
-
         const outer = outerFullHeightRef.current
         const scrollable = scrollableRef.current
         const header = headerRef.current
         const inner = innerRef.current
+
+        if (!header || !outer) return
+
         invariant(outer)
         invariant(scrollable)
         invariant(header)

@@ -35,7 +35,10 @@ export const ListFold = memo(function ListFold({
     return (
         <>
             {!column.isFold ? (
-                <div className="flex items-center justify-between px-3 pt-2" ref={headerRef}>
+                <div
+                    ref={headerRef}
+                    className="flex items-center justify-between px-3 pt-2"
+                >
                     <h3 className="font-semibold truncate w-2/3">{column.name}</h3>
 
                     <div>
@@ -60,7 +63,10 @@ export const ListFold = memo(function ListFold({
                     </div>
                 </div>
             ) : (
-                <div className="flex flex-col items-center gap-2 justify-center h-full">
+                <div
+                    ref={headerRef}
+                    className="flex flex-col items-center gap-2 justify-center h-full"
+                >
                     <Button
                         size="icon"
                         variant="ghost"
