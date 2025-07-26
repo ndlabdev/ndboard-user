@@ -1,6 +1,6 @@
-import { CardItemKanban, CardShadow } from '@/features/card'
+import { CardCreateInList, CardItemKanban, CardShadow } from '@/features/card'
 import { ListFold } from '@/features/list'
-import { BoardCardsResponse, BoardDetailResponse, BoardListsResponse } from '@/types'
+import { BoardCardsResponse, BoardDetailResponse } from '@/types'
 import { memo, useEffect, useRef, useState } from 'react'
 import invariant from 'tiny-invariant'
 import {
@@ -16,8 +16,6 @@ import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/el
 import { blockBoardPanningAttr, getColumnData, isCardData, isCardDropTargetData, isColumnData, isDraggingACard, isDraggingAColumn, settings, TCardData, TColumn, TColumnState } from '@/shared/data'
 import { isShallowEqual } from '@/shared/is-shallow-equal'
 import { isSafari } from '@/shared/is-safari'
-import { Copy, Ellipsis, Plus } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 
 interface Props {
     index?: number
@@ -57,6 +55,8 @@ export const ListColumn = memo(function ListColumn({
     const [state, setState] = useState<TColumnState>(idle)
 
     useEffect(() => {
+        if (column.isFold) return
+
         const outer = outerFullHeightRef.current
         const scrollable = scrollableRef.current
         const header = headerRef.current
@@ -203,15 +203,14 @@ export const ListColumn = memo(function ListColumn({
     if (!column) return null
 
     return (
-        <div className={`flex flex-shrink-0 select-none flex-col h-full ${column.isFold ? 'w-14 px-0 py-3' : 'w-72'}`} ref={outerFullHeightRef}>
+        <div className={`flex flex-shrink-0 select-none flex-col h-full ${column.isFold ? 'w-14 px-0' : 'w-72'}`} ref={outerFullHeightRef}>
             <div
                 className={`flex max-h-full flex-col rounded-lg bg-white ${stateStyles[state.type]}`}
                 ref={innerRef}
                 {...{ [blockBoardPanningAttr]: true }}
             >
-                {/* Extra wrapping element to make it easy to toggle visibility of content when a column is dragging over */}
                 <div
-                    className={`flex max-h-full flex-col ${state.type === 'is-column-over' ? 'invisible' : ''}`}
+                    className={`flex max-h-full flex-col ${column.isFold ? 'py-3' : ''} ${state.type === 'is-column-over' ? 'invisible' : ''}`}
                 >
                     <ListFold
                         board={board}
@@ -239,31 +238,16 @@ export const ListColumn = memo(function ListColumn({
                         )}
                     </div>
 
-                    <div className="flex flex-row gap-2 p-3">
-                        <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => {
-                                setAddingIndex('end')
-                                setNewCardTitle('')
-                            }}
-                            className="flex flex-grow flex-row gap-1 justify-start"
-                        >
-                            <Plus />
-                            Add a card
-                        </Button>
-
-                        <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => {
-                                setAddingIndex('end')
-                                setNewCardTitle('')
-                            }}
-                        >
-                            <Copy size={16} />
-                        </Button>
-                    </div>
+                    {!column.isFold && (
+                        <CardCreateInList
+                            column={column}
+                            cards={cards}
+                            addingIndex={addingIndex}
+                            setAddingIndex={setAddingIndex}
+                            newCardTitle={newCardTitle}
+                            setNewCardTitle={setNewCardTitle}
+                        />
+                    )}
                 </div>
             </div>
         </div>

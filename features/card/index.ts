@@ -4,6 +4,7 @@ export * from './components/CardItemKanban'
 export * from './components/CardLinkPreview'
 export * from './components/CardDisplay'
 export * from './components/CardShadow'
+export * from './components/CardCreateInList'
 
 // ** Hooks
 export * from './hooks/useCardGetListQuery'
