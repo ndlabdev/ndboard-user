@@ -1,6 +1,6 @@
 import { CardCreateInList, CardItemKanban, CardShadow } from '@/features/card'
 import { ListFold } from '@/features/list'
-import { BoardCardsResponse, BoardDetailResponse } from '@/types'
+import { BoardDetailResponse } from '@/types'
 import { memo, useEffect, useRef, useState } from 'react'
 import invariant from 'tiny-invariant'
 import {
@@ -16,16 +16,14 @@ import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/el
 import { blockBoardPanningAttr, getColumnData, isCardData, isCardDropTargetData, isColumnData, isDraggingACard, isDraggingAColumn, settings, TCardData, TColumn, TColumnState } from '@/shared/data'
 import { isShallowEqual } from '@/shared/is-shallow-equal'
 import { isSafari } from '@/shared/is-safari'
+import { Skeleton } from '@/components/ui/skeleton'
 
 interface Props {
-    index?: number
     board: BoardDetailResponse['data']
     column: TColumn
-    cards: BoardCardsResponse[]
-    isCardsLoading?: boolean
 }
 
-const stateStyles: { [Key in TColumnState['type']]: string } = {
+const stateStyles = {
     idle: 'cursor-grab',
     'is-card-over': 'outline outline-2 outline-neutral-50',
     'is-dragging': 'opacity-40',
@@ -35,15 +33,26 @@ const stateStyles: { [Key in TColumnState['type']]: string } = {
 const idle = { type: 'idle' } satisfies TColumnState
 
 const CardList = memo(function CardList({ column }: { column: TColumn }) {
-    return column.cards.map((card) => <CardItemKanban key={card.id} card={card} columnId={column.id} />)
+    if (column.isLoading) {
+        return (
+            <div className="px-2 pt-1 space-y-2 pb-2 min-h-[60px]">
+                <Skeleton className="h-8 rounded-lg" />
+                <Skeleton className="h-8 rounded-lg" />
+                <Skeleton className="h-8 rounded-lg" />
+            </div>
+        )
+    }
+
+    return column.cards.map((card) => <CardItemKanban
+        key={card.id}
+        card={card}
+        columnId={column.id}
+    />)
 })
 
 export const ListColumn = memo(function ListColumn({
     board,
-    column,
-    cards,
-    index = 0,
-    isCardsLoading = false
+    column
 }: Props) {
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
     const [addingIndex, setAddingIndex] = useState<number | 'end' | null>(null)
@@ -241,7 +250,7 @@ export const ListColumn = memo(function ListColumn({
                     {!column.isFold && (
                         <CardCreateInList
                             column={column}
-                            cards={cards}
+                            cards={column.cards}
                             addingIndex={addingIndex}
                             setAddingIndex={setAddingIndex}
                             newCardTitle={newCardTitle}

@@ -40,12 +40,13 @@ export function CardLinkPreview({ meta }: BoardLinkCardProps) {
     const description = meta.ogDescription || meta.twitterDescription
 
     return (
-        <Card className="border-0 relative group rounded-md bg-muted/90 p-0 overflow-hidden">
+        <Card className="border-0 relative group rounded-md bg-muted/90 p-0 overflow-hidden" draggable={false}>
             <Link
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block focus:outline-none rounded-md"
+                draggable={false}
             >
                 {meta.ogImage?.[0]?.url && (
                     <div className="w-full max-h-44 overflow-hidden rounded-t-md">
@@ -57,6 +58,7 @@ export function CardLinkPreview({ meta }: BoardLinkCardProps) {
                             className="w-full object-cover"
                             loading="lazy"
                             unoptimized
+                            draggable={false}
                         />
                     </div>
                 )}

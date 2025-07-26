@@ -12,8 +12,7 @@ export default function BoardDetailPage() {
         board,
         listCards,
         isLoading,
-        isError,
-        isDragReady
+        isError
     } = useBoardWithCardsQuery(params.shortLink as string)
     const { mutate } = useBoardUpdateMutation()
 
@@ -77,7 +76,6 @@ export default function BoardDetailPage() {
                 <div className="h-full overflow-y-hidden max-h-[calc(100vh-108px)]">
                     <ListColumnKanban
                         board={board}
-                        isDragReady={isDragReady}
                         listCards={listCards}
                     />
                 </div>

@@ -4,11 +4,13 @@ import { TCard, TCardState } from '@/shared/data'
 import { RefObject } from 'react'
 import { CardItem } from './CardItem'
 
+// eslint-disable-next-line no-unused-vars
 const innerStyles: { [Key in TCardState['type']]?: string } = {
     idle: 'hover:outline outline-2 outline-neutral-50 cursor-grab',
     'is-dragging': 'opacity-40'
 }
 
+// eslint-disable-next-line no-unused-vars
 const outerStyles: { [Key in TCardState['type']]?: string } = {
     'is-dragging-and-left-self': 'hidden'
 }

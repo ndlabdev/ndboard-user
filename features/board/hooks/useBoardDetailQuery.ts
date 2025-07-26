@@ -35,15 +35,10 @@ export function useBoardWithCardsQuery(shortLink: string) {
         }))
     }), [lists, cardsQueries])
 
-    const isDragReady = !isCardsLoading && !boardDetailQuery.isLoading
-
-    console.log(listCards)
-
     return {
         ...boardDetailQuery,
         board,
         listCards,
-        isDragReady,
         isCardsLoading,
         isCardsError
     }
