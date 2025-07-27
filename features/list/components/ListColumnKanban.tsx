@@ -30,7 +30,7 @@ interface Props {
 export function ListColumnKanban({ board, listCards }: Props) {
     const [data, setData] = useState(listCards)
     const scrollableRef = useRef<HTMLDivElement | null>(null)
-    const { mutateAsync: mutateListOrder } = useListReorderMutation()
+    const { mutateAsync: mutateListOrder } = useListReorderMutation(board.shortLink)
     const { mutateAsync: mutateCardOrder } = useCardBulkReorderMutation()
 
     useEffect(() => {

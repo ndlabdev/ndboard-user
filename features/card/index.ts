@@ -7,7 +7,6 @@ export * from './components/CardShadow'
 export * from './components/CardCreateInList'
 
 // ** Hooks
-export * from './hooks/useCardGetListQuery'
 export * from './hooks/useCardCreateMutation'
 export * from './hooks/useCardReorderMutation'
 export * from './hooks/useCardBulkReorder'
