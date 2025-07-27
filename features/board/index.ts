@@ -20,6 +20,7 @@ export * from './components/BoardMenuStar'
 export * from './components/BoardMenuArchive'
 export * from './components/BoardMenuVisibility'
 export * from './components/BoardMenuBackgroundPicker'
+export * from './components/BoardChangeVisibility'
 
 // ** Constants
 export * from './constants'

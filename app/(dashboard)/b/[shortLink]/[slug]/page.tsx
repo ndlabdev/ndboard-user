@@ -1,8 +1,8 @@
 'use client'
 
-import { useCallback, useMemo } from 'react'
+import { useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import { BoardCoverImage, BoardDetailSkeleton, BoardMenu, BoardNameEditable, BoardStar, useBoardUpdateMutation, useBoardWithCardsQuery } from '@/features/board'
+import { BoardChangeVisibility, BoardCoverImage, BoardDetailSkeleton, BoardMenu, BoardNameEditable, BoardStar, useBoardUpdateMutation, useBoardWithCardsQuery } from '@/features/board'
 import { ListColumnKanban } from '@/features/list'
 import { getTextColorByBg } from '@/utils'
 
@@ -15,11 +15,6 @@ export default function BoardDetailPage() {
         isError
     } = useBoardWithCardsQuery(params.shortLink as string)
     const { mutate } = useBoardUpdateMutation()
-
-    const textColor = useMemo(
-        () => getTextColorByBg(board?.coverImageUrl),
-        [board?.coverImageUrl]
-    )
 
     const handleUpdateBoardName = useCallback(
         (newName: string) => {
@@ -45,6 +40,8 @@ export default function BoardDetailPage() {
         )
     }
 
+    const textColor = getTextColorByBg(board.coverImageUrl as string)
+
     return (
         <section className="relative h-full overflow-hidden">
             <BoardCoverImage coverImageUrl={board.coverImageUrl} />
@@ -58,11 +55,16 @@ export default function BoardDetailPage() {
                             onUpdate={handleUpdateBoardName}
                         />
 
-                        <div>
+                        <div className="flex gap-2">
                             <BoardStar
                                 textColor={textColor}
                                 shortLink={board.shortLink}
                                 isFavorite={board.isFavorite}
+                            />
+
+                            <BoardChangeVisibility
+                                board={board}
+                                textColor={textColor}
                             />
 
                             <BoardMenu
