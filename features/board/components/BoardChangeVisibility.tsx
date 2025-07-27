@@ -52,10 +52,10 @@ export const BoardChangeVisibility = memo(function BoardChangeVisibility({
     const CurrentIcon = BOARD_VISIBILITY_ICONS[board.visibility]
 
     return (
-        <Tooltip>
-            <TooltipTrigger>
-                <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-                    <DropdownMenuTrigger asChild>
+        <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+            <DropdownMenuTrigger asChild>
+                <Tooltip>
+                    <TooltipTrigger asChild>
                         <Button
                             variant="link"
                             className={`size-6 cursor-pointer ${textColor === 'white' ? 'text-white' : 'text-black'}`}
@@ -64,51 +64,51 @@ export const BoardChangeVisibility = memo(function BoardChangeVisibility({
                         >
                             <CurrentIcon className="size-4" />
                         </Button>
-                    </DropdownMenuTrigger>
+                    </TooltipTrigger>
 
-                    <DropdownMenuContent
-                        align="end"
-                        sideOffset={4}
-                        className="w-80"
-                    >
-                        {BOARD_VISIBILITY_OPTIONS.map((option) => {
-                            const Icon = BOARD_VISIBILITY_ICONS[option.id]
-                            const isSelected = board.visibility === option.id
-                            const isLoadingThis = loadingOption === option.id
+                    <TooltipContent side="bottom">
+                        Change Visibility
+                    </TooltipContent>
+                </Tooltip>
+            </DropdownMenuTrigger>
 
-                            return (
-                                <DropdownMenuItem
-                                    key={option.id}
-                                    className={`flex flex-col items-start gap-1 ${isLoadingThis ? 'opacity-50 pointer-events-none' : ''}`}
-                                    disabled={isLoadingThis}
-                                    onSelect={(e) => {
-                                        e.preventDefault()
-                                        handleChangeVisibility(option.id)
-                                    }}
-                                >
-                                    <div className="flex items-center gap-2">
-                                        <Icon className="size-4" />
-                                        <h5>{option.label}</h5>
-                                        {isLoadingThis ? (
-                                            <Spinner size={16} />
-                                        ) : (
-                                            isSelected && <Check className="size-4 ml-auto text-primary" />
-                                        )}
-                                    </div>
+            <DropdownMenuContent
+                align="end"
+                sideOffset={4}
+                className="w-80"
+            >
+                {BOARD_VISIBILITY_OPTIONS.map((option) => {
+                    const Icon = BOARD_VISIBILITY_ICONS[option.id]
+                    const isSelected = board.visibility === option.id
+                    const isLoadingThis = loadingOption === option.id
 
-                                    <p className="text-xs text-muted-foreground">
-                                        {option.description}
-                                    </p>
-                                </DropdownMenuItem>
-                            )
-                        })}
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </TooltipTrigger>
+                    return (
+                        <DropdownMenuItem
+                            key={option.id}
+                            className={`flex flex-col items-start gap-1 ${isLoadingThis ? 'opacity-50 pointer-events-none' : ''}`}
+                            disabled={isLoadingThis}
+                            onSelect={(e) => {
+                                e.preventDefault()
+                                handleChangeVisibility(option.id)
+                            }}
+                        >
+                            <div className="flex items-center gap-2">
+                                <Icon className="size-4" />
+                                <h5>{option.label}</h5>
+                                {isLoadingThis ? (
+                                    <Spinner size={16} />
+                                ) : (
+                                    isSelected && <Check className="size-4 ml-auto text-primary" />
+                                )}
+                            </div>
 
-            <TooltipContent side="bottom">
-                Change Visibility
-            </TooltipContent>
-        </Tooltip>
+                            <p className="text-xs text-muted-foreground">
+                                {option.description}
+                            </p>
+                        </DropdownMenuItem>
+                    )
+                })}
+            </DropdownMenuContent>
+        </DropdownMenu>
     )
 })

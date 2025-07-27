@@ -28,10 +28,10 @@ export const BoardMenu = memo(function BoardMenu({
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
 
     return (
-        <Tooltip>
-            <TooltipTrigger asChild>
-                <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-                    <DropdownMenuTrigger asChild>
+        <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+            <DropdownMenuTrigger asChild>
+                <Tooltip>
+                    <TooltipTrigger asChild>
                         <Button
                             variant="link"
                             className={'size-6 cursor-pointer'}
@@ -40,37 +40,34 @@ export const BoardMenu = memo(function BoardMenu({
                         >
                             <Settings className={`size-4 ${textColor === 'white' ? 'text-white' : 'text-black'}`} />
                         </Button>
-                    </DropdownMenuTrigger>
+                    </TooltipTrigger>
 
-                    <DropdownMenuContent
-                        align="end"
-                        sideOffset={4}
-                        className="w-80"
-                    >
-                        <DropdownMenuGroup>
-                            <BoardMenuVisibility board={board} />
+                    <TooltipContent side="bottom">Menu</TooltipContent>
+                </Tooltip>
+            </DropdownMenuTrigger>
 
-                            <BoardMenuStar
-                                board={board}
-                                textColor={textColor}
-                            />
-                        </DropdownMenuGroup>
+            <DropdownMenuContent
+                align="end"
+                sideOffset={4}
+                className="w-80"
+            >
+                <DropdownMenuGroup>
+                    <BoardMenuVisibility board={board} />
 
-                        <DropdownMenuSeparator />
+                    <BoardMenuStar board={board} />
+                </DropdownMenuGroup>
 
-                        <DropdownMenuGroup>
-                            <BoardMenuBackgroundPicker board={board} />
+                <DropdownMenuSeparator />
 
-                            <BoardMenuArchive
-                                board={board}
-                                textColor={textColor}
-                            />
-                        </DropdownMenuGroup>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </TooltipTrigger>
+                <DropdownMenuGroup>
+                    <BoardMenuBackgroundPicker board={board} />
 
-            <TooltipContent side="bottom">Menu</TooltipContent>
-        </Tooltip>
+                    <BoardMenuArchive
+                        board={board}
+                        textColor={textColor}
+                    />
+                </DropdownMenuGroup>
+            </DropdownMenuContent>
+        </DropdownMenu>
     )
 })

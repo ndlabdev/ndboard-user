@@ -6,12 +6,10 @@ import { BoardDetailResponse } from '@/types'
 
 interface Props {
     board: BoardDetailResponse['data']
-    textColor: string
 }
 
 export const BoardMenuStar = memo(function BoardMenuStar({
-    board,
-    textColor
+    board
 }: Props) {
     const { isFavorite, shortLink } = board
     const { mutate: favorite } = useBoardFavoriteMutation()
@@ -26,13 +24,12 @@ export const BoardMenuStar = memo(function BoardMenuStar({
     }, [isFavorite, favorite, unFavorite, shortLink])
 
     const iconFill = isFavorite ? '#facc15' : 'none'
-    const iconStroke = textColor === 'white' ? '#fff' : '#000'
 
     return (
         <DropdownMenuItem onClick={handleClick}>
             <Star
                 fill={iconFill}
-                stroke={iconStroke}
+                stroke={'#000'}
                 strokeWidth={isFavorite ? 0 : 2}
                 className="size-5"
             />
