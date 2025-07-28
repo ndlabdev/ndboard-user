@@ -1,11 +1,6 @@
-import { memo, useState } from 'react'
+import { memo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Settings } from 'lucide-react'
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipTrigger
-} from '@/components/ui/tooltip'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -13,7 +8,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { BoardMenuArchive, BoardMenuBackgroundPicker, BoardMenuStar, BoardMenuVisibility } from '@/features/board'
+import { BoardMenuArchive, BoardMenuBackgroundPicker, BoardMenuLabel, BoardMenuStar, BoardMenuVisibility } from '@/features/board'
 import { BoardDetailResponse } from '@/types'
 
 interface Props {
@@ -25,25 +20,17 @@ export const BoardMenu = memo(function BoardMenu({
     board,
     textColor
 }: Props) {
-    const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
-
     return (
-        <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+        <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button
-                            variant="link"
-                            className={'size-6 cursor-pointer'}
-                            tabIndex={0}
-                            aria-label="Menu"
-                        >
-                            <Settings className={`size-4 ${textColor === 'white' ? 'text-white' : 'text-black'}`} />
-                        </Button>
-                    </TooltipTrigger>
-
-                    <TooltipContent side="bottom">Menu</TooltipContent>
-                </Tooltip>
+                <Button
+                    variant="link"
+                    className={'size-6 cursor-pointer'}
+                    tabIndex={0}
+                    aria-label="Menu"
+                >
+                    <Settings className={`size-4 ${textColor === 'white' ? 'text-white' : 'text-black'}`} />
+                </Button>
             </DropdownMenuTrigger>
 
             <DropdownMenuContent
@@ -61,6 +48,8 @@ export const BoardMenu = memo(function BoardMenu({
 
                 <DropdownMenuGroup>
                     <BoardMenuBackgroundPicker board={board} />
+
+                    <BoardMenuLabel board={board} />
 
                     <BoardMenuArchive
                         board={board}

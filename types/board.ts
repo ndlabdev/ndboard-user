@@ -126,8 +126,17 @@ export interface BoardDetailResponse {
         archivedAt: Date | null
         order: number
         lists: BoardListsResponse[]
+        labels: BoardLabelResponse[]
         isFavorite: boolean
     }
+}
+
+export interface BoardLabelResponse {
+    id: string
+    color: string
+    name: string
+    boardId: string
+    tone: 'subtle' | 'normal' | 'bold'
 }
 
 export interface BoardCreateResponse {

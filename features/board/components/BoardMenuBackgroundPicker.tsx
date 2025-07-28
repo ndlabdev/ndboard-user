@@ -18,7 +18,7 @@ export const BoardMenuBackgroundPicker = memo(function BoardMenuBackgroundPicker
 }: Props) {
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
 
-    const { mutate: updateBackground, isPending } = useBoardUpdateMutation()
+    const { mutate: updateBackground, isPending } = useBoardUpdateMutation(board.workspaceId)
 
     const selected = useMemo(() => {
         if (!board.coverImageUrl) return DEFAULT_BOARD_BACKGROUNDS[0]

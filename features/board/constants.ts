@@ -140,3 +140,78 @@ export const DEFAULT_BOARD_BACKGROUNDS: BoardBackground[] = [
         value: 'linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%)'
     }
 ]
+
+export const LABEL_COLORS = [
+    {
+        name: 'green',
+        subtle: 'bg-green-100 text-green-900',
+        normal: 'bg-green-500 text-white',
+        bold: 'bg-green-700 text-white'
+    },
+    {
+        name: 'yellow',
+        subtle: 'bg-yellow-100 text-yellow-900',
+        normal: 'bg-yellow-400 text-gray-900',
+        bold: 'bg-yellow-600 text-white'
+    },
+    {
+        name: 'orange',
+        subtle: 'bg-orange-100 text-orange-900',
+        normal: 'bg-orange-400 text-gray-900',
+        bold: 'bg-orange-600 text-white'
+    },
+    {
+        name: 'red',
+        subtle: 'bg-red-100 text-red-900',
+        normal: 'bg-red-500 text-white',
+        bold: 'bg-red-700 text-white'
+    },
+    {
+        name: 'blue',
+        subtle: 'bg-blue-100 text-blue-900',
+        normal: 'bg-blue-500 text-white',
+        bold: 'bg-blue-700 text-white'
+    },
+    {
+        name: 'purple',
+        subtle: 'bg-purple-100 text-purple-900',
+        normal: 'bg-purple-500 text-white',
+        bold: 'bg-purple-700 text-white'
+    },
+    {
+        name: 'sky',
+        subtle: 'bg-sky-100 text-sky-900',
+        normal: 'bg-sky-400 text-gray-900',
+        bold: 'bg-sky-600 text-white'
+    },
+    {
+        name: 'pink',
+        subtle: 'bg-pink-100 text-pink-900',
+        normal: 'bg-pink-400 text-gray-900',
+        bold: 'bg-pink-600 text-white'
+    },
+    {
+        name: 'lime',
+        subtle: 'bg-lime-100 text-lime-900',
+        normal: 'bg-lime-400 text-gray-900',
+        bold: 'bg-lime-600 text-white'
+    },
+    {
+        name: 'teal',
+        subtle: 'bg-teal-100 text-teal-900',
+        normal: 'bg-teal-400 text-gray-900',
+        bold: 'bg-teal-600 text-white'
+    },
+    {
+        name: 'gray',
+        subtle: 'bg-gray-200 text-gray-900',
+        normal: 'bg-gray-400 text-gray-900',
+        bold: 'bg-gray-700 text-white'
+    },
+    {
+        name: 'black',
+        subtle: 'bg-gray-700 text-white',
+        normal: 'bg-black text-white',
+        bold: 'bg-black text-white border border-gray-300'
+    }
+]

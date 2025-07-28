@@ -14,7 +14,7 @@ export default function BoardDetailPage() {
         isLoading,
         isError
     } = useBoardWithCardsQuery(params.shortLink as string)
-    const { mutate } = useBoardUpdateMutation()
+    const { mutate } = useBoardUpdateMutation(board?.workspaceId as string)
 
     const handleUpdateBoardName = useCallback(
         (newName: string) => {

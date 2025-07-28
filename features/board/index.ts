@@ -21,6 +21,8 @@ export * from './components/BoardMenuArchive'
 export * from './components/BoardMenuVisibility'
 export * from './components/BoardMenuBackgroundPicker'
 export * from './components/BoardChangeVisibility'
+export * from './components/BoardMenuLabel'
+export * from './components/BoardMenuLabelForm'
 
 // ** Constants
 export * from './constants'
