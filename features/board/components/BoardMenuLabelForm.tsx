@@ -22,26 +22,33 @@ import {
     FormLabel,
     FormMessage
 } from '@/components/ui/form'
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger
+} from '@/components/ui/tooltip'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { BoardCreateFormValues, boardCreateSchema, boardCreateState, useBoardCreateMutation } from '@/features/board'
+import { BoardCreateFormValues, BoardLabelCreateFormValues, boardLabelCreateSchema, boardLabelCreateState, LABEL_COLORS, LABEL_TONES, LabelTone, useBoardCreateMutation } from '@/features/board'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { Separator } from '@/components/ui/separator'
 
 interface Props {
-    workspaceId: string
+    boardId: string
 }
 
-export function BoardMenuLabelForm({ workspaceId }: Props) {
+export function BoardMenuLabelForm({ boardId }: Props) {
     const queryClient = useQueryClient()
     const [open, setOpen] = useState(false)
-    const form = useForm<BoardCreateFormValues>({
-        resolver: zodResolver(boardCreateSchema),
+    const form = useForm<BoardLabelCreateFormValues>({
+        resolver: zodResolver(boardLabelCreateSchema),
         defaultValues: {
-            ...boardCreateState,
-            workspaceId
+            ...boardLabelCreateState,
+            boardId
         }
     })
+    const [selected, setSelected] = useState<{ color: string; tone: LabelTone } | null>(null)
 
     const { mutate, isPending, isSuccess } = useBoardCreateMutation(
         ({ data }) => {
@@ -87,9 +94,43 @@ export function BoardMenuLabelForm({ workspaceId }: Props) {
                         <ScrollArea className="flex-1 min-h-0 overflow-y-auto">
                             <div className="grid gap-4 my-4 px-6">
                                 <div className="col-span-12">
+                                    <div className="col-span-12 flex items-center gap-2 min-h-8">
+                                        {selected ? (
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <span
+                                                        className={`
+                                                    inline-flex items-center px-3 py-2 rounded font-semibold text-xs w-full min-h-8
+                                                    ${LABEL_COLORS.find((c) => c.name === selected.color)?.[selected.tone] || ''}
+                                                    transition-colors duration-150
+                                                `}
+                                                    >
+                                                        {form.watch('name')}
+                                                    </span>
+                                                </TooltipTrigger>
+
+                                                <TooltipContent side="bottom">
+                                                    <span>
+                                                        Color: {selected.tone === 'normal'
+                                                            ? selected.color
+                                                            : `${selected.tone} ${selected.color}`}, title: {form.watch('name') || 'None'}
+                                                    </span>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        ) : (
+                                            <span className="inline-flex items-center px-3 py-2 min-h-8 rounded font-semibold w-full text-xs bg-gray-100 text-gray-400"></span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="col-span-12">
+                                    <Separator />
+                                </div>
+
+                                <div className="col-span-12">
                                     <FormField
                                         control={form.control}
-                                        name="title"
+                                        name="name"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Title</FormLabel>
@@ -105,15 +146,77 @@ export function BoardMenuLabelForm({ workspaceId }: Props) {
                                         )}
                                     />
                                 </div>
+
+                                <div className="col-span-12">
+                                    <FormField
+                                        control={form.control}
+                                        name="color"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Select a color</FormLabel>
+                                                <FormControl>
+                                                    <div className={`grid grid-cols-${LABEL_COLORS.length / 2} gap-2`}>
+                                                        {LABEL_TONES.map((tone) =>
+                                                            LABEL_COLORS.map((color) => {
+                                                                const checked =
+                                                                    selected?.color === color.name && selected?.tone === tone
+                                                                    
+                                                                return (
+                                                                    <Tooltip key={color.name + '-' + tone}>
+                                                                        <TooltipTrigger asChild>
+                                                                            <button
+                                                                                type="button"
+                                                                                aria-label={`${tone} ${color.name}`}
+                                                                                role="radio"
+                                                                                aria-checked={checked}
+                                                                                className={`
+                                                                                w-full h-9 rounded shadow transition border
+                                                                                ${color[tone]}
+                                                                                ${checked ? 'ring-2 ring-blue-500 border-blue-500' : 'border-transparent'}
+                                                                                focus:outline-none
+                                                                            `}
+                                                                                onClick={() => {
+                                                                                    setSelected({ color: color.name, tone })
+                                                                                    field.onChange({ color: color.name, tone })
+                                                                                }}
+                                                                            >
+                                                                                {checked && (
+                                                                                    <svg
+                                                                                        className="w-5 h-5 mx-auto text-white"
+                                                                                        fill="none"
+                                                                                        stroke="currentColor"
+                                                                                        strokeWidth={3}
+                                                                                        viewBox="0 0 24 24"
+                                                                                    >
+                                                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                                                                    </svg>
+                                                                                )}
+                                                                            </button>
+                                                                        </TooltipTrigger>
+
+                                                                        <TooltipContent side="bottom">
+                                                                            <p>{tone === 'normal' ? color.name : `${tone} ${color.name}`}</p>
+                                                                        </TooltipContent>
+                                                                    </Tooltip>
+                                                                )
+                                                            })
+                                                        )}
+                                                    </div>
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
                             </div>
                         </ScrollArea>
 
                         <DialogFooter className="py-4 border-t">
                             <DialogClose asChild>
-                                <Button variant="outline">Cancel</Button>
+                                <Button variant="outline" size="sm">Cancel</Button>
                             </DialogClose>
 
-                            <Button type="submit" disabled={form.formState.isSubmitting || isPending}>
+                            <Button type="submit" size="sm" disabled={form.formState.isSubmitting || isPending}>
                                 {isPending ? (
                                     <>
                                         <Loader2Icon className="animate-spin" />

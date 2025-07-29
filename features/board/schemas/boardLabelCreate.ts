@@ -1,30 +1,21 @@
 import { z } from 'zod'
-import { BOARD_VISIBILITY } from '@/features/board'
-
-const BOARD_VISIBILITY_VALUES = Object.values(BOARD_VISIBILITY) as [string, ...string[]]
+import { LABEL_COLOR_NAMES, LABEL_TONES } from '@/features/board'
 
 // ** Schema
 export const boardLabelCreateSchema = z.object({
-    name: z.string()
-        .trim()
-        .nonempty('Board name cannot be empty')
-        .min(1, 'Board name cannot be empty')
-        .max(100, 'Board name must be at most 100 characters'),
-    description: z.string().optional(),
-    coverImageUrl: z.string().optional(),
-    workspaceId: z.string(),
-    visibility: z.enum(BOARD_VISIBILITY_VALUES)
-
+    name: z.string().optional(),
+    color: z.enum(LABEL_COLOR_NAMES, { message: 'Invalid color' }),
+    tone: z.enum(LABEL_TONES, { message: 'Invalid tone' }),
+    boardId: z.string()
 })
 
 // ** State
-export const boardCreateState: z.infer<typeof boardCreateSchema> = {
+export const boardLabelCreateState: z.infer<typeof boardLabelCreateSchema> = {
     name: '',
-    description: '',
-    coverImageUrl: '',
-    workspaceId: '',
-    visibility: BOARD_VISIBILITY.PRIVATE
+    color: 'green',
+    tone: 'normal',
+    boardId: ''
 }
 
 // ** Types
-export type BoardCreateFormValues = z.infer<typeof boardCreateSchema>
+export type BoardLabelCreateFormValues = z.infer<typeof boardLabelCreateSchema>

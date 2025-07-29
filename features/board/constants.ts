@@ -215,3 +215,8 @@ export const LABEL_COLORS = [
         bold: 'bg-black text-white border border-gray-300'
     }
 ]
+
+export const LABEL_COLOR_NAMES = LABEL_COLORS.map((c) => c.name) as [string, ...string[]]
+export type LabelColor = typeof LABEL_COLOR_NAMES[number]
+export const LABEL_TONES = ['subtle', 'normal', 'bold'] as const
+export type LabelTone = typeof LABEL_TONES[number]
