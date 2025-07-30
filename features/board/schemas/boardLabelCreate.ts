@@ -3,6 +3,7 @@ import { LABEL_COLOR_NAMES, LABEL_TONES } from '@/features/board'
 
 // ** Schema
 export const boardLabelCreateSchema = z.object({
+    id: z.string().optional(),
     name: z.string().optional(),
     color: z.enum(LABEL_COLOR_NAMES, { message: 'Invalid color' }),
     tone: z.enum(LABEL_TONES, { message: 'Invalid tone' }),

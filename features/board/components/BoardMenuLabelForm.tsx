@@ -11,7 +11,7 @@ import {
     DialogTrigger
 } from '@/components/ui/dialog'
 import { Loader2Icon } from 'lucide-react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
 import {
     Form,
@@ -27,38 +27,90 @@ import {
     TooltipTrigger
 } from '@/components/ui/tooltip'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { BoardLabelCreateFormValues, boardLabelCreateSchema, boardLabelCreateState, LABEL_COLORS, LABEL_TONES, useBoardCreateLabelsMutation } from '@/features/board'
-import { useEffect, useState } from 'react'
+import { BoardLabelCreateFormValues, boardLabelCreateSchema, boardLabelCreateState, LABEL_COLORS, LABEL_TONES, LabelTone, useBoardCreateLabelsMutation, useBoardUpdateLabelMutation } from '@/features/board'
+import { memo, useEffect, useState } from 'react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { BoardDetailResponse } from '@/types'
 
 interface Props {
     board: BoardDetailResponse['data']
+    initialValues?: Partial<BoardLabelCreateFormValues>
+    onSave?: () => void
+    open?: boolean
+    setOpen?: (_v: boolean) => void
+    mode?: 'create' | 'edit'
 }
 
-export function BoardMenuLabelForm({ board }: Props) {
+const PreviewLabel = memo(function PreviewLabel({ color, tone, name }: { color: string, tone: LabelTone, name?: string }) {
+    return (
+        <span
+            className={`
+                inline-flex items-center px-3 py-2 rounded font-semibold text-xs w-full min-h-8
+                ${LABEL_COLORS.find((c) => c.name === color)?.[tone] || ''}
+                transition-colors duration-150
+            `}
+        >
+            {name}
+        </span>
+    )
+})
+
+export function BoardMenuLabelForm({
+    board,
+    initialValues,
+    onSave,
+    open: controlledOpen,
+    setOpen: setControlledOpen,
+    mode = 'create'
+}: Props) {
     const [open, setOpen] = useState(false)
+    const isOpen = controlledOpen !== undefined ? controlledOpen : open
+    const setIsOpen = setControlledOpen || setOpen
+
     const form = useForm<BoardLabelCreateFormValues>({
         resolver: zodResolver(boardLabelCreateSchema),
-        defaultValues: {
-            ...boardLabelCreateState,
-            boardId: board.id
+        defaultValues: initialValues
+            ? { ...boardLabelCreateState, boardId: board.id, ...initialValues }
+            : { ...boardLabelCreateState, boardId: board.id }
+    })
+
+    const { mutate: createMutate, isPending: isPendingCreate, isSuccess: isSuccessCreate } =
+        useBoardCreateLabelsMutation(board.shortLink, () => {
+            setIsOpen(false)
+            onSave?.()
+        })
+
+    const { mutate: updateMutate, isPending: isPendingUpdate, isSuccess: isSuccessUpdate } =
+        useBoardUpdateLabelMutation(board.shortLink, () => {
+            setIsOpen(false)
+            onSave?.()
+        })
+
+    const onSubmit = (values: BoardLabelCreateFormValues) => {
+        if (mode === 'edit' && initialValues?.id) {
+            updateMutate({ ...values, id: initialValues.id })
+        } else {
+            createMutate(values)
         }
-    })
-
-    const { mutate, isPending, isSuccess } = useBoardCreateLabelsMutation(board.shortLink, () => {
-        setOpen(false)
-    })
-
-    const onSubmit = (values: BoardLabelCreateFormValues) => mutate(values)
+    }
 
     useEffect(() => {
-        if (isSuccess) form.reset()
-    }, [isSuccess, form])
+        if (isSuccessCreate || isSuccessUpdate) form.reset()
+    }, [isSuccessCreate, isSuccessUpdate, form])
+
+    useEffect(() => {
+        if (isOpen && initialValues) {
+            form.reset({ ...boardLabelCreateState, boardId: board.id, ...initialValues })
+        }
+    }, [isOpen])
+
+    const color = useWatch({ control: form.control, name: 'color' })
+    const tone = useWatch({ control: form.control, name: 'tone' })
+    const name = useWatch({ control: form.control, name: 'name' })
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <Button
                     variant="secondary"
@@ -79,25 +131,14 @@ export function BoardMenuLabelForm({ board }: Props) {
                             <div className="grid gap-4 my-4 px-6">
                                 <div className="col-span-12">
                                     <div className="col-span-12 flex items-center gap-2 min-h-8">
-                                        {form.watch('color') ? (
+                                        {color ? (
                                             <Tooltip>
                                                 <TooltipTrigger asChild>
-                                                    <span
-                                                        className={`
-                                                    inline-flex items-center px-3 py-2 rounded font-semibold text-xs w-full min-h-8
-                                                    ${LABEL_COLORS.find((c) => c.name === form.watch('color'))?.[form.watch('tone')] || ''}
-                                                    transition-colors duration-150
-                                                `}
-                                                    >
-                                                        {form.watch('name')}
-                                                    </span>
+                                                    <PreviewLabel color={color} tone={tone} name={name} />
                                                 </TooltipTrigger>
-
                                                 <TooltipContent side="bottom">
                                                     <span>
-                                                        Color: {form.watch('tone') === 'normal'
-                                                            ? form.watch('color')
-                                                            : `${form.watch('tone')} ${form.watch('color')}`}, title: {form.watch('name') || 'None'}
+                                                        Color: {tone === 'normal' ? color : `${tone} ${color}`}, title: {name || 'None'}
                                                     </span>
                                                 </TooltipContent>
                                             </Tooltip>
@@ -200,13 +241,12 @@ export function BoardMenuLabelForm({ board }: Props) {
                                 <Button variant="outline" size="sm">Cancel</Button>
                             </DialogClose>
 
-                            <Button type="submit" size="sm" disabled={form.formState.isSubmitting || isPending}>
-                                {isPending ? (
-                                    <>
-                                        <Loader2Icon className="animate-spin" />
-                                        Loading...
-                                    </>
-                                ) : 'Create Label'}
+                            <Button type="submit" size="sm"
+                                disabled={form.formState.isSubmitting || isPendingCreate || isPendingUpdate}
+                            >
+                                {(isPendingCreate || isPendingUpdate)
+                                    ? (<><Loader2Icon className="animate-spin" />Loading...</>)
+                                    : (mode === 'edit' ? 'Save Changes' : 'Create Label')}
                             </Button>
                         </DialogFooter>
                     </form>

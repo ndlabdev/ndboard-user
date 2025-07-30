@@ -6,6 +6,7 @@ export * from './hooks/useBoardUpdateMutation'
 export * from './hooks/useBoardFavoriteMutation'
 export * from './hooks/useBoardUnFavoriteMutation'
 export * from './hooks/useBoardCreateLabelsMutation'
+export * from './hooks/useBoardUpdateLabelMutation'
 
 // ** Components
 export * from './components/BoardList'

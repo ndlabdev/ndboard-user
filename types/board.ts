@@ -171,6 +171,8 @@ export interface BoardCreateLabelsResponse {
     }
 }
 
+export type BoardUpdateLabelResponse = BoardCreateLabelsResponse
+
 export interface BoardUpdateResponse {
     data: {
         name: string

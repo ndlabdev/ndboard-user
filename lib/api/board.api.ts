@@ -47,3 +47,10 @@ export function boardCreateLabelsApi(payload: BoardLabelCreateFormValues): Promi
         body: JSON.stringify(payload)
     })
 }
+
+export function boardUpdateLabelApi(payload: BoardLabelCreateFormValues): Promise<BoardCreateLabelsResponse> {
+    return apiFetch<BoardCreateLabelsResponse>('/boards/labels', {
+        method: 'PATCH',
+        body: JSON.stringify(payload)
+    })
+}

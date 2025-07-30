@@ -7,8 +7,9 @@ import {
     DropdownMenuSubTrigger
 } from '@/components/ui/dropdown-menu'
 import { BoardMenuLabelForm, LABEL_COLORS } from '@/features/board'
-import { Tag } from 'lucide-react'
+import { Edit, Tag } from 'lucide-react'
 import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 
 interface Props {
     board: BoardDetailResponse['data']
@@ -25,6 +26,7 @@ export const BoardMenuLabel = memo(function BoardMenuLabel({
 }: Props) {
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
     const [search, setSearch] = useState<string>('')
+    const [editingLabel, setEditingLabel] = useState<BoardDetailResponse['data']['labels'][number] | null>(null)
 
     const filteredLabels = useMemo(() => {
         if (!search.trim()) return board.labels
@@ -66,11 +68,31 @@ export const BoardMenuLabel = memo(function BoardMenuLabel({
                                         >
                                             {item.name}
                                         </span>
+
+                                        <Button
+                                            size="sm"
+                                            variant="secondary"
+                                            className="h-7 w-7 rounded-sm"
+                                            onClick={() => setEditingLabel(item)}
+                                        >
+                                            <Edit className="size-3.5" />
+                                        </Button>
                                     </div>
                                 </div>
                             ))}
 
                             <BoardMenuLabelForm board={board} />
+
+                            {editingLabel && (
+                                <BoardMenuLabelForm
+                                    board={board}
+                                    mode="edit"
+                                    initialValues={editingLabel}
+                                    open={!!editingLabel}
+                                    setOpen={(val) => { if (!val) setEditingLabel(null) }}
+                                    onSave={() => setEditingLabel(null)}
+                                />
+                            )}
                         </div>
                     </div>
                 </DropdownMenuSubContent>
