@@ -161,6 +161,16 @@ export interface BoardCreateResponse {
     }
 }
 
+export interface BoardCreateLabelsResponse {
+    data: {
+        name: string;
+        id: string;
+        boardId: string;
+        color: string;
+        tone: string;
+    }
+}
+
 export interface BoardUpdateResponse {
     data: {
         name: string

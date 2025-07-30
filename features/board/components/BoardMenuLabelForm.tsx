@@ -13,7 +13,6 @@ import {
 import { Loader2Icon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
-import { toast } from 'sonner'
 import {
     Form,
     FormControl,
@@ -28,46 +27,31 @@ import {
     TooltipTrigger
 } from '@/components/ui/tooltip'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { BoardCreateFormValues, BoardLabelCreateFormValues, boardLabelCreateSchema, boardLabelCreateState, LABEL_COLORS, LABEL_TONES, LabelTone, useBoardCreateMutation } from '@/features/board'
-import { useQueryClient } from '@tanstack/react-query'
+import { BoardLabelCreateFormValues, boardLabelCreateSchema, boardLabelCreateState, LABEL_COLORS, LABEL_TONES, useBoardCreateLabelsMutation } from '@/features/board'
 import { useEffect, useState } from 'react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
+import { BoardDetailResponse } from '@/types'
 
 interface Props {
-    boardId: string
+    board: BoardDetailResponse['data']
 }
 
-export function BoardMenuLabelForm({ boardId }: Props) {
-    const queryClient = useQueryClient()
+export function BoardMenuLabelForm({ board }: Props) {
     const [open, setOpen] = useState(false)
     const form = useForm<BoardLabelCreateFormValues>({
         resolver: zodResolver(boardLabelCreateSchema),
         defaultValues: {
             ...boardLabelCreateState,
-            boardId
+            boardId: board.id
         }
     })
-    const [selected, setSelected] = useState<{ color: string; tone: LabelTone } | null>(null)
 
-    const { mutate, isPending, isSuccess } = useBoardCreateMutation(
-        ({ data }) => {
-            toast.success('Board Created Successfully', {
-                description: 'Your new board is ready. Start organizing your tasks and collaborate with your team.'
-            })
+    const { mutate, isPending, isSuccess } = useBoardCreateLabelsMutation(board.shortLink, () => {
+        setOpen(false)
+    })
 
-            setOpen(false)
-            queryClient.invalidateQueries({ queryKey: ['boards'] })
-        }, (error) => {
-            const msg =
-                (error as { message?: string })?.message ||
-                'Create Board Failed'
-
-            toast.error(msg)
-        }
-    )
-
-    const onSubmit = (values: BoardCreateFormValues) => mutate(values)
+    const onSubmit = (values: BoardLabelCreateFormValues) => mutate(values)
 
     useEffect(() => {
         if (isSuccess) form.reset()
@@ -95,13 +79,13 @@ export function BoardMenuLabelForm({ boardId }: Props) {
                             <div className="grid gap-4 my-4 px-6">
                                 <div className="col-span-12">
                                     <div className="col-span-12 flex items-center gap-2 min-h-8">
-                                        {selected ? (
+                                        {form.watch('color') ? (
                                             <Tooltip>
                                                 <TooltipTrigger asChild>
                                                     <span
                                                         className={`
                                                     inline-flex items-center px-3 py-2 rounded font-semibold text-xs w-full min-h-8
-                                                    ${LABEL_COLORS.find((c) => c.name === selected.color)?.[selected.tone] || ''}
+                                                    ${LABEL_COLORS.find((c) => c.name === form.watch('color'))?.[form.watch('tone')] || ''}
                                                     transition-colors duration-150
                                                 `}
                                                     >
@@ -111,9 +95,9 @@ export function BoardMenuLabelForm({ boardId }: Props) {
 
                                                 <TooltipContent side="bottom">
                                                     <span>
-                                                        Color: {selected.tone === 'normal'
-                                                            ? selected.color
-                                                            : `${selected.tone} ${selected.color}`}, title: {form.watch('name') || 'None'}
+                                                        Color: {form.watch('tone') === 'normal'
+                                                            ? form.watch('color')
+                                                            : `${form.watch('tone')} ${form.watch('color')}`}, title: {form.watch('name') || 'None'}
                                                     </span>
                                                 </TooltipContent>
                                             </Tooltip>
@@ -159,7 +143,7 @@ export function BoardMenuLabelForm({ boardId }: Props) {
                                                         {LABEL_TONES.map((tone) =>
                                                             LABEL_COLORS.map((color) => {
                                                                 const checked =
-                                                                    selected?.color === color.name && selected?.tone === tone
+                                                                    form.watch('color') === color.name && form.watch('tone') === tone
                                                                     
                                                                 return (
                                                                     <Tooltip key={color.name + '-' + tone}>
@@ -176,8 +160,8 @@ export function BoardMenuLabelForm({ boardId }: Props) {
                                                                                 focus:outline-none
                                                                             `}
                                                                                 onClick={() => {
-                                                                                    setSelected({ color: color.name, tone })
-                                                                                    field.onChange({ color: color.name, tone })
+                                                                                    field.onChange(color.name)
+                                                                                    form.setValue('tone', tone)
                                                                                 }}
                                                                             >
                                                                                 {checked && (

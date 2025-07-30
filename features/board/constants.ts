@@ -212,7 +212,7 @@ export const LABEL_COLORS = [
         name: 'black',
         subtle: 'bg-gray-700 text-white',
         normal: 'bg-black text-white',
-        bold: 'bg-black text-white border border-gray-300'
+        bold: 'bg-black text-white'
     }
 ]
 
