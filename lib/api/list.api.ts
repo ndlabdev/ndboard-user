@@ -39,7 +39,7 @@ export function listCopyApi(payload: ListCopyFormValues): Promise<ListCopyRespon
     })
 }
 
-export function listArchiveApi(payload: { id: string }) {
+export function listArchiveApi(payload: { id: string }): Promise<ListUpdateResponse> {
     return apiFetch(`/lists/${payload.id}/archive`, {
         method: 'PATCH'
     })

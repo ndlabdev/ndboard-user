@@ -43,7 +43,7 @@ export const BoardMenuArchiveList = memo(function BoardMenuArchiveList({
     const {
         data,
         isLoading
-    } = useListGetArchiveListQuery(board.id, page, pageSize, debounced)
+    } = useListGetArchiveListQuery(board.id, page, pageSize, debounced, isOpen)
 
     const handleSwitchType = () => {
         setType((prev) => (prev === 'list' ? 'card' : 'list'))

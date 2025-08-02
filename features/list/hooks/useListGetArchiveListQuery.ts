@@ -6,11 +6,12 @@ export function useListGetArchiveListQuery(
     boardId: string,
     page = 1,
     pageSize = 10,
-    query = ''
+    query = '',
+    enabled = true
 ): UseQueryResult<ListGetArchiveResponse, unknown> {
     return useQuery({
         queryKey: ['lists', 'archived', boardId, page, pageSize, query],
         queryFn: () => listGetArchiveListApi(boardId, page, pageSize, query),
-        enabled: !!boardId
+        enabled: !!boardId && enabled
     })
 }
