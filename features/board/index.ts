@@ -19,12 +19,12 @@ export * from './components/BoardNameEditable'
 export * from './components/BoardStar'
 export * from './components/BoardMenu'
 export * from './components/BoardMenuStar'
-export * from './components/BoardMenuArchive'
 export * from './components/BoardMenuVisibility'
 export * from './components/BoardMenuBackgroundPicker'
 export * from './components/BoardChangeVisibility'
 export * from './components/BoardMenuLabel'
 export * from './components/BoardMenuLabelForm'
+export * from './components/BoardMenuArchiveList'
 
 // ** Constants
 export * from './constants'

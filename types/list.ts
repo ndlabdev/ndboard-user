@@ -1,3 +1,4 @@
+import { PaginateMeta } from './api-common'
 import { BoardListsResponse } from './board'
 
 export interface ListGetListItem {
@@ -11,6 +12,11 @@ export interface ListGetListItem {
 
 export interface ListGetListResponse {
     data: ListGetListItem[]
+}
+
+export interface ListGetArchiveResponse {
+    data: ListGetListItem[]
+    meta: PaginateMeta
 }
 
 export interface ListCreateResponse {

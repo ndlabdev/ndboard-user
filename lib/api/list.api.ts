@@ -1,5 +1,5 @@
 import { apiFetch } from '@/lib/fetcher'
-import type { ListGetListResponse, ListCreateResponse, ListUpdateResponse, ListCopyResponse, ListMoveResponse, BoardListsResponse } from '@/types'
+import type { ListGetListResponse, ListCreateResponse, ListUpdateResponse, ListCopyResponse, ListMoveResponse, BoardListsResponse, ListGetArchiveResponse } from '@/types'
 import { ListReorderFormValues, ListCreateFormValues, ListUpdateFormValues, ListCopyFormValues, ListMoveFormValues } from '@/features/list'
 import { ListMoveAllCardsFormValues } from '@/features/list/schemas/moveAllCards'
 
@@ -68,5 +68,21 @@ export function listMoveAllCardsApi(payload: ListMoveAllCardsFormValues): Promis
     return apiFetch<ListMoveAllCardsFormValues>(`/lists/${payload.id}/move-all-cards`, {
         method: 'PATCH',
         body: JSON.stringify(payload)
+    })
+}
+
+export function listGetArchiveListApi(
+    boardId: string,
+    page = 1,
+    pageSize = 10,
+    q = ''
+): Promise<ListGetArchiveResponse> {
+    return apiFetch<ListGetArchiveResponse>('/lists/archived', {
+        query: {
+            boardId,
+            page,
+            pageSize,
+            q
+        }
     })
 }
