@@ -24,6 +24,7 @@ export interface BoardListResponse {
         updatedById: string
         visibility: string
         coverImageUrl: string | null
+        isFavorite: boolean
         isTemplate: boolean
         isArchived: boolean
         archivedAt: Date | null

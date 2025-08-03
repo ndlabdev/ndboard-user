@@ -7,7 +7,7 @@ import {
 
 import { BoardCreateFirst, BoardSkeleton, useBoardGetListQuery } from '@/features/board'
 import { useRouter } from '@bprogress/next/app'
-import { User } from 'lucide-react'
+import { Star, User } from 'lucide-react'
 
 interface Props {
     workspaceId: string
@@ -27,18 +27,24 @@ export function BoardList({ workspaceId }: Props) {
                     className="py-0 rounded-2xl gap-0 cursor-pointer"
                     onClick={() => router.push(`/b/${board.shortLink}/${board.slug}`)}
                 >
-                    <div
-                        className="h-28 w-full rounded-t-xl"
-                        style={
-                            !board.coverImageUrl?.startsWith('linear-gradient')
-                                ? {
-                                    backgroundImage: `url(${board.coverImageUrl})`,
-                                    backgroundSize: 'cover',
-                                    backgroundPosition: 'center'
-                                }
-                                : { background: board.coverImageUrl }
-                        }
-                    />
+                    <div className="relative h-28 w-full rounded-t-xl overflow-hidden">
+                        <div
+                            className="absolute inset-0"
+                            style={
+                                !board.coverImageUrl?.startsWith('linear-gradient')
+                                    ? {
+                                        backgroundImage: `url(${board.coverImageUrl})`,
+                                        backgroundSize: 'cover',
+                                        backgroundPosition: 'center'
+                                    }
+                                    : { background: board.coverImageUrl }
+                            }
+                        />
+
+                        {board.isFavorite && (
+                            <Star className="absolute top-2 right-2 size-5 text-yellow-400 drop-shadow" fill="currentColor" />
+                        )}
+                    </div>
 
                     <CardContent className="px-0">
                         <div className="p-4 flex flex-col gap-1">
