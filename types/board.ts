@@ -38,6 +38,7 @@ export interface BoardListsResponse {
     id: string;
     boardId: string;
     color: string;
+    order: number;
     isFold: boolean;
 }
 

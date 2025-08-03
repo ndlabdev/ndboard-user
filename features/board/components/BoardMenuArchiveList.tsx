@@ -15,7 +15,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { Input } from '@/components/ui/input'
 import { BoardDetailResponse } from '@/types'
-import { useListGetArchiveListQuery } from '@/features/list'
+import { useListGetArchiveListQuery, useListRestoreMutation } from '@/features/list'
 import { useCardGetArchiveListQuery } from '@/features/card'
 
 interface Props {
@@ -57,6 +57,7 @@ export const BoardMenuArchiveList = memo(function BoardMenuArchiveList({
         data: cardData,
         isLoading: isLoadingCard
     } = useCardGetArchiveListQuery(board.id, page, pageSize, debounced, isOpen && type === 'card')
+    const restoreMutation = useListRestoreMutation(board.shortLink)
 
     const isLoading = type === 'list' ? isLoadingList : isLoadingCard
     const data = type === 'list' ? listData : cardData
@@ -125,7 +126,18 @@ export const BoardMenuArchiveList = memo(function BoardMenuArchiveList({
                                             <div className="flex items-center justify-between">
                                                 <span>{item.name}</span>
                                                 <div className="flex gap-1">
-                                                    <Button size="sm" variant="secondary" className="h-8">
+                                                    <Button
+                                                        size="sm"
+                                                        variant="secondary"
+                                                        className="h-8"
+                                                        disabled={restoreMutation.isPending}
+                                                        onClick={() =>
+                                                            restoreMutation.mutate({
+                                                                id: item.id,
+                                                                index: 0
+                                                            })
+                                                        }
+                                                    >
                                                         <RotateCcw className="size-4" />
                                                         Restore
                                                     </Button>

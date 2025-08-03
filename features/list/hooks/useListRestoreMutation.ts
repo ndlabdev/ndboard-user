@@ -8,12 +8,12 @@ export function useListRestoreMutation(shortLink: string) {
 
     return useMutation({
         mutationFn: listRestoreApi,
-        onSuccess: (data: ListUpdateResponse, variables) => {
+        onSuccess: (data: ListUpdateResponse) => {
             queryClient.setQueryData(['boards', shortLink], (old: BoardDetailResponse | undefined) => {
                 if (!old?.data?.lists) return old
 
-                const lists = [...old.data.lists]
-                lists.splice(variables.index, 0, data.data)
+                const lists = [...old.data.lists, data.data]
+                lists.sort((a, b) => a.order - b.order)
 
                 return {
                     ...old,
@@ -22,6 +22,9 @@ export function useListRestoreMutation(shortLink: string) {
                         lists
                     }
                 }
+            })
+            queryClient.invalidateQueries({
+                queryKey: ['lists', 'archived', data.data.boardId]
             })
             toast.success('List restored successfully!', {
                 description: 'This list has been restored to your board.'
