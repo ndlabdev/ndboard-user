@@ -82,7 +82,10 @@ export const ListActions = memo(function ListActions({
                         column={column}
                     />
 
-                    <ListArchiveAllCards column={column} />
+                    <ListArchiveAllCards
+                        column={column}
+                        setIsMenuOpen={setIsMenuOpen}
+                    />
                 </DropdownMenuGroup>
             </DropdownMenuContent>
         </DropdownMenu>

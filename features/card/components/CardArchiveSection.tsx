@@ -1,10 +1,21 @@
 'use client'
 
-import { memo, useMemo } from 'react'
+import { memo, useMemo, useState } from 'react'
 import { RotateCcw, Trash } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { useCardGetArchiveListQuery, useCardRestoreMutation } from '@/features/card'
+import { useCardDeleteMutation, useCardGetArchiveListQuery, useCardRestoreMutation } from '@/features/card'
+import {
+    AlertDialog,
+    AlertDialogTrigger,
+    AlertDialogContent,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogCancel,
+    AlertDialogAction
+} from '@/components/ui/alert-dialog'
 import {
     Pagination,
     PaginationContent,
@@ -34,6 +45,9 @@ export const CardArchiveSection = memo(function CardArchiveSection({
         isLoading
     } = useCardGetArchiveListQuery(boardId, page, pageSize, search, true)
     const restoreMutation = useCardRestoreMutation()
+    
+    const [selectedListId, setSelectedListId] = useState<string | null>(null)
+    const deleteMutation = useCardDeleteMutation()
 
     const cards = useMemo(() => data?.data ?? [], [data])
 
@@ -45,7 +59,7 @@ export const CardArchiveSection = memo(function CardArchiveSection({
                 )}
 
                 {!isLoading && cards.length === 0 && (
-                    <span className="text-muted-foreground">
+                    <span className="text-center text-muted-foreground">
                         No archived cards found.
                     </span>
                 )}
@@ -68,9 +82,42 @@ export const CardArchiveSection = memo(function CardArchiveSection({
                                     Restore
                                 </Button>
 
-                                <Button size="sm" variant="secondary" className="h-8">
-                                    <Trash className="size-4" />
-                                </Button>
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button
+                                            size="sm"
+                                            variant="secondary"
+                                            className="h-8"
+                                            onClick={() => setSelectedListId(item.id)}
+                                        >
+                                            <Trash className="size-4" />
+                                        </Button>
+                                    </AlertDialogTrigger>
+
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Delete card</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                This action cannot be undone. Are you sure you want to permanently delete this card?
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction
+                                                onClick={() => {
+                                                    if (selectedListId) {
+                                                        deleteMutation.mutate({ id: selectedListId })
+                                                        setSelectedListId(null)
+                                                    }
+                                                }}
+                                                disabled={deleteMutation.isPending}
+                                            >
+                                                Confirm
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
                             </div>
                         </div>
 

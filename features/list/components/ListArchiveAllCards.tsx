@@ -1,6 +1,6 @@
 import { useListArchiveAllCardsMutation } from '@/features/list'
 import { BoardListsResponse } from '@/types'
-import { memo } from 'react'
+import { Dispatch, memo, SetStateAction } from 'react'
 import { Loader2Icon } from 'lucide-react'
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import {
@@ -17,12 +17,14 @@ import {
 
 interface Props {
     column: BoardListsResponse
+    setIsMenuOpen: Dispatch<SetStateAction<boolean>>
 }
 
 export const ListArchiveAllCards = memo(function ListColumn({
-    column
+    column,
+    setIsMenuOpen
 }: Props) {
-    const { mutate, isPending } = useListArchiveAllCardsMutation(column)
+    const { mutate, isPending } = useListArchiveAllCardsMutation(column, setIsMenuOpen)
 
     const handleArchiveAllCards = () => mutate({ id: column.id })
 

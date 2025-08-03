@@ -48,3 +48,9 @@ export function cardRestoreApi(payload: { id: string }): Promise<CardCreateRespo
         method: 'PATCH'
     })
 }
+
+export function cardDeleteApi(payload: { id: string }): Promise<CardCreateResponse> {
+    return apiFetch(`/cards/${payload.id}`, {
+        method: 'DELETE'
+    })
+}

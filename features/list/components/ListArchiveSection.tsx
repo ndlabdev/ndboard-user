@@ -1,10 +1,21 @@
 'use client'
 
-import { memo, useMemo } from 'react'
+import { memo, useMemo, useState } from 'react'
 import { RotateCcw, Trash } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { useListGetArchiveListQuery, useListRestoreMutation } from '@/features/list'
+import { useListDeleteMutation, useListGetArchiveListQuery, useListRestoreMutation } from '@/features/list'
+import {
+    AlertDialog,
+    AlertDialogTrigger,
+    AlertDialogContent,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogCancel,
+    AlertDialogAction
+} from '@/components/ui/alert-dialog'
 import {
     Pagination,
     PaginationContent,
@@ -36,6 +47,9 @@ export const ListArchiveSection = memo(function ListArchiveSection({
         isLoading
     } = useListGetArchiveListQuery(boardId, page, pageSize, search, true)
     const restoreMutation = useListRestoreMutation(boardShortLink)
+    
+    const [selectedListId, setSelectedListId] = useState<string | null>(null)
+    const deleteMutation = useListDeleteMutation()
 
     const lists = useMemo(() => data?.data ?? [], [data])
 
@@ -70,9 +84,42 @@ export const ListArchiveSection = memo(function ListArchiveSection({
                                     Restore
                                 </Button>
 
-                                <Button size="sm" variant="secondary" className="h-8">
-                                    <Trash className="size-4" />
-                                </Button>
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button
+                                            size="sm"
+                                            variant="secondary"
+                                            className="h-8"
+                                            onClick={() => setSelectedListId(item.id)}
+                                        >
+                                            <Trash className="size-4" />
+                                        </Button>
+                                    </AlertDialogTrigger>
+
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Delete list</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                This action cannot be undone. Are you sure you want to permanently delete this list?
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction
+                                                onClick={() => {
+                                                    if (selectedListId) {
+                                                        deleteMutation.mutate({ id: selectedListId })
+                                                        setSelectedListId(null)
+                                                    }
+                                                }}
+                                                disabled={deleteMutation.isPending}
+                                            >
+                                                Confirm
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
                             </div>
                         </div>
 

@@ -86,3 +86,9 @@ export function listGetArchiveListApi(
         }
     })
 }
+
+export function listDeleteApi(payload: { id: string }): Promise<ListUpdateResponse> {
+    return apiFetch(`/lists/${payload.id}`, {
+        method: 'DELETE'
+    })
+}
