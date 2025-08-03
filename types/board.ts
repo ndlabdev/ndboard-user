@@ -200,6 +200,7 @@ export interface BoardUpdateResponse {
 
 export interface BoardFavoriteResponse {
     data: {
+        workspaceId: string;
         boardId: string;
         shortLink: string;
         userId: string;

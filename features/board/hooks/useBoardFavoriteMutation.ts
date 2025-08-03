@@ -9,6 +9,7 @@ export function useBoardFavoriteMutation(): UseMutationResult<BoardFavoriteRespo
     return useMutation<BoardFavoriteResponse, unknown, BoardFavoriteFormValues>({
         mutationFn: boardFavoriteApi,
         onSuccess: (_data, variables) => {
+            queryClient.invalidateQueries({ queryKey: ['boards', _data.data.workspaceId] })
             queryClient.setQueryData(['boards', variables.shortLink], (old: BoardDetailResponse) => ({
                 ...old,
                 data: {
