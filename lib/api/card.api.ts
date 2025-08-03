@@ -26,3 +26,19 @@ export function cardBulkReorderApi(payload: CardBulkReorderFormValues) {
         body: JSON.stringify(payload)
     })
 }
+
+export function cardGetArchiveListApi(
+    boardId: string,
+    page = 1,
+    pageSize = 10,
+    q = ''
+): Promise<ListGetArchiveResponse> {
+    return apiFetch<ListGetArchiveResponse>('/cards/archived', {
+        query: {
+            boardId,
+            page,
+            pageSize,
+            q
+        }
+    })
+}

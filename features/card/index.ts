@@ -10,6 +10,7 @@ export * from './components/CardCreateInList'
 export * from './hooks/useCardCreateMutation'
 export * from './hooks/useCardReorderMutation'
 export * from './hooks/useCardBulkReorder'
+export * from './hooks/useCardGetArchiveListQuery'
 
 // ** Schemas
 export * from './schemas/create'

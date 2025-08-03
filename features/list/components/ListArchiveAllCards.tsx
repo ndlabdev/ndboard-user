@@ -3,7 +3,6 @@ import { BoardListsResponse } from '@/types'
 import { memo } from 'react'
 import { Loader2Icon } from 'lucide-react'
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
-import { toast } from 'sonner'
 import {
     AlertDialog,
     AlertDialogTrigger,
@@ -23,11 +22,7 @@ interface Props {
 export const ListArchiveAllCards = memo(function ListColumn({
     column
 }: Props) {
-    const { mutate, isPending } = useListArchiveAllCardsMutation(() => {
-        toast.success(`All cards in list "${column.name}" have been archived!`)
-    }, () => {
-        toast.error('Failed to archive all cards. Please try again.')
-    })
+    const { mutate, isPending } = useListArchiveAllCardsMutation(column)
 
     const handleArchiveAllCards = () => mutate({ id: column.id })
 

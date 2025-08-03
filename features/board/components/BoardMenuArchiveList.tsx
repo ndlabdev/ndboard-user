@@ -16,6 +16,7 @@ import { Separator } from '@/components/ui/separator'
 import { Input } from '@/components/ui/input'
 import { BoardDetailResponse } from '@/types'
 import { useListGetArchiveListQuery } from '@/features/list'
+import { useCardGetArchiveListQuery } from '@/features/card'
 
 interface Props {
     board: BoardDetailResponse['data']
@@ -47,14 +48,18 @@ export const BoardMenuArchiveList = memo(function BoardMenuArchiveList({
         setPage(1)
     }, [debounced, type])
 
-    const { data, isLoading } = useListGetArchiveListQuery(
-        board.id,
-        page,
-        pageSize,
-        debounced,
-        isOpen
-    )
+    const {
+        data: listData,
+        isLoading: isLoadingList
+    } = useListGetArchiveListQuery(board.id, page, pageSize, debounced, isOpen && type === 'list')
 
+    const {
+        data: cardData,
+        isLoading: isLoadingCard
+    } = useCardGetArchiveListQuery(board.id, page, pageSize, debounced, isOpen && type === 'card')
+
+    const isLoading = type === 'list' ? isLoadingList : isLoadingCard
+    const data = type === 'list' ? listData : cardData
     const hasMore = page < (data?.meta.totalPages ?? 0)
 
     const handleSwitchType = () => {
@@ -63,11 +68,7 @@ export const BoardMenuArchiveList = memo(function BoardMenuArchiveList({
         setDebounced('')
     }
 
-    const archivedItems = useMemo(() => {
-        if (type === 'list') return data?.data ?? []
-
-        return []
-    }, [data, type])
+    const archivedItems = useMemo(() => data?.data ?? [], [data])
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
