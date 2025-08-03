@@ -42,8 +42,7 @@ export function useListArchiveMutation(
                     onClick: () => {
                         if (archivedIndex !== null) {
                             restoreMutation.mutate({
-                                id: listId,
-                                index: archivedIndex
+                                id: listId
                             })
                         }
                     }

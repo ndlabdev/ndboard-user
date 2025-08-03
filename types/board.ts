@@ -47,6 +47,7 @@ export interface BoardCardsResponse {
     name: string;
     description: string | null;
     listId: string;
+    boardId: string;
     order: number;
     dueDate: Date | null;
     isArchived: boolean;

@@ -45,7 +45,7 @@ export function listArchiveApi(payload: { id: string }): Promise<ListUpdateRespo
     })
 }
 
-export function listRestoreApi(payload: { id: string, index: number }): Promise<{ data: BoardListsResponse }> {
+export function listRestoreApi(payload: { id: string }): Promise<{ data: BoardListsResponse }> {
     return apiFetch(`/lists/${payload.id}/restore`, {
         method: 'PATCH'
     })

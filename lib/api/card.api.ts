@@ -32,13 +32,19 @@ export function cardGetArchiveListApi(
     page = 1,
     pageSize = 10,
     q = ''
-): Promise<ListGetArchiveResponse> {
-    return apiFetch<ListGetArchiveResponse>('/cards/archived', {
+): Promise<BoardCardsResponse> {
+    return apiFetch<BoardCardsResponse>('/cards/archived', {
         query: {
             boardId,
             page,
             pageSize,
             q
         }
+    })
+}
+
+export function cardRestoreApi(payload: { id: string }): Promise<CardCreateResponse> {
+    return apiFetch(`/cards/${payload.id}/restore`, {
+        method: 'PATCH'
     })
 }

@@ -9,6 +9,7 @@ export * from './components/ListMove'
 export * from './components/ListMoveAllCards'
 export * from './components/ListFold'
 export * from './components/ListActions'
+export * from './components/ListArchiveSection'
 
 // ** Hooks
 export * from './hooks/useListGetListQuery'
