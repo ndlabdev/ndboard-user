@@ -11,11 +11,15 @@ import { Star, User } from 'lucide-react'
 
 interface Props {
     workspaceId: string
+    isStarred?: boolean
 }
 
-export function BoardList({ workspaceId }: Props) {
+export function BoardList({
+    workspaceId,
+    isStarred = false
+}: Props) {
     const router = useRouter()
-    const { data, isLoading } = useBoardGetListQuery(workspaceId)
+    const { data, isLoading } = useBoardGetListQuery(workspaceId, isStarred)
 
     if (isLoading) return <BoardSkeleton />
 
@@ -65,7 +69,9 @@ export function BoardList({ workspaceId }: Props) {
                 </Card>
             ))}
 
-            <BoardCreateFirst workspaceId={workspaceId} />
+            {!isStarred && (
+                <BoardCreateFirst workspaceId={workspaceId} />
+            )}
         </div>
     )
 }

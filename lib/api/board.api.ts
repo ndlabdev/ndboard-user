@@ -2,11 +2,14 @@ import { apiFetch } from '@/lib/fetcher'
 import { BoardCreateFormValues, BoardFavoriteFormValues, BoardLabelCreateFormValues, BoardUpdateFormValues } from '@/features/board'
 import type { BoardListResponse, BoardDetailResponse, BoardCreateResponse, BoardUpdateResponse, BoardFavoriteResponse, BoardCreateLabelsResponse } from '@/types'
 
-export function boardGetListApi(workspaceId: string): Promise<BoardListResponse> {
+export function boardGetListApi(workspaceId: string, isStarred = false): Promise<BoardListResponse> {
     return apiFetch<BoardListResponse>('/boards', {
         query: {
             workspaceId,
-            pageSize: 30
+            pageSize: 30,
+            ...(isStarred ? {
+                isStarred: true
+            } : {})
         }
     })
 }

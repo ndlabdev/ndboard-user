@@ -34,6 +34,11 @@ export default function BoardPage() {
             <Separator />
 
             <div>
+                <h2 className="text-xl font-bold mb-4">Starred Boards</h2>
+                <BoardList workspaceId={workspace.id} isStarred />
+            </div>
+
+            <div>
                 <h2 className="text-xl font-bold mb-4">Your Boards</h2>
                 <BoardList workspaceId={workspace.id} />
             </div>
