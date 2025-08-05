@@ -14,8 +14,10 @@ export * from './hooks/useCardBulkReorder'
 export * from './hooks/useCardGetArchiveListQuery'
 export * from './hooks/useCardRestoreMutation'
 export * from './hooks/useCardDeleteMutation'
+export * from './hooks/useCardUpdateMutation'
 
 // ** Schemas
 export * from './schemas/create'
 export * from './schemas/reorder'
 export * from './schemas/bulk-reorder'
+export * from './schemas/update'

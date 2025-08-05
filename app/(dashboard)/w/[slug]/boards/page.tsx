@@ -22,7 +22,7 @@ export default function BoardPage() {
     }
 
     return (
-        <section className="flex flex-col gap-4 px-4 overflow-y-auto">
+        <section className="flex flex-col gap-4 px-4 overflow-y-auto pb-4">
             <WorkspaceHeader
                 id={workspace.id}
                 slug={workspace.slug}
@@ -33,15 +33,13 @@ export default function BoardPage() {
 
             <Separator />
 
-            <div>
-                <h2 className="text-xl font-bold mb-4">Starred Boards</h2>
-                <BoardList workspaceId={workspace.id} isStarred />
-            </div>
+            <BoardList
+                title='Starred Boards'
+                workspaceId={workspace.id}
+                isStarred
+            />
 
-            <div>
-                <h2 className="text-xl font-bold mb-4">Your Boards</h2>
-                <BoardList workspaceId={workspace.id} />
-            </div>
+            <BoardList workspaceId={workspace.id} />
         </section>
     )
 }

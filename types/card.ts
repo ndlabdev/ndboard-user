@@ -49,3 +49,20 @@ export interface CardGetListResponse {
 export interface CardCreateResponse {
     data: BoardCardsResponse
 }
+
+export interface CardUpdateResponse {
+    data: {
+        name: string;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        description: string | null;
+        createdById: string;
+        updatedById: string;
+        isArchived: boolean;
+        order: number;
+        boardId: string;
+        dueDate: Date | null;
+        listId: string;
+    }
+}
