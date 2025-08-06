@@ -9,20 +9,15 @@ import {
 import { Button } from '@/components/ui/button'
 import { Edit, Tag } from 'lucide-react'
 import { useCardUpdateMutation } from '@/features/card'
-import { BoardMenuLabelForm, LABEL_COLORS } from '@/features/board'
+import { BoardMenuLabelForm } from '@/features/board'
 import { BoardCardsResponse, BoardDetailResponse } from '@/types'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
+import { getLabelClass } from '@/lib/utils'
 
 interface Props {
     card: BoardCardsResponse
     board: BoardDetailResponse['data']
-}
-
-export function getLabelClass(color: string, type: 'subtle' | 'normal' | 'bold' = 'normal') {
-    const c = LABEL_COLORS.find((x) => x.name === color)
-    
-    return c ? c[type] : 'bg-gray-200 text-gray-900'
 }
 
 export function CardAddLabel({
@@ -120,6 +115,7 @@ export function CardAddLabel({
                             <BoardMenuLabelForm
                                 board={board}
                                 mode="edit"
+                                card={card}
                                 initialValues={editingLabel}
                                 open={!!editingLabel}
                                 setOpen={(val) => { if (!val) setEditingLabel(null) }}

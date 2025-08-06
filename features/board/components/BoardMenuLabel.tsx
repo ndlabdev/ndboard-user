@@ -6,19 +6,14 @@ import {
     DropdownMenuSubContent,
     DropdownMenuSubTrigger
 } from '@/components/ui/dropdown-menu'
-import { BoardMenuLabelForm, LABEL_COLORS } from '@/features/board'
+import { BoardMenuLabelForm } from '@/features/board'
 import { Edit, Tag } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { getLabelClass } from '@/lib/utils'
 
 interface Props {
     board: BoardDetailResponse['data']
-}
-
-export function getLabelClass(color: string, type: 'subtle' | 'normal' | 'bold' = 'normal') {
-    const c = LABEL_COLORS.find((x) => x.name === color)
-    
-    return c ? c[type] : 'bg-gray-200 text-gray-900'
 }
 
 export const BoardMenuLabel = memo(function BoardMenuLabel({

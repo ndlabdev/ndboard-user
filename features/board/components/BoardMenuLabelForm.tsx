@@ -31,7 +31,7 @@ import { BoardLabelCreateFormValues, boardLabelCreateSchema, boardLabelCreateSta
 import { memo, useEffect, useState } from 'react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
-import { BoardDetailResponse } from '@/types'
+import { BoardCardsResponse, BoardDetailResponse } from '@/types'
 
 interface Props {
     board: BoardDetailResponse['data']
@@ -40,6 +40,7 @@ interface Props {
     open?: boolean
     setOpen?: (_v: boolean) => void
     mode?: 'create' | 'edit'
+    card?: BoardCardsResponse
 }
 
 const PreviewLabel = memo(function PreviewLabel({ color, tone, name }: { color: string, tone: LabelTone, name?: string }) {
@@ -62,7 +63,8 @@ export function BoardMenuLabelForm({
     onSave,
     open: controlledOpen,
     setOpen: setControlledOpen,
-    mode = 'create'
+    mode = 'create',
+    card
 }: Props) {
     const [open, setOpen] = useState(false)
     const isOpen = controlledOpen !== undefined ? controlledOpen : open
@@ -82,7 +84,7 @@ export function BoardMenuLabelForm({
         })
 
     const { mutate: updateMutate, isPending: isPendingUpdate, isSuccess: isSuccessUpdate } =
-        useBoardUpdateLabelMutation(board.shortLink, () => {
+        useBoardUpdateLabelMutation(board.shortLink, card, () => {
             setIsOpen(false)
             onSave?.()
         })
