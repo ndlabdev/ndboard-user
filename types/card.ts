@@ -64,5 +64,12 @@ export interface CardUpdateResponse {
         boardId: string;
         dueDate: Date | null;
         listId: string;
+        labels: {
+            name: string;
+            id: string;
+            boardId: string;
+            color: string;
+            tone: string;
+        }[] | undefined;
     }
 }

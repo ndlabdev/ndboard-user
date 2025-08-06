@@ -15,16 +15,19 @@ import {
     extractClosestEdge
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
 import { createPortal } from 'react-dom'
+import { BoardDetailResponse } from '@/types'
 
 interface Props {
     card: TCard
     columnId: string
+    board: BoardDetailResponse['data']
 }
 
 const idle: TCardState = { type: 'idle' }
 
 export const CardItemKanban = memo(function CardItemKanban({
     card,
+    board,
     columnId
 }: Props) {
     const outerRef = useRef<HTMLDivElement | null>(null)
@@ -132,9 +135,10 @@ export const CardItemKanban = memo(function CardItemKanban({
                 innerRef={innerRef}
                 state={state}
                 card={card}
+                board={board}
             />
             {state.type === 'preview'
-                ? createPortal(<CardDisplay state={state} card={card} />, state.container)
+                ? createPortal(<CardDisplay state={state} card={card} board={board} />, state.container)
                 : null}
         </>
     )

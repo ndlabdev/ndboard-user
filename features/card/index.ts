@@ -6,6 +6,7 @@ export * from './components/CardDisplay'
 export * from './components/CardShadow'
 export * from './components/CardCreateInList'
 export * from './components/CardArchiveSection'
+export * from './components/CardAddLabel'
 
 // ** Hooks
 export * from './hooks/useCardCreateMutation'

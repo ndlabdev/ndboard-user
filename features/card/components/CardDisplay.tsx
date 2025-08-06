@@ -3,6 +3,7 @@ import { CardShadow } from './CardShadow'
 import { TCard, TCardState } from '@/shared/data'
 import { RefObject } from 'react'
 import { CardItem } from './CardItem'
+import { BoardDetailResponse } from '@/types'
 
 // eslint-disable-next-line no-unused-vars
 const innerStyles: { [Key in TCardState['type']]?: string } = {
@@ -19,12 +20,14 @@ export function CardDisplay({
     card,
     state,
     outerRef,
-    innerRef
+    innerRef,
+    board
 }: {
     card: TCard;
     state: TCardState;
     outerRef?: RefObject<HTMLDivElement | null>;
     innerRef?: RefObject<HTMLDivElement | null>;
+    board: BoardDetailResponse['data'];
 }) {
     return (
         <div
@@ -48,7 +51,10 @@ export function CardDisplay({
                         : undefined
                 }
             >
-                <CardItem card={card} />
+                <CardItem
+                    card={card}
+                    board={board}
+                />
             </div>
 
             {state.type === 'is-over' && state.closestEdge === 'bottom' ? (

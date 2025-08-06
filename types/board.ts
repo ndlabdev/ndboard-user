@@ -52,11 +52,7 @@ export interface BoardCardsResponse {
     order: number;
     dueDate: Date | null;
     isArchived: boolean;
-    labels: {
-        id: string;
-        name: string;
-        color: string;
-    }[];
+    labels: BoardLabelResponse[];
     assignees: {
         id: string;
         name: string;

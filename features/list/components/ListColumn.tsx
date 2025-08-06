@@ -32,7 +32,7 @@ const stateStyles = {
 
 const idle = { type: 'idle' } satisfies TColumnState
 
-const CardList = memo(function CardList({ column }: { column: TColumn }) {
+const CardList = memo(function CardList({ column, board }: { column: TColumn, board: BoardDetailResponse['data'] }) {
     if (column.isLoading) {
         return (
             <div className="px-2 pt-1 space-y-2 pb-2 min-h-[60px]">
@@ -46,6 +46,7 @@ const CardList = memo(function CardList({ column }: { column: TColumn }) {
     return column.cards.map((card) => <CardItemKanban
         key={card.id}
         card={card}
+        board={board}
         columnId={column.id}
     />)
 })
@@ -238,7 +239,10 @@ export const ListColumn = memo(function ListColumn({
                     >
                         {!column.isFold && (
                             <>
-                                <CardList column={column} />
+                                <CardList
+                                    board={board}
+                                    column={column}
+                                />
                                 {state.type === 'is-card-over' && !state.isOverChildCard ? (
                                     <div className="flex-shrink-0 px-3 py-1">
                                         <CardShadow dragging={state.dragging} />

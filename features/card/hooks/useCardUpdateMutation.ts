@@ -21,6 +21,7 @@ export function useCardUpdateMutation(
                             ? {
                                 ...card,
                                 name: data.data.name,
+                                labels: data.data.labels,
                                 updatedAt: data.data.updatedAt
                             }
                             : card

@@ -1,7 +1,7 @@
 import { memo, useState } from 'react'
 import { isUrl } from '@/lib/utils'
-import { CardLinkPreview } from '@/features/card'
-import { BoardCardsResponse } from '@/types'
+import { CardAddLabel, CardLinkPreview } from '@/features/card'
+import { BoardCardsResponse, BoardDetailResponse } from '@/types'
 import {
     Dialog,
     DialogContent,
@@ -11,14 +11,23 @@ import {
 } from '@/components/ui/dialog'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { EditableTextarea } from './CardEditableTextarea'
+import { LABEL_COLORS } from '@/features/board'
 
 interface Props {
     card: BoardCardsResponse
+    board: BoardDetailResponse['data']
     nearLastItem?: boolean
+}
+
+export function getLabelClass(color: string, type: 'subtle' | 'normal' | 'bold' = 'normal') {
+    const c = LABEL_COLORS.find((x) => x.name === color)
+    
+    return c ? c[type] : 'bg-gray-200 text-gray-900'
 }
 
 export const CardItem = memo(function CardItem({
     card,
+    board,
     nearLastItem = false
 }: Props) {
     const [isOpen, setIsOpen] = useState(false)
@@ -54,6 +63,30 @@ export const CardItem = memo(function CardItem({
                                 value={card.name}
                                 placeholder="Card title"
                             />
+                        </div>
+
+                        <div className="col-span-12">
+                            <CardAddLabel
+                                card={card}
+                                board={board}
+                            />
+                        </div>
+
+                        <div className="col-span-12">
+                            <ul className="flex gap-1 items-center">
+                                {card.labels.map((item) => (
+                                    <li
+                                        key={item.id}
+                                        className={`
+                                                h-7 leading-7 text-center px-3 min-w-12 max-w-full text-xs font-semibold rounded
+                                                ${getLabelClass(item.color, item.tone) || 'bg-gray-300 text-gray-900'}
+                                                transition-colors duration-150
+                                            `}
+                                    >
+                                        {item.name}
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
                     </div>
                 </ScrollArea>
