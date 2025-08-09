@@ -1,6 +1,7 @@
 import { apiFetch } from '@/lib/fetcher'
-import type { BoardCardsResponse, CardCreateResponse, CardUpdateResponse } from '@/types'
+import type { BoardCardsResponse, CardAddChecklistsResponse, CardCreateResponse, CardUpdateResponse } from '@/types'
 import { CardCreateFormValues, CardReorderFormValues, CardBulkReorderFormValues, CardUpdateFormValues } from '@/features/card'
+import { CardAddChecklistsFormValues } from '@/features/card/schemas/add-checklists'
 
 export function cardGetListApi(listId: string): Promise<{ data: BoardCardsResponse[] }> {
     return apiFetch<{ data: BoardCardsResponse[] }>(`/cards/l/${listId}`)
@@ -58,6 +59,13 @@ export function cardDeleteApi(payload: { id: string }): Promise<CardCreateRespon
 export function cardUpdateApi(payload: CardUpdateFormValues): Promise<CardUpdateResponse> {
     return apiFetch<CardUpdateResponse>(`/cards/${payload.id}`, {
         method: 'PATCH',
+        body: JSON.stringify(payload)
+    })
+}
+
+export function cardAddChecklistsApi(payload: CardAddChecklistsFormValues): Promise<CardAddChecklistsResponse> {
+    return apiFetch<CardAddChecklistsResponse>(`/cards/${payload.id}/checklists`, {
+        method: 'POST',
         body: JSON.stringify(payload)
     })
 }

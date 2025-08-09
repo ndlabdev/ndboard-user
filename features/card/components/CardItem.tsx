@@ -1,6 +1,6 @@
 import { memo, useState } from 'react'
 import { getLabelClass, isUrl } from '@/lib/utils'
-import { CardAddLabel, CardLinkPreview } from '@/features/card'
+import { CardAddChecklist, CardAddLabel, CardLinkPreview } from '@/features/card'
 import { BoardCardsResponse, BoardDetailResponse } from '@/types'
 import {
     Dialog,
@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dialog'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { EditableTextarea } from './CardEditableTextarea'
+import { CardChecklistSection } from './CardChecklistSection'
 
 interface Props {
     card: BoardCardsResponse
@@ -33,20 +34,22 @@ export const CardItem = memo(function CardItem({
                         ? <CardLinkPreview meta={card.meta} />
                         : (
                             <div className="p-3">
-                                <ul className="flex gap-1 items-center">
-                                    {card.labels.map((item) => (
-                                        <li
-                                            key={item.id}
-                                            className={`
-                                                h-4 text-center px-1 min-w-12 max-w-full text-[10px] font-semibold rounded
-                                                ${getLabelClass(item.color, item.tone) || 'bg-gray-300 text-gray-900'}
-                                                transition-colors duration-150
-                                            `}
-                                        >
-                                            {item.name}
-                                        </li>
-                                    ))}
-                                </ul>
+                                {card.labels.length > 0 && (
+                                    <ul className="flex gap-1 items-center mb-2">
+                                        {card.labels.map((item) => (
+                                            <li
+                                                key={item.id}
+                                                className={`
+                                                    h-4 text-center px-1 min-w-12 max-w-full text-[10px] font-semibold rounded
+                                                    ${getLabelClass(item.color, item.tone) || 'bg-gray-300 text-gray-900'}
+                                                    transition-colors duration-150
+                                                `}
+                                            >
+                                                {item.name}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
 
                                 <h4 className="font-semibold text-sm">
                                     {card.name}
@@ -74,10 +77,17 @@ export const CardItem = memo(function CardItem({
                         </div>
 
                         <div className="col-span-12">
-                            <CardAddLabel
-                                card={card}
-                                board={board}
-                            />
+                            <div className="flex gap-2">
+                                <CardAddLabel
+                                    card={card}
+                                    board={board}
+                                />
+
+                                <CardAddChecklist
+                                    card={card}
+                                    board={board}
+                                />
+                            </div>
                         </div>
 
                         <div className="col-span-12">
@@ -95,6 +105,10 @@ export const CardItem = memo(function CardItem({
                                     </li>
                                 ))}
                             </ul>
+                        </div>
+                        
+                        <div className="col-span-12">
+                            <CardChecklistSection card={card} />
                         </div>
                     </div>
                 </ScrollArea>

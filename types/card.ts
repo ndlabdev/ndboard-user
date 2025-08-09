@@ -73,3 +73,20 @@ export interface CardUpdateResponse {
         }[] | undefined;
     }
 }
+
+export interface CardAddChecklistsResponse {
+    data: {
+        readonly id: string;
+        readonly cardId: string;
+        readonly title: string;
+        readonly order: number;
+        readonly createdAt: Date;
+        readonly items: {
+            name: string;
+            id: string;
+            order: number;
+            checklistId: string;
+            isChecked: boolean;
+        }[];
+    }
+}
