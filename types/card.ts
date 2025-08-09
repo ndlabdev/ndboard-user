@@ -90,3 +90,18 @@ export interface CardAddChecklistsResponse {
         }[];
     }
 }
+
+export interface CardAddChecklistItemResponse {
+    data: {
+        readonly id: string;
+        readonly checklistId: string;
+        readonly name: string;
+        readonly isChecked: boolean;
+        readonly order: number;
+        readonly completedBy: {
+            userId: string;
+            checklistItemId: string;
+            completedAt: Date;
+        }[];
+    }
+}

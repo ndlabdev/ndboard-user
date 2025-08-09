@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Progress } from '@/components/ui/progress'
-import { calcAllChecklistsProgress, calcChecklistProgress } from '@/features/card'
+import { calcAllChecklistsProgress, calcChecklistProgress, useCardAddChecklistItemMutation } from '@/features/card'
 import { SquareCheckBig, Trash } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
@@ -26,6 +26,32 @@ export function CardChecklistSection({ card }) {
         setAddOpen((m) => ({ ...m, [listId]: false }))
         setAddingMap((m) => ({ ...m, [listId]: '' }))
     }
+
+    // ====== mutation: add checklist item ======
+    const addItemMutation = useCardAddChecklistItemMutation(
+    // onSuccess
+        (res) => {
+            // NOTE: We reconcile the temp item with the real one returned by API.
+            // Expecting shape: { data: { id, name, isChecked, order, checklistId }, meta?: {...} }
+            const serverItem = res?.data
+            const checklistId: string = serverItem?.checklistId
+
+            if (!checklistId || !serverItem?.id) return
+
+            setLists((prev) =>
+                prev.map((list) => {
+                    if (list.id !== checklistId) return list
+                    // Replace the first temp item that has the same name and is temp-id
+                    const nextItems = [...list.items]
+                    const idx = nextItems.findIndex((i) => i.id.startsWith('temp_') && i.name === serverItem.name)
+                    if (idx >= 0) nextItems[idx] = { ...nextItems[idx], ...serverItem, id: serverItem.id }
+                    else nextItems.push(serverItem) // fallback if we didn't find temp
+                    
+                    return { ...list, items: nextItems }
+                })
+            )
+        }
+    )
 
     const handleToggleItem = async (checklistId: string, itemId: string, next: boolean) => {
     // optimistic update
@@ -61,6 +87,9 @@ export function CardChecklistSection({ card }) {
         const name = (addingMap[checklistId] ?? '').trim()
         if (!name) return
 
+        const target = lists.find((l) => l.id === checklistId)
+        const order = target ? target.items.length : 0
+
         // create a temp id for optimistic UI
         const tempId = `temp_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
 
@@ -76,6 +105,12 @@ export function CardChecklistSection({ card }) {
 
         try {
             // await onAddItem?.(checklistId, name)
+            await addItemMutation.mutateAsync({
+                id: card.id,
+                name,
+                checklistId,
+                order
+            })
         } catch {
             setLists((prev) =>
                 prev.map((list) =>
