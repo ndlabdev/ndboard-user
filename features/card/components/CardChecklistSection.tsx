@@ -25,10 +25,10 @@ export function CardChecklistSection({ card, lists, setLists }: Props) {
 
     // mutations
     const renameItemMutation = useCardRenameChecklistItemMutation()
-    const completeItemMutation = useCardCompleteChecklistItemMutation()
-    const deleteChecklistMutation = useCardDeleteChecklistMutation()
-    const deleteItemMutation = useCardDeleteChecklistItemMutation()
-    const addItemMutation = useCardAddChecklistItemMutation((res) => {
+    const completeItemMutation = useCardCompleteChecklistItemMutation(card.listId)
+    const deleteChecklistMutation = useCardDeleteChecklistMutation(card.listId)
+    const deleteItemMutation = useCardDeleteChecklistItemMutation(card.listId)
+    const addItemMutation = useCardAddChecklistItemMutation(card.listId, (res) => {
         const it = res?.data
         if (!it?.id || !it?.checklistId) return
         setLists((prev) =>

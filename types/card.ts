@@ -95,6 +95,7 @@ export interface CardAddChecklistsResponse {
 export interface CardAddChecklistItemResponse {
     data: {
         readonly id: string;
+        cardId: string
         readonly checklistId: string;
         readonly name: string;
         readonly isChecked: boolean;
@@ -110,5 +111,7 @@ export interface CardAddChecklistItemResponse {
 export interface CardDeleteChecklistItemResponse {
     data: {
         id: string
+        cardId: string
+        checklistId: string
     }
 }
