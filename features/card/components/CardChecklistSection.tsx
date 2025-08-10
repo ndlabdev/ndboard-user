@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Progress } from '@/components/ui/progress'
-import { calcAllChecklistsProgress, calcChecklistProgress, useCardAddChecklistItemMutation, useCardDeleteChecklistItemMutation } from '@/features/card'
+import { calcAllChecklistsProgress, calcChecklistProgress, useCardAddChecklistItemMutation, useCardDeleteChecklistItemMutation, useCardDeleteChecklistMutation } from '@/features/card'
 import { SquareCheckBig, Trash } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
@@ -14,6 +14,7 @@ export function CardChecklistSection({ card }) {
     const [busyMap, setBusyMap] = useState<Record<string, boolean>>({})
     const [addOpen, setAddOpen] = useState<Record<string, boolean>>({})
     const [deletingMap, setDeletingMap] = useState<Record<string, boolean>>({})
+    const [deletingChecklistMap, setDeletingChecklistMap] = useState<Record<string, boolean>>({})
     const inputRefs = useRef<Record<string, HTMLInputElement>>({})
 
     const overall = useMemo(() => calcAllChecklistsProgress(lists), [lists])
@@ -28,6 +29,10 @@ export function CardChecklistSection({ card }) {
         setAddingMap((m) => ({ ...m, [listId]: '' }))
     }
 
+    // ====== mutation: delete checklist ======
+    const deleteChecklistMutation = useCardDeleteChecklistMutation()
+
+    // ====== mutation: delete checklist item ======
     const deleteItemMutation = useCardDeleteChecklistItemMutation()
 
     // ====== mutation: add checklist item ======
@@ -128,12 +133,27 @@ export function CardChecklistSection({ card }) {
     }
 
     const handleDeleteChecklist = async (checklistId: string) => {
+        // optimistic snapshot
         const snapshot = lists
+
+        // optimistic remove
         setLists((prev) => prev.filter((l) => l.id !== checklistId))
+        setDeletingChecklistMap((m) => ({ ...m, [checklistId]: true }))
+
         try {
-            // await onDeleteChecklist?.(checklistId)
+            await deleteChecklistMutation.mutateAsync({
+                id: card.id,
+                checklistId
+            })
         } catch {
+            // revert on error
             setLists(snapshot)
+        } finally {
+            setDeletingChecklistMap((m) => {
+                const { [checklistId]: _, ...rest } = m
+                
+                return rest
+            })
         }
     }
 
@@ -205,6 +225,7 @@ export function CardChecklistSection({ card }) {
                                     variant="ghost"
                                     className="h-8 px-2 text-destructive hover:text-destructive"
                                     onClick={() => handleDeleteChecklist(list.id)}
+                                    disabled={!!deletingChecklistMap[list.id]}
                                 >
                                     <Trash className="mr-1 size-4" />
                                     Delete
@@ -242,6 +263,7 @@ export function CardChecklistSection({ card }) {
                                             className="h-8 w-8 text-muted-foreground hover:text-destructive"
                                             onClick={() => handleDeleteItem(list.id, item.id)}
                                             aria-label="Delete item"
+                                            disabled={!!deletingMap[`${list.id}:${item.id}`]}
                                         >
                                             <Trash className="size-4" />
                                         </Button>

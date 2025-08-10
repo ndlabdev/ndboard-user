@@ -20,6 +20,7 @@ export * from './hooks/useCardUpdateMutation'
 export * from './hooks/useCardAddChecklistsMutation'
 export * from './hooks/useCardAddChecklistItemMutation'
 export * from './hooks/useCardDeleteChecklistItemMutation'
+export * from './hooks/useCardDeleteChecklistMutation'
 
 // ** Schemas
 export * from './schemas/create'
@@ -29,6 +30,7 @@ export * from './schemas/update'
 export * from './schemas/add-checklists'
 export * from './schemas/add-checklist-item'
 export * from './schemas/delete-checklist-item'
+export * from './schemas/delete-checklist'
 
 // ** Utils
 export * from './utils/checklist-progress.utils'
