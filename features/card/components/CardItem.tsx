@@ -35,7 +35,7 @@ export const CardItem = memo(function CardItem({
                         : (
                             <div className="p-3">
                                 {card.labels.length > 0 && (
-                                    <ul className="flex gap-1 items-center mb-2">
+                                    <ul className="flex flex-wrap gap-1 items-center mb-2">
                                         {card.labels.map((item) => (
                                             <li
                                                 key={item.id}

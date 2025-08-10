@@ -3,10 +3,11 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Progress } from '@/components/ui/progress'
-import { calcAllChecklistsProgress, calcChecklistProgress, useCardAddChecklistItemMutation, useCardDeleteChecklistItemMutation, useCardDeleteChecklistMutation } from '@/features/card'
+import { calcAllChecklistsProgress, calcChecklistProgress, useCardAddChecklistItemMutation, useCardCompleteChecklistItemMutation, useCardDeleteChecklistItemMutation, useCardDeleteChecklistMutation } from '@/features/card'
 import { SquareCheckBig, Trash } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
+import { Label } from '@/components/ui/label'
 
 export function CardChecklistSection({ card }) {
     const [lists, setLists] = useState<Checklist[]>(card?.checklists ?? [])
@@ -15,6 +16,8 @@ export function CardChecklistSection({ card }) {
     const [addOpen, setAddOpen] = useState<Record<string, boolean>>({})
     const [deletingMap, setDeletingMap] = useState<Record<string, boolean>>({})
     const [deletingChecklistMap, setDeletingChecklistMap] = useState<Record<string, boolean>>({})
+    const [togglingMap, setTogglingMap] = useState<Record<string, boolean>>({})
+    const [showCheckedMap, setShowCheckedMap] = useState<Record<string, boolean>>({})
     const inputRefs = useRef<Record<string, HTMLInputElement>>({})
 
     const overall = useMemo(() => calcAllChecklistsProgress(lists), [lists])
@@ -28,6 +31,13 @@ export function CardChecklistSection({ card }) {
         setAddOpen((m) => ({ ...m, [listId]: false }))
         setAddingMap((m) => ({ ...m, [listId]: '' }))
     }
+
+    function toggleShowChecked(listId: string) {
+        setShowCheckedMap((m) => ({ ...m, [listId]: !m[listId] }))
+    }
+
+    // ====== mutation: complete checklist item ======
+    const completeItemMutation = useCardCompleteChecklistItemMutation()
 
     // ====== mutation: delete checklist ======
     const deleteChecklistMutation = useCardDeleteChecklistMutation()
@@ -62,32 +72,40 @@ export function CardChecklistSection({ card }) {
     )
 
     const handleToggleItem = async (checklistId: string, itemId: string, next: boolean) => {
-    // optimistic update
+        const itemKey = `${checklistId}:${itemId}`
+
+        // optimistic update
+        const snapshot = lists
         setLists((prev) =>
             prev.map((list) =>
                 list.id !== checklistId
                     ? list
                     : {
                         ...list,
-                        items: list.items.map((it) => (it.id === itemId ? { ...it, isChecked: next } : it))
+                        items: list.items.map((it) =>
+                            it.id === itemId ? { ...it, isChecked: next } : it
+                        )
                     }
             )
         )
+        setTogglingMap((m) => ({ ...m, [itemKey]: true }))
 
         try {
-            // await onToggleItem?.(checklistId, itemId, next)
+            await completeItemMutation.mutateAsync({
+                id: card.id,
+                checklistId,
+                itemId,
+                completed: next
+            })
         } catch {
             // revert on error
-            setLists((prev) =>
-                prev.map((list) =>
-                    list.id !== checklistId
-                        ? list
-                        : {
-                            ...list,
-                            items: list.items.map((it) => (it.id === itemId ? { ...it, isChecked: !next } : it))
-                        }
-                )
-            )
+            setLists(snapshot)
+        } finally {
+            setTogglingMap((m) => {
+                const { [itemKey]: _, ...rest } = m
+                
+                return rest
+            })
         }
     }
 
@@ -220,16 +238,26 @@ export function CardChecklistSection({ card }) {
                                     <h5 className="text-sm font-semibold">{list.title}</h5>
                                 </div>
 
-                                <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    className="h-8 px-2 text-destructive hover:text-destructive"
-                                    onClick={() => handleDeleteChecklist(list.id)}
-                                    disabled={!!deletingChecklistMap[list.id]}
-                                >
-                                    <Trash className="mr-1 size-4" />
-                                    Delete
-                                </Button>
+                                <div className="flex items-center">
+                                    <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => toggleShowChecked(list.id)}
+                                    >
+                                        {showCheckedMap[list.id] ? 'Hide Checked' : 'Show Checked'}
+                                    </Button>
+
+                                    <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="h-8 px-2 text-destructive hover:text-destructive"
+                                        onClick={() => handleDeleteChecklist(list.id)}
+                                        disabled={!!deletingChecklistMap[list.id]}
+                                    >
+                                        <Trash className="mr-1 size-4" />
+                                        Delete
+                                    </Button>
+                                </div>
                             </div>
 
                             {/* Per-checklist progress (the only progress shown by default) */}
@@ -241,35 +269,58 @@ export function CardChecklistSection({ card }) {
                             <Separator className="my-3" />
 
                             {/* Items */}
-                            <ul className="space-y-2">
-                                {list.items.map((item) => (
-                                    <li key={item.id} className="flex items-center justify-between gap-2">
-                                        <div className="flex items-center gap-2">
-                                            <Checkbox
-                                                checked={item.isChecked}
-                                                onCheckedChange={(checked) =>
-                                                    handleToggleItem(list.id, item.id, Boolean(checked))
-                                                }
-                                                aria-label={item.name}
-                                            />
-                                            <span className={cn('text-sm', item.isChecked && 'text-muted-foreground line-through')}>
-                                                {item.name}
-                                            </span>
-                                        </div>
+                            {(!showCheckedMap[list.id] && per === 100 && list.items.length > 0) ? (
+                                <p className="mt-2 text-sm text-green-600 font-medium">
+                                    Everything in this checklist is complete!
+                                </p>
+                            ) : (
+                                <ul className="space-y-2">
+                                    {list.items
+                                        .filter((item) => {
+                                            if (!showCheckedMap[list.id] && item.isChecked) return false
+                                        
+                                            return true
+                                        })
+                                        .map((item) => (
+                                            <li key={item.id} className="flex items-center justify-between gap-2">
+                                                <div className="flex items-center gap-2">
+                                                    <Checkbox
+                                                        id={`chk-${list.id}-${item.id}`}
+                                                        checked={item.isChecked}
+                                                        onCheckedChange={(checked) =>
+                                                            handleToggleItem(list.id, item.id, Boolean(checked))
+                                                        }
+                                                        aria-label={item.name}
+                                                        disabled={
+                                                            !!togglingMap[`${list.id}:${item.id}`] ||
+                                                    !!deletingMap[`${list.id}:${item.id}`]
+                                                        }
+                                                    />
+                                                    <Label
+                                                        htmlFor={`chk-${list.id}-${item.id}`}
+                                                        className={cn(
+                                                            'text-sm cursor-pointer select-none',
+                                                            item.isChecked && 'text-muted-foreground line-through'
+                                                        )}
+                                                    >
+                                                        {item.name}
+                                                    </Label>
+                                                </div>
 
-                                        <Button
-                                            size="icon"
-                                            variant="ghost"
-                                            className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                                            onClick={() => handleDeleteItem(list.id, item.id)}
-                                            aria-label="Delete item"
-                                            disabled={!!deletingMap[`${list.id}:${item.id}`]}
-                                        >
-                                            <Trash className="size-4" />
-                                        </Button>
-                                    </li>
-                                ))}
-                            </ul>
+                                                <Button
+                                                    size="icon"
+                                                    variant="ghost"
+                                                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                                    onClick={() => handleDeleteItem(list.id, item.id)}
+                                                    aria-label="Delete item"
+                                                    disabled={!!deletingMap[`${list.id}:${item.id}`]}
+                                                >
+                                                    <Trash className="size-4" />
+                                                </Button>
+                                            </li>
+                                        ))}
+                                </ul>
+                            )}
 
                             {/* Add item */}
                             <div className="mt-3">
