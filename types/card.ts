@@ -105,3 +105,9 @@ export interface CardAddChecklistItemResponse {
         }[];
     }
 }
+
+export interface CardDeleteChecklistItemResponse {
+    data: {
+        id: string
+    }
+}

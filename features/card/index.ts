@@ -19,6 +19,7 @@ export * from './hooks/useCardDeleteMutation'
 export * from './hooks/useCardUpdateMutation'
 export * from './hooks/useCardAddChecklistsMutation'
 export * from './hooks/useCardAddChecklistItemMutation'
+export * from './hooks/useCardDeleteChecklistItemMutation'
 
 // ** Schemas
 export * from './schemas/create'
@@ -27,6 +28,7 @@ export * from './schemas/bulk-reorder'
 export * from './schemas/update'
 export * from './schemas/add-checklists'
 export * from './schemas/add-checklist-item'
+export * from './schemas/delete-checklist-item'
 
 // ** Utils
 export * from './utils/checklist-progress.utils'

@@ -1,7 +1,8 @@
 import { apiFetch } from '@/lib/fetcher'
-import type { BoardCardsResponse, CardAddChecklistItemResponse, CardAddChecklistsResponse, CardCreateResponse, CardUpdateResponse } from '@/types'
+import type { BoardCardsResponse, CardAddChecklistItemResponse, CardAddChecklistsResponse, CardCreateResponse, CardDeleteChecklistItemResponse, CardUpdateResponse } from '@/types'
 import { CardCreateFormValues, CardReorderFormValues, CardBulkReorderFormValues, CardUpdateFormValues, CardAddChecklistItemFormValues } from '@/features/card'
 import { CardAddChecklistsFormValues } from '@/features/card/schemas/add-checklists'
+import { CardDeleteChecklistItemFormValues } from '@/features/card/schemas/delete-checklist-item'
 
 export function cardGetListApi(listId: string): Promise<{ data: BoardCardsResponse[] }> {
     return apiFetch<{ data: BoardCardsResponse[] }>(`/cards/l/${listId}`)
@@ -74,5 +75,11 @@ export function cardAddChecklistItemApi(payload: CardAddChecklistItemFormValues)
     return apiFetch<CardAddChecklistItemResponse>(`/cards/${payload.id}/checklists/items`, {
         method: 'POST',
         body: JSON.stringify(payload)
+    })
+}
+
+export function cardDeleteChecklistItemApi(payload: CardDeleteChecklistItemFormValues): Promise<CardDeleteChecklistItemResponse> {
+    return apiFetch<CardDeleteChecklistItemResponse>(`/cards/${payload.id}/checklists/${payload.checklistId}/items/${payload.itemId}`, {
+        method: 'DELETE'
     })
 }

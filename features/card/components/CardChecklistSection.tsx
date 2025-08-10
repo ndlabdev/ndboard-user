@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Progress } from '@/components/ui/progress'
-import { calcAllChecklistsProgress, calcChecklistProgress, useCardAddChecklistItemMutation } from '@/features/card'
+import { calcAllChecklistsProgress, calcChecklistProgress, useCardAddChecklistItemMutation, useCardDeleteChecklistItemMutation } from '@/features/card'
 import { SquareCheckBig, Trash } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
@@ -13,6 +13,7 @@ export function CardChecklistSection({ card }) {
     const [addingMap, setAddingMap] = useState<Record<string, string>>({}) // checklistId -> input value
     const [busyMap, setBusyMap] = useState<Record<string, boolean>>({})
     const [addOpen, setAddOpen] = useState<Record<string, boolean>>({})
+    const [deletingMap, setDeletingMap] = useState<Record<string, boolean>>({})
     const inputRefs = useRef<Record<string, HTMLInputElement>>({})
 
     const overall = useMemo(() => calcAllChecklistsProgress(lists), [lists])
@@ -26,6 +27,8 @@ export function CardChecklistSection({ card }) {
         setAddOpen((m) => ({ ...m, [listId]: false }))
         setAddingMap((m) => ({ ...m, [listId]: '' }))
     }
+
+    const deleteItemMutation = useCardDeleteChecklistItemMutation()
 
     // ====== mutation: add checklist item ======
     const addItemMutation = useCardAddChecklistItemMutation(
@@ -135,16 +138,39 @@ export function CardChecklistSection({ card }) {
     }
 
     const handleDeleteItem = async (checklistId: string, itemId: string) => {
+        const itemKey = `${checklistId}:${itemId}`
+
+        // optimistic snapshot to revert on error
         const snapshot = lists
+
+        // optimistic remove
         setLists((prev) =>
             prev.map((list) =>
-                list.id !== checklistId ? list : { ...list, items: list.items.filter((i) => i.id !== itemId) }
+                list.id !== checklistId
+                    ? list
+                    : { ...list, items: list.items.filter((i) => i.id !== itemId) }
             )
         )
+
+        // lock the button for this item
+        setDeletingMap((m) => ({ ...m, [itemKey]: true }))
+
         try {
-            // await onDeleteItem?.(checklistId, itemId)
+            // IMPORTANT: your API path expects `id` = card.id
+            await deleteItemMutation.mutateAsync({
+                id: card.id,
+                checklistId,
+                itemId
+            })
         } catch {
+            // revert on error
             setLists(snapshot)
+        } finally {
+            setDeletingMap((m) => {
+                const { [itemKey]: _, ...rest } = m
+                
+                return rest
+            })
         }
     }
   

@@ -106,10 +106,12 @@ export const CardItem = memo(function CardItem({
                                 ))}
                             </ul>
                         </div>
-                        
-                        <div className="col-span-12">
-                            <CardChecklistSection card={card} />
-                        </div>
+
+                        {card?.checklists?.length > 0 && (
+                            <div className="col-span-12">
+                                <CardChecklistSection card={card} />
+                            </div>
+                        )}
                     </div>
                 </ScrollArea>
             </DialogContent>
