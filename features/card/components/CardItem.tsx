@@ -1,6 +1,6 @@
 import { memo, useState } from 'react'
 import { getLabelClass, isUrl } from '@/lib/utils'
-import { CardAddChecklist, CardAddLabel, CardLinkPreview } from '@/features/card'
+import { calcAllChecklistsProgress, CardAddChecklist, CardAddLabel, CardLinkPreview } from '@/features/card'
 import { BoardCardChecklists, BoardCardsResponse, BoardDetailResponse } from '@/types'
 import {
     Dialog,
@@ -12,11 +12,37 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { EditableTextarea } from './CardEditableTextarea'
 import { CardChecklistSection } from './CardChecklistSection'
+import { SquareCheckBig } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 
 interface Props {
     card: BoardCardsResponse
     board: BoardDetailResponse['data']
     nearLastItem?: boolean
+}
+
+function CardChecklistSummary({ card }: Pick<Props, 'card'>) {
+    if (!card.checklists || card.checklists.length === 0) return null
+
+    const totalItems = card.checklists.reduce((sum, cl) => sum + cl.items.length, 0)
+    const completedItems = card.checklists.reduce(
+        (sum, cl) => sum + cl.items.filter((it) => it.isChecked).length,
+        0
+    )
+
+    const progress = calcAllChecklistsProgress(card.checklists)
+
+    const isDone = progress === 100
+
+    return (
+        <Badge
+            variant={isDone ? 'default' : 'secondary'}
+            className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium mt-2"
+        >
+            <SquareCheckBig className={`size-3 ${isDone ? 'text-white' : 'text-muted-foreground'}`} />
+            {completedItems}/{totalItems}
+        </Badge>
+    )
 }
 
 export const CardItem = memo(function CardItem({
@@ -55,6 +81,8 @@ export const CardItem = memo(function CardItem({
                                 <h4 className="font-semibold text-sm">
                                     {card.name}
                                 </h4>
+
+                                <CardChecklistSummary card={card} />
                             </div>
                         )}
                 </div>
