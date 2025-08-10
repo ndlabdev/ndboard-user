@@ -30,6 +30,8 @@ function CardChecklistSummary({ card }: Pick<Props, 'card'>) {
         0
     )
 
+    if (!totalItems) return null
+
     const progress = calcAllChecklistsProgress(card.checklists)
 
     const isDone = progress === 100
