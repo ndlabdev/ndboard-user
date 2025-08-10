@@ -43,6 +43,19 @@ export interface BoardListsResponse {
     isFold: boolean;
 }
 
+export interface BoardCardChecklists {
+    id: string;
+    title: string;
+    order: number;
+    items: {
+        name: string;
+        id: string;
+        order: number;
+        checklistId: string;
+        isChecked: boolean;
+    }[];
+}
+
 export interface BoardCardsResponse {
     id: string;
     name: string;
@@ -58,18 +71,7 @@ export interface BoardCardsResponse {
         name: string;
         avatarUrl: string | null;
     }[];
-    checklists: {
-        id: string;
-        title: string;
-        order: number;
-        items: {
-            name: string;
-            id: string;
-            order: number;
-            checklistId: string;
-            isChecked: boolean;
-        }[];
-    }[];
+    checklists: BoardCardChecklists[];
     attachments: {
         name: string;
         id: string;

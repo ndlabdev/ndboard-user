@@ -1,7 +1,7 @@
 import { memo, useState } from 'react'
 import { getLabelClass, isUrl } from '@/lib/utils'
 import { CardAddChecklist, CardAddLabel, CardLinkPreview } from '@/features/card'
-import { BoardCardsResponse, BoardDetailResponse } from '@/types'
+import { BoardCardChecklists, BoardCardsResponse, BoardDetailResponse } from '@/types'
 import {
     Dialog,
     DialogContent,
@@ -25,7 +25,8 @@ export const CardItem = memo(function CardItem({
     nearLastItem = false
 }: Props) {
     const [isOpen, setIsOpen] = useState(false)
-
+    const [lists, setLists] = useState<BoardCardChecklists[]>(card?.checklists ?? [])
+    
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
@@ -85,7 +86,7 @@ export const CardItem = memo(function CardItem({
 
                                 <CardAddChecklist
                                     card={card}
-                                    board={board}
+                                    setLists={setLists}
                                 />
                             </div>
                         </div>
@@ -107,9 +108,13 @@ export const CardItem = memo(function CardItem({
                             </ul>
                         </div>
 
-                        {card?.checklists?.length > 0 && (
+                        {lists?.length > 0 && (
                             <div className="col-span-12">
-                                <CardChecklistSection card={card} />
+                                <CardChecklistSection
+                                    card={card}
+                                    lists={lists}
+                                    setLists={setLists}
+                                />
                             </div>
                         )}
                     </div>

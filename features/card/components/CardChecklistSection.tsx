@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { Dispatch, SetStateAction, useMemo, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
@@ -8,17 +8,23 @@ import { SquareCheckBig, Trash } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import { Label } from '@/components/ui/label'
+import { BoardCardChecklists, BoardCardsResponse } from '@/types'
 
-export function CardChecklistSection({ card }) {
-    const [lists, setLists] = useState<Checklist[]>(card?.checklists ?? [])
-    const [addingMap, setAddingMap] = useState<Record<string, string>>({}) // checklistId -> input value
+interface Props {
+    card: BoardCardsResponse
+    lists: BoardCardChecklists[]
+    setLists: Dispatch<SetStateAction<BoardCardChecklists[]>>
+}
+
+export function CardChecklistSection({ card, lists, setLists }: Props) {
+    const [addingMap, setAddingMap] = useState<Record<string, string>>({})
     const [busyMap, setBusyMap] = useState<Record<string, boolean>>({})
     const [addOpen, setAddOpen] = useState<Record<string, boolean>>({})
     const [deletingMap, setDeletingMap] = useState<Record<string, boolean>>({})
     const [deletingChecklistMap, setDeletingChecklistMap] = useState<Record<string, boolean>>({})
     const [togglingMap, setTogglingMap] = useState<Record<string, boolean>>({})
     const [showCheckedMap, setShowCheckedMap] = useState<Record<string, boolean>>({})
-    const inputRefs = useRef<Record<string, HTMLInputElement>>({})
+    const inputRefs = useRef<Record<string, HTMLInputElement | null>>({})
 
     const overall = useMemo(() => calcAllChecklistsProgress(lists), [lists])
 
@@ -119,12 +125,20 @@ export function CardChecklistSection({ card }) {
         // create a temp id for optimistic UI
         const tempId = `temp_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
 
+        const tempItem: BoardCardChecklists['items'][number] = {
+            id: tempId,
+            name,
+            isChecked: false,
+            order,
+            checklistId
+        }
+
         setBusyMap((s) => ({ ...s, [checklistId]: true }))
         setLists((prev) =>
             prev.map((list) =>
                 list.id !== checklistId
                     ? list
-                    : { ...list, items: [...list.items, { id: tempId, name, isChecked: false }] }
+                    : { ...list, items: [...list.items, tempItem] }
             )
         )
         setAddingMap((m) => ({ ...m, [checklistId]: '' }))
@@ -337,7 +351,9 @@ export function CardChecklistSection({ card }) {
                                 // Expanded state: input + actions
                                     <div className="flex items-center gap-2">
                                         <Input
-                                            ref={(el) => (inputRefs.current[list.id] = el)}
+                                            ref={(el) => {
+                                                inputRefs.current[list.id] = el
+                                            }}
                                             placeholder="Add an item"
                                             value={addingMap[list.id] ?? ''}
                                             onChange={(e) =>

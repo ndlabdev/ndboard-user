@@ -25,6 +25,15 @@ const eslintConfig = [
 
             // No unused vars (bắt buộc để code sạch)
             'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }], // ignore _props, _unused
+            '@typescript-eslint/no-unused-vars': [
+                'warn',
+                {
+                    argsIgnorePattern: '^_',
+                    varsIgnorePattern: '^_',
+                    caughtErrorsIgnorePattern: '^_',
+                    ignoreRestSiblings: true
+                }
+            ],
 
             // Object & Array formatting
             'object-curly-spacing': ['error', 'always'],

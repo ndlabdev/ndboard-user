@@ -1,5 +1,5 @@
 import { apiFetch } from '@/lib/fetcher'
-import type { BoardCardsResponse, CardAddChecklistItemResponse, CardAddChecklistsResponse, CardCreateResponse, CardDeleteChecklistItemResponse, CardUpdateResponse } from '@/types'
+import type { BoardCardsResponse, CardAddChecklistItemResponse, CardAddChecklistsResponse, CardCreateResponse, CardDeleteChecklistItemResponse, CardUpdateResponse, ListGetArchiveResponse } from '@/types'
 import { CardCreateFormValues, CardReorderFormValues, CardBulkReorderFormValues, CardUpdateFormValues, CardAddChecklistItemFormValues, CardDeleteChecklistFormValues, CardCompleteChecklistItemFormValues } from '@/features/card'
 import { CardAddChecklistsFormValues } from '@/features/card/schemas/add-checklists'
 import { CardDeleteChecklistItemFormValues } from '@/features/card/schemas/delete-checklist-item'
@@ -34,8 +34,8 @@ export function cardGetArchiveListApi(
     page = 1,
     pageSize = 10,
     q = ''
-): Promise<BoardCardsResponse> {
-    return apiFetch<BoardCardsResponse>('/cards/archived', {
+): Promise<ListGetArchiveResponse> {
+    return apiFetch<ListGetArchiveResponse>('/cards/archived', {
         query: {
             boardId,
             page,

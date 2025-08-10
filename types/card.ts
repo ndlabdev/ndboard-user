@@ -1,5 +1,5 @@
 import { PaginateMeta } from './api-common'
-import { BoardCardsResponse } from './board'
+import { BoardCardChecklists, BoardCardsResponse } from './board'
 import { OgObject } from './og-object'
 
 export interface CardGetListItem {
@@ -24,6 +24,7 @@ export interface CardGetListItem {
         avatarUrl: string | null
     }[]
     checklistCount: number
+    checklists: BoardCardChecklists[];
     attachments: {
         name: string
         id: string

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, Dispatch, SetStateAction } from 'react'
 import {
     Popover,
     PopoverContent,
@@ -9,18 +9,18 @@ import {
 import { Button } from '@/components/ui/button'
 import { SquareCheckBig } from 'lucide-react'
 import { cardAddChecklistsSchema, useCardAddChecklistsMutation } from '@/features/card'
-import { BoardCardsResponse, BoardDetailResponse } from '@/types'
+import { BoardCardChecklists, BoardCardsResponse } from '@/types'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 interface Props {
     card: BoardCardsResponse
-    board: BoardDetailResponse['data']
+    setLists: Dispatch<SetStateAction<BoardCardChecklists[]>>
 }
 
 export function CardAddChecklist({
-    board,
-    card
+    card,
+    setLists
 }: Props) {
     const [open, setOpen] = useState(false)
     const [title, setTitle] = useState('Checklist')
@@ -31,7 +31,40 @@ export function CardAddChecklist({
     }, [])
 
     const { mutate, isPending } = useCardAddChecklistsMutation(
-        () => {
+        (data) => {
+            const created = data?.data
+
+            if (!created?.id) {
+                setOpen(false)
+                
+                return
+            }
+
+            if (created.cardId && created.cardId !== card.id) {
+                setOpen(false)
+                
+                return
+            }
+
+            setLists((prev) => {
+                const prevArr = Array.isArray(prev) ? prev : []
+                if (prevArr.some((c) => c.id === created.id)) return prevArr
+
+                const next: BoardCardChecklists[] = [
+                    ...prevArr,
+                    {
+                        id: created.id,
+                        title: created.title ?? 'Checklist',
+                        order: typeof created.order === 'number' ? created.order : prevArr.length,
+                        items: Array.isArray(created.items) ? created.items : []
+                    }
+                ]
+
+                next.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+                
+                return next
+            })
+      
             setTitle('Checklist')
             setError(null)
             setOpen(false)
