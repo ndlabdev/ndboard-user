@@ -1,6 +1,6 @@
 import { apiFetch } from '@/lib/fetcher'
 import type { BoardCardsResponse, CardAddChecklistItemResponse, CardAddChecklistsResponse, CardCreateResponse, CardDeleteChecklistItemResponse, CardUpdateResponse, ListGetArchiveResponse } from '@/types'
-import { CardCreateFormValues, CardReorderFormValues, CardBulkReorderFormValues, CardUpdateFormValues, CardAddChecklistItemFormValues, CardDeleteChecklistFormValues, CardCompleteChecklistItemFormValues } from '@/features/card'
+import { CardCreateFormValues, CardReorderFormValues, CardBulkReorderFormValues, CardUpdateFormValues, CardAddChecklistItemFormValues, CardDeleteChecklistFormValues, CardCompleteChecklistItemFormValues, CardRenameChecklistItemFormValues } from '@/features/card'
 import { CardAddChecklistsFormValues } from '@/features/card/schemas/add-checklists'
 import { CardDeleteChecklistItemFormValues } from '@/features/card/schemas/delete-checklist-item'
 
@@ -92,6 +92,13 @@ export function cardDeleteChecklistApi(payload: CardDeleteChecklistFormValues): 
 
 export function cardCompleteChecklistItemApi(payload: CardCompleteChecklistItemFormValues): Promise<CardAddChecklistItemResponse> {
     return apiFetch<CardAddChecklistItemResponse>(`/cards/${payload.id}/checklists/${payload.checklistId}/items/${payload.itemId}/complete`, {
+        method: 'PATCH',
+        body: JSON.stringify(payload)
+    })
+}
+
+export function cardRenameChecklistItemApi(payload: CardRenameChecklistItemFormValues): Promise<CardAddChecklistItemResponse> {
+    return apiFetch<CardAddChecklistItemResponse>(`/cards/${payload.id}/checklists/${payload.checklistId}/items/${payload.itemId}`, {
         method: 'PATCH',
         body: JSON.stringify(payload)
     })

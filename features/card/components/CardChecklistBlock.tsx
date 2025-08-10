@@ -26,6 +26,7 @@ type Props = {
     onAddItem: () => void
     onDeleteChecklist: () => void
     onDeleteItem: (_itemId: string) => void
+    onRenameItem: (_itemId: string, _newName: string) => void
     setInputRef: (_el: HTMLInputElement | null) => void
 }
 
@@ -47,6 +48,7 @@ export const CardChecklistBlock = memo(function CardChecklistBlock({
     onAddItem,
     onDeleteChecklist,
     onDeleteItem,
+    onRenameItem,
     setInputRef
 }: Props) {
     const per = useMemo(() => calcChecklistProgress(list), [list, calcChecklistProgress])
@@ -111,6 +113,7 @@ export const CardChecklistBlock = memo(function CardChecklistBlock({
                                     disabled={!!togglingMap[key] || !!deletingMap[key]}
                                     onToggle={(next) => onToggleItem(list.id, item.id, next)}
                                     onDelete={() => onDeleteItem(item.id)}
+                                    onRename={(newName) => onRenameItem(item.id, newName)}
                                 />
                             )
                         })}

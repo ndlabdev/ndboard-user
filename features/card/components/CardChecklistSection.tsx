@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback, useRef, useState, Dispatch, SetStateAction } from 'react'
 import { Progress } from '@/components/ui/progress'
 import { Separator } from '@/components/ui/separator'
-import { calcAllChecklistsProgress, calcChecklistProgress, useCardAddChecklistItemMutation, useCardCompleteChecklistItemMutation, useCardDeleteChecklistItemMutation, useCardDeleteChecklistMutation } from '@/features/card'
+import { calcAllChecklistsProgress, calcChecklistProgress, renameChecklistItemSchema, useCardAddChecklistItemMutation, useCardCompleteChecklistItemMutation, useCardDeleteChecklistItemMutation, useCardDeleteChecklistMutation, useCardRenameChecklistItemMutation } from '@/features/card'
 import { BoardCardChecklists, BoardCardsResponse } from '@/types'
 import { CardChecklistBlock } from './CardChecklistBlock'
 
@@ -24,6 +24,7 @@ export function CardChecklistSection({ card, lists, setLists }: Props) {
     const overall = useMemo(() => calcAllChecklistsProgress(lists), [lists])
 
     // mutations
+    const renameItemMutation = useCardRenameChecklistItemMutation()
     const completeItemMutation = useCardCompleteChecklistItemMutation()
     const deleteChecklistMutation = useCardDeleteChecklistMutation()
     const deleteItemMutation = useCardDeleteChecklistItemMutation()
@@ -145,6 +146,44 @@ export function CardChecklistSection({ card, lists, setLists }: Props) {
         [card.id, deleteItemMutation, lists, setLists]
     )
 
+    const handleRenameItem = useCallback(
+        async (checklistId: string, itemId: string, name: string) => {
+            const parsed = renameChecklistItemSchema.safeParse({
+                id: card.id,
+                checklistId,
+                itemId,
+                name
+            })
+            if (!parsed.success) return
+
+            const payload = parsed.data
+
+            let snapshot: BoardCardChecklists[] | null = null
+
+            setLists((prev) => {
+                snapshot = prev
+                
+                return prev.map((list) =>
+                    list.id !== checklistId
+                        ? list
+                        : {
+                            ...list,
+                            items: list.items.map((it) =>
+                                it.id === itemId ? { ...it, name: payload.name } : it
+                            )
+                        }
+                )
+            })
+
+            try {
+                await renameItemMutation.mutateAsync(payload)
+            } catch {
+                if (snapshot) setLists(snapshot)
+            }
+        },
+        [card.id, renameItemMutation, setLists]
+    )
+
     const setInputRef = useCallback((listId: string, el: HTMLInputElement | null) => {
         inputRefs.current[listId] = el
     }, [])
@@ -181,6 +220,7 @@ export function CardChecklistSection({ card, lists, setLists }: Props) {
                     onAddItem={() => handleAddItem(list.id)}
                     onDeleteChecklist={() => handleDeleteChecklist(list.id)}
                     onDeleteItem={(itemId) => handleDeleteItem(list.id, itemId)}
+                    onRenameItem={(itemId, newName) => handleRenameItem(list.id, itemId, newName)}
                     setInputRef={(el) => setInputRef(list.id, el)}
                 />
             ))}
