@@ -1,4 +1,4 @@
-import React, { memo, useMemo, KeyboardEventHandler } from 'react'
+import React, { memo, useMemo, KeyboardEventHandler, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Progress } from '@/components/ui/progress'
@@ -22,6 +22,7 @@ type Props = {
     onOpenAdd: () => void
     onCancelAdd: () => void
     onToggleShowChecked: () => void
+    onRenameChecklistTitle: (_title: string) => void
     onToggleItem: (_checklistId: string, _itemId: string, _next: boolean) => void
     onAddItem: () => void
     onDeleteChecklist: () => void
@@ -44,6 +45,7 @@ export const CardChecklistBlock = memo(function CardChecklistBlock({
     onOpenAdd,
     onCancelAdd,
     onToggleShowChecked,
+    onRenameChecklistTitle,
     onToggleItem,
     onAddItem,
     onDeleteChecklist,
@@ -51,6 +53,9 @@ export const CardChecklistBlock = memo(function CardChecklistBlock({
     onRenameItem,
     setInputRef
 }: Props) {
+    const [editingTitle, setEditingTitle] = React.useState(false)
+    const [titleDraft, setTitleDraft] = React.useState(list.title)
+
     const per = useMemo(() => calcChecklistProgress(list), [list, calcChecklistProgress])
 
     const filteredItems = useMemo(
@@ -63,19 +68,59 @@ export const CardChecklistBlock = memo(function CardChecklistBlock({
         if (e.key === 'Escape') onCancelAdd()
     }
 
+    useEffect(() => setTitleDraft(list.title), [list.title])
+
+    const submitTitle = () => {
+        const next = titleDraft.trim()
+        if (!next || next === list.title) {
+            setEditingTitle(false)
+            setTitleDraft(list.title)
+            
+            return
+        }
+        onRenameChecklistTitle(next)
+        setEditingTitle(false)
+    }
+
+    const onTitleKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
+        if (e.key === 'Enter') submitTitle()
+        if (e.key === 'Escape') {
+            setEditingTitle(false)
+            setTitleDraft(list.title)
+        }
+    }
+
     return (
         <div className="col-span-12">
             <div className="rounded-lg border bg-card p-3">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <SquareCheckBig className="size-4" />
-                        <h5 className="text-sm font-semibold">{list.title}</h5>
+                        {editingTitle ? (
+                            <Input
+                                className="text-sm font-semibold bg-transparent border-b outline-none"
+                                value={titleDraft}
+                                onChange={(e) => setTitleDraft(e.target.value)}
+                                onKeyDown={onTitleKeyDown}
+                                onBlur={submitTitle}
+                                autoFocus
+                            />
+                        ) : (
+                            <h5
+                                className="text-sm font-semibold cursor-text"
+                                onClick={() => setEditingTitle(true)}
+                                title="Click to rename"
+                            >
+                                {list.title}
+                            </h5>
+                        )}
                     </div>
 
                     <div className="flex items-center gap-1">
                         <Button size="sm" variant="ghost" onClick={onToggleShowChecked}>
                             {showChecked ? 'Hide Checked' : 'Show Checked'}
                         </Button>
+
                         <Button
                             size="sm"
                             variant="ghost"

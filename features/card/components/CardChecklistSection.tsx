@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback, useRef, useState, Dispatch, SetStateAction } from 'react'
 import { Progress } from '@/components/ui/progress'
 import { Separator } from '@/components/ui/separator'
-import { calcAllChecklistsProgress, calcChecklistProgress, renameChecklistItemSchema, useCardAddChecklistItemMutation, useCardCompleteChecklistItemMutation, useCardDeleteChecklistItemMutation, useCardDeleteChecklistMutation, useCardRenameChecklistItemMutation } from '@/features/card'
+import { calcAllChecklistsProgress, calcChecklistProgress, cardUpdateChecklistSchema, renameChecklistItemSchema, useCardAddChecklistItemMutation, useCardCompleteChecklistItemMutation, useCardDeleteChecklistItemMutation, useCardDeleteChecklistMutation, useCardRenameChecklistItemMutation, useCardUpdateChecklistMutation } from '@/features/card'
 import { BoardCardChecklists, BoardCardsResponse } from '@/types'
 import { CardChecklistBlock } from './CardChecklistBlock'
 
@@ -18,13 +18,13 @@ export function CardChecklistSection({ card, lists, setLists }: Props) {
     const [deletingMap, setDeletingMap] = useState<Record<string, boolean>>({})
     const [deletingChecklistMap, setDeletingChecklistMap] = useState<Record<string, boolean>>({})
     const [togglingMap, setTogglingMap] = useState<Record<string, boolean>>({})
-    const [showCheckedMap, setShowCheckedMap] = useState<Record<string, boolean>>({})
     const inputRefs = useRef<Record<string, HTMLInputElement | null>>({})
 
     const overall = useMemo(() => calcAllChecklistsProgress(lists), [lists])
 
     // mutations
     const renameItemMutation = useCardRenameChecklistItemMutation()
+    const updateChecklistMutation = useCardUpdateChecklistMutation()
     const completeItemMutation = useCardCompleteChecklistItemMutation(card.listId)
     const deleteChecklistMutation = useCardDeleteChecklistMutation(card.listId)
     const deleteItemMutation = useCardDeleteChecklistItemMutation(card.listId)
@@ -52,10 +52,6 @@ export function CardChecklistSection({ card, lists, setLists }: Props) {
     const cancelAddSection = useCallback((listId: string) => {
         setAddOpen((m) => ({ ...m, [listId]: false }))
         setAddingMap((m) => ({ ...m, [listId]: '' }))
-    }, [])
-
-    const toggleShowChecked = useCallback((listId: string) => {
-        setShowCheckedMap((m) => ({ ...m, [listId]: !m[listId] }))
     }, [])
 
     const handleToggleItem = useCallback(
@@ -184,6 +180,51 @@ export function CardChecklistSection({ card, lists, setLists }: Props) {
         [card.id, renameItemMutation, setLists]
     )
 
+    const handleToggleShowChecked = useCallback(
+        async (listId: string) => {
+            const snapshot = lists
+            const cur = !!lists.find((l) => l.id === listId)?.isShow
+            const next = !cur
+
+            setLists((prev) => prev.map((l) => (l.id === listId ? { ...l, isShow: next } : l)))
+
+            try {
+                await updateChecklistMutation.mutateAsync({
+                    id: card.id,
+                    checklistId: listId,
+                    isShow: next
+                })
+            } catch {
+                setLists(snapshot)
+            }
+        },
+        [card.id, lists, setLists, updateChecklistMutation]
+    )
+
+    // rename checklist title (gọi API)
+    const handleRenameChecklistTitle = useCallback(
+        async (listId: string, newTitle: string) => {
+            const parsed = cardUpdateChecklistSchema.safeParse({
+                id: card.id,
+                checklistId: listId,
+                title: newTitle.trim()
+            })
+            if (!parsed.success) return
+
+            const payload = parsed.data
+            const snapshot = lists
+
+            setLists((prev) => prev.map((l) => (l.id === listId ? { ...l, title: payload.title! } : l)))
+
+            try {
+                await updateChecklistMutation.mutateAsync(payload)
+            } catch {
+                setLists(snapshot)
+            }
+        },
+        [card.id, lists, setLists, updateChecklistMutation]
+    )
+
     const setInputRef = useCallback((listId: string, el: HTMLInputElement | null) => {
         inputRefs.current[listId] = el
     }, [])
@@ -209,13 +250,14 @@ export function CardChecklistSection({ card, lists, setLists }: Props) {
                     isBusy={!!busyMap[list.id]}
                     addOpen={!!addOpen[list.id]}
                     deletingChecklist={!!deletingChecklistMap[list.id]}
-                    showChecked={!!showCheckedMap[list.id]}
+                    showChecked={!!list.isShow}
                     deletingMap={deletingMap}
                     togglingMap={togglingMap}
                     onChangeAdding={(v) => setAddingMap((m) => ({ ...m, [list.id]: v }))}
                     onOpenAdd={() => openAddSection(list.id)}
                     onCancelAdd={() => cancelAddSection(list.id)}
-                    onToggleShowChecked={() => toggleShowChecked(list.id)}
+                    onToggleShowChecked={() => handleToggleShowChecked(list.id)}
+                    onRenameChecklistTitle={(t) => handleRenameChecklistTitle(list.id, t)} 
                     onToggleItem={handleToggleItem}
                     onAddItem={() => handleAddItem(list.id)}
                     onDeleteChecklist={() => handleDeleteChecklist(list.id)}

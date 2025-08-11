@@ -46,6 +46,7 @@ export interface BoardListsResponse {
 export interface BoardCardChecklists {
     id: string;
     title: string;
+    isShow: boolean;
     order: number;
     items: {
         name: string;
