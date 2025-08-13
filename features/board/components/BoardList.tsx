@@ -27,6 +27,8 @@ export function BoardList({
 
     const boards = data?.data || []
 
+    if (isStarred && boards.length === 0) return
+
     return (
         <div>
             <h2 className="text-xl font-bold mb-4">{title}</h2>
