@@ -22,6 +22,7 @@ export function useCardUpdateMutation(
                                 ...card,
                                 name: data.data.name,
                                 labels: data.data.labels,
+                                description: data.data.description,
                                 updatedAt: data.data.updatedAt
                             }
                             : card

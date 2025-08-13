@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -122,16 +123,16 @@
 }
 
 ::-webkit-scrollbar {
-    background-color: transparent;
-    height: .4em;
-    width: .4em;
+  background-color: transparent;
+  height: 0.4em;
+  width: 0.4em;
 }
 
 ::-webkit-scrollbar-thumb {
-    border-radius: .6em;
-    background-color: var(--color-slate-300);
+  border-radius: 0.6em;
+  background-color: var(--color-slate-300);
 }
 
 ::-webkit-scrollbar-track {
-    background-color: var(--color-slate-100);
+  background-color: var(--color-slate-100);
 }

@@ -14,6 +14,7 @@ import { EditableTextarea } from './CardEditableTextarea'
 import { CardChecklistSection } from './CardChecklistSection'
 import { SquareCheckBig } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { CardDescription } from './CardDescription'
 
 interface Props {
     card: BoardCardsResponse
@@ -136,6 +137,10 @@ export const CardItem = memo(function CardItem({
                                     </li>
                                 ))}
                             </ul>
+                        </div>
+
+                        <div className="col-span-12">
+                            <CardDescription card={card} />
                         </div>
 
                         {lists?.length > 0 && (

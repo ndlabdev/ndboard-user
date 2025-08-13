@@ -1,5 +1,6 @@
 import { PaginateMeta } from './api-common'
 import { OgObject } from './og-object'
+import type { JSONContent } from '@tiptap/core'
 
 export type BoardBackground = {
     key: string
@@ -60,7 +61,7 @@ export interface BoardCardChecklists {
 export interface BoardCardsResponse {
     id: string;
     name: string;
-    description: string | null;
+    description: JSONContent | null;
     listId: string;
     boardId: string;
     order: number;
