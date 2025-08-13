@@ -15,7 +15,7 @@ type Props = {
 
 const EMPTY_DOC: JSONContent = { type: 'doc', content: [{ type: 'paragraph' }] }
 
-export function CardDescription({ card, initial = null, onPersist }: Props) {
+export function CardDescription({ card, onPersist }: Props) {
     const [doc, setDoc] = useState<JSONContent | null>(card.description)
     const [isEditing, setIsEditing] = useState(false)
     const [draft, setDraft] = useState<JSONContent | null>(null)
