@@ -56,7 +56,7 @@ export function CardAddLabel({
     }
 
     return (
-        <Popover>
+        <Popover modal>
             <PopoverTrigger asChild>
                 <Button
                     size="sm"
@@ -67,7 +67,10 @@ export function CardAddLabel({
                 </Button>
             </PopoverTrigger>
 
-            <PopoverContent align='start' className="p-4 max-h-[60vh] overflow-y-auto bg-white shadow-xl rounded-xl w-80">
+            <PopoverContent
+                align='start'
+                className="p-4 max-h-[60vh] overflow-y-auto bg-white shadow-xl rounded-xl w-80"
+            >
                 <div>
                     <Input
                         placeholder="Search labels..."
