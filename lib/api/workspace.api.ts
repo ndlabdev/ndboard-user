@@ -1,6 +1,6 @@
 import { WorkspaceCreateFormValues, WorkspaceEditFormValues, WorkspaceInviteMemberFormValues } from '@/features/workspace'
 import { apiFetch } from '@/lib/fetcher'
-import type { WorkspaceCreateResponse, WorkspaceListResponse, WorkspaceEditResponse, WorkspaceMemberListResponse, WorkspaceInviteMemberResponse, WorkspaceMemberSearchResponse } from '@/types'
+import type { WorkspaceCreateResponse, WorkspaceListResponse, WorkspaceEditResponse, WorkspaceMemberListResponse, WorkspaceInviteMemberResponse, WorkspaceMemberSearchResponse, WorkspaceMemberRemoveResponse } from '@/types'
 
 export function workspaceGetListApi(): Promise<WorkspaceListResponse> {
     return apiFetch<WorkspaceListResponse>('/workspace', {
@@ -46,5 +46,11 @@ export function workspaceMemberSearchApi(workspaceId: string, q: string): Promis
             q,
             pageSize: 30
         }
+    })
+}
+
+export async function workspaceRemoveMemberApi(workspaceId: string, userId: string): Promise<WorkspaceMemberRemoveResponse> {
+    return apiFetch<WorkspaceMemberRemoveResponse>(`/workspace/${workspaceId}/members/${userId}`, {
+        method: 'DELETE'
     })
 }

@@ -81,3 +81,13 @@ export interface WorkspaceMemberSearchResponse {
     data: WorkspaceMemberUser[]
     meta: PaginateMeta
 }
+
+export interface WorkspaceMemberRemoveResponse {
+    data: {
+        userId: string;
+        role: string;
+        workspaceId: string;
+        joinedAt: Date;
+        invitedById: string | null;
+    }
+}

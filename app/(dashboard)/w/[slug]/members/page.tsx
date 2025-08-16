@@ -6,21 +6,38 @@ import {
     useWorkspaceGetListQuery,
     useWorkspaceMemberListQuery,
     WorkspaceSkeleton,
-    WorkspaceInviteMember
+    WorkspaceInviteMember,
+    useWorkspaceRemoveMemberMutation
 } from '@/features/workspace'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
+import { Button } from '@/components/ui/button'
+import { Trash } from 'lucide-react'
+import { toast } from 'sonner'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 export default function BoardMembersPage() {
     const params = useParams()
     const { data, isLoading } = useWorkspaceGetListQuery()
     const workspace = data?.data.find((item) => item.slug === params.slug)
 
-    const { data: dataMembers, isLoading: isMembersLoading } = useWorkspaceMemberListQuery(
+    const { data: dataMembers, isLoading: isMembersLoading, refetch } = useWorkspaceMemberListQuery(
         workspace?.id ?? '',
         '',
         !!workspace
+    )
+
+    const { mutate: removeMember, isPending } = useWorkspaceRemoveMemberMutation(
+        workspace?.id ?? '',
+        () => refetch(),
+        (error) => {
+            const msg =
+                (error as { message?: string })?.message ||
+                'Remove Member failed. Please try again.'
+
+            toast.error(msg)
+        }
     )
 
     if (isLoading) return <WorkspaceSkeleton />
@@ -76,7 +93,29 @@ export default function BoardMembersPage() {
                                     </div>
                                 </div>
                             </div>
-                            <Badge variant="secondary" className="uppercase">{member.role}</Badge>
+                            <div className="flex items-center gap-2">
+                                <Badge variant="secondary" className="uppercase">
+                                    {member.role}
+                                </Badge>
+                                
+                                <TooltipProvider>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Button
+                                                size="icon"
+                                                variant="ghost"
+                                                onClick={() => removeMember(member.id)}
+                                                disabled={isPending}
+                                            >
+                                                <Trash className="w-4 h-4 text-destructive" />
+                                            </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="top">
+                                            <p className="text-sm">Remove member</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                            </div>
                         </div>
                     ))}
                 </div>

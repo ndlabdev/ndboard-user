@@ -5,6 +5,7 @@ export * from './hooks/useWorkspaceEditMutation'
 export * from './hooks/useWorkspaceMemberListQuery'
 export * from './hooks/useWorkspaceInviteMemberMutation'
 export * from './hooks/useWorkspaceMemberSearchQuery'
+export * from './hooks/useWorkspaceRemoveMemberMutation'
 
 // ** Components
 export * from './components/WorkspaceCreateButton'
