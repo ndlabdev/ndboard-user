@@ -15,7 +15,7 @@ import {
 import { WorkspaceMemberUser } from '@/types'
 
 interface WorkspaceInviteMemberProps {
-  workspaceId: string
+    workspaceId: string
 }
 
 export function useDebounce<T>(value: T, delay = 300): T {
@@ -39,7 +39,7 @@ export function WorkspaceInviteMember({ workspaceId }: WorkspaceInviteMemberProp
     const debouncedSearch = useDebounce(search, 400)
     const [selectedUsers, setSelectedUsers] = useState<WorkspaceMemberUser[]>([])
 
-    const { data, isLoading } = useWorkspaceMemberSearchQuery(workspaceId, debouncedSearch)
+    const { data, isLoading } = useWorkspaceMemberSearchQuery(workspaceId, debouncedSearch, !!debouncedSearch)
     const inviteMutation = useWorkspaceInviteMemberMutation(workspaceId)
 
     const handleToggleUser = (user: WorkspaceMemberUser) => {

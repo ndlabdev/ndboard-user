@@ -7,6 +7,7 @@ export * from './hooks/useBoardFavoriteMutation'
 export * from './hooks/useBoardUnFavoriteMutation'
 export * from './hooks/useBoardCreateLabelsMutation'
 export * from './hooks/useBoardUpdateLabelMutation'
+export * from './hooks/useBoardInviteMemberMutation'
 
 // ** Components
 export * from './components/BoardList'
@@ -25,6 +26,7 @@ export * from './components/BoardChangeVisibility'
 export * from './components/BoardMenuLabel'
 export * from './components/BoardMenuLabelForm'
 export * from './components/BoardMenuArchiveList'
+export * from './components/BoardInviteMember'
 
 // ** Constants
 export * from './constants'

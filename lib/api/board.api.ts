@@ -1,6 +1,6 @@
 import { apiFetch } from '@/lib/fetcher'
 import { BoardCreateFormValues, BoardFavoriteFormValues, BoardLabelCreateFormValues, BoardUpdateFormValues } from '@/features/board'
-import type { BoardListResponse, BoardDetailResponse, BoardCreateResponse, BoardUpdateResponse, BoardFavoriteResponse, BoardCreateLabelsResponse } from '@/types'
+import type { BoardListResponse, BoardDetailResponse, BoardCreateResponse, BoardUpdateResponse, BoardFavoriteResponse, BoardCreateLabelsResponse, BoardInviteMembersResponse } from '@/types'
 
 export function boardGetListApi(workspaceId: string, isStarred = false): Promise<BoardListResponse> {
     return apiFetch<BoardListResponse>('/boards', {
@@ -56,4 +56,17 @@ export function boardUpdateLabelApi(payload: BoardLabelCreateFormValues): Promis
         method: 'PATCH',
         body: JSON.stringify(payload)
     })
+}
+
+export async function boardInviteMembersApi(
+    shortLink: string,
+    body: { userIds: string[]; role?: string }
+): Promise<BoardInviteMembersResponse> {
+    return apiFetch<BoardInviteMembersResponse>(
+        `/boards/${shortLink}/invite-members`,
+        {
+            method: 'POST',
+            body: JSON.stringify(body)
+        }
+    )
 }

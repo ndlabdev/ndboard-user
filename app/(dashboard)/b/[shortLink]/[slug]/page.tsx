@@ -2,7 +2,7 @@
 
 import { useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import { BoardChangeVisibility, BoardCoverImage, BoardDetailSkeleton, BoardMenu, BoardNameEditable, BoardStar, useBoardUpdateMutation, useBoardWithCardsQuery } from '@/features/board'
+import { BoardChangeVisibility, BoardCoverImage, BoardDetailSkeleton, BoardInviteMember, BoardMenu, BoardNameEditable, BoardStar, useBoardUpdateMutation, useBoardWithCardsQuery } from '@/features/board'
 import { ListColumnKanban } from '@/features/list'
 import { getTextColorByBg } from '@/utils'
 
@@ -64,6 +64,12 @@ export default function BoardDetailPage() {
 
                             <BoardChangeVisibility
                                 board={board}
+                                textColor={textColor}
+                            />
+
+                            <BoardInviteMember
+                                shortLink={board.shortLink}
+                                workspaceId={board.workspaceId}
                                 textColor={textColor}
                             />
 

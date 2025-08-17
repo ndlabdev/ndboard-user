@@ -4,10 +4,12 @@ import type { WorkspaceMemberSearchResponse } from '@/types'
 
 export function useWorkspaceMemberSearchQuery(
     workspaceId: string,
-    search: string
+    search: string,
+    enabled = false
 ): UseQueryResult<WorkspaceMemberSearchResponse, unknown> {
     return useQuery({
         queryKey: ['workspacesSearchUser', workspaceId, search],
-        queryFn: () => workspaceMemberSearchApi(workspaceId, search)
+        queryFn: () => workspaceMemberSearchApi(workspaceId, search),
+        enabled
     })
 }

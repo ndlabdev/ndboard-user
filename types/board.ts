@@ -207,3 +207,12 @@ export interface BoardFavoriteResponse {
         isFavorite: true;
     }
 }
+
+export interface BoardInviteMembersResponse {
+    data: {
+        boardId: string
+        invitedUsers: string[]
+        skippedUsers: { userId: string; reason: string }[]
+        role: string
+    }
+}
