@@ -8,6 +8,7 @@ export * from './components/CardCreateInList'
 export * from './components/CardArchiveSection'
 export * from './components/CardAddLabel'
 export * from './components/CardAddChecklist'
+export * from './components/CardAssignMember'
 
 // ** Hooks
 export * from './hooks/useCardCreateMutation'

@@ -101,6 +101,14 @@ export interface BoardCardsResponse {
     meta: OgObject;
 }
 
+export interface BoardMembersResponse {
+    userId: string;
+    name: string;
+    email: string;
+    avatarUrl: string | null;
+    role: string;
+}
+
 export interface BoardDetailResponse {
     data: {
         owner: {
@@ -130,6 +138,7 @@ export interface BoardDetailResponse {
         order: number
         lists: BoardListsResponse[]
         labels: BoardLabelResponse[]
+        members: BoardMembersResponse[]
         isFavorite: boolean
     }
 }

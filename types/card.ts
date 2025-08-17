@@ -72,6 +72,11 @@ export interface CardUpdateResponse {
             color: string;
             tone: string;
         }[] | undefined;
+        assignees: {
+            id: string;
+            name: string;
+            avatarUrl: string | null;
+        }
     }
 }
 
