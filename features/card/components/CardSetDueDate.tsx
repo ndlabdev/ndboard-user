@@ -85,7 +85,6 @@ export function CardSetDueDate({ card }: Props) {
         return format(dueDate, 'dd MMM yyyy')
     }
 
-
     return (
         <Popover open={open} onOpenChange={setOpen} modal>
             <PopoverTrigger asChild>

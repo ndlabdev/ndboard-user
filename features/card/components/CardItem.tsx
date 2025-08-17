@@ -9,7 +9,7 @@ import {
     DialogTitle,
     DialogTrigger
 } from '@/components/ui/dialog'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { EditableTextarea } from './CardEditableTextarea'
 import { CardChecklistSection } from './CardChecklistSection'
 import { SquareCheckBig } from 'lucide-react'
@@ -122,7 +122,7 @@ export const CardItem = memo(function CardItem({
                 </div>
             </DialogTrigger>
 
-            <DialogContent className="sm:max-w-5/6 max-h-[95vh] flex flex-col">
+            <DialogContent className="sm:max-w-5/6 max-h-[95vh] flex flex-col overflow-x-auto">
                 <DialogHeader className="py-4 border-b">
                     <DialogTitle>
                         Header
@@ -231,6 +231,8 @@ export const CardItem = memo(function CardItem({
                             </div>
                         )}
                     </div>
+
+                    <ScrollBar orientation="horizontal" />
                 </ScrollArea>
             </DialogContent>
         </Dialog>
