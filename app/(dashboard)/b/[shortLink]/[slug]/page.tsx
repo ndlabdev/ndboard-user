@@ -68,6 +68,7 @@ export default function BoardDetailPage() {
                             />
 
                             <BoardInviteMember
+                                board={board}
                                 shortLink={board.shortLink}
                                 workspaceId={board.workspaceId}
                                 textColor={textColor}

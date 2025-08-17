@@ -220,7 +220,12 @@ export interface BoardFavoriteResponse {
 export interface BoardInviteMembersResponse {
     data: {
         boardId: string
-        invitedUsers: string[]
+        invitedUsers: {
+            id: string;
+            name: string;
+            email: string;
+            avatarUrl: string | null;
+        }[]
         skippedUsers: { userId: string; reason: string }[]
         role: string
     }

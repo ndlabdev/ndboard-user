@@ -70,3 +70,12 @@ export async function boardInviteMembersApi(
         }
     )
 }
+
+export async function boardRemoveMemberApi(shortLink: string, userId: string) {
+    return apiFetch<{ data: { success: boolean } }>(
+        `/boards/${shortLink}/members/${userId}`,
+        {
+            method: 'DELETE'
+        }
+    )
+}

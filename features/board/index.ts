@@ -8,6 +8,7 @@ export * from './hooks/useBoardUnFavoriteMutation'
 export * from './hooks/useBoardCreateLabelsMutation'
 export * from './hooks/useBoardUpdateLabelMutation'
 export * from './hooks/useBoardInviteMemberMutation'
+export * from './hooks/useBoardRemoveMemberMutation'
 
 // ** Components
 export * from './components/BoardList'
