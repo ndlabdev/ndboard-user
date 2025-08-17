@@ -158,22 +158,62 @@ export const CardItem = memo(function CardItem({
                             </div>
                         </div>
 
-                        <div className="col-span-12">
-                            <ul className="flex gap-1 items-center">
-                                {card.labels.map((item) => (
-                                    <li
-                                        key={item.id}
-                                        className={`
+                        {(card.assignees && card.assignees.length > 0) && (card.labels && card.labels.length > 0) && (
+                            <div className="col-span-12">
+                                <div className="flex flex-wrap gap-4">
+                                    {card.assignees && card.assignees.length > 0 && (
+                                        <div className="flex flex-col gap-2">
+                                            <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                                                Members
+                                            </h4>
+
+                                            <ul className="flex gap-2 items-center flex-wrap">
+                                                {card.assignees.map((m) => (
+                                                    <li key={m.id} className="flex items-center gap-2">
+                                                        <Avatar className="h-8 w-8">
+                                                            {m.avatarUrl ? (
+                                                                <AvatarImage src={m.avatarUrl} alt={m.name} />
+                                                            ) : (
+                                                                <AvatarFallback>
+                                                                    {m.name?.charAt(0).toUpperCase()}
+                                                                </AvatarFallback>
+                                                            )}
+                                                        </Avatar>
+                                                        <div className="flex flex-col">
+                                                            <span className="text-sm font-medium">{m.name}</span>
+                                                            <span className="text-xs text-muted-foreground">{m.email}</span>
+                                                        </div>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+  
+                                    {card.labels && card.labels.length > 0 && (
+                                        <div className="flex flex-col gap-2">
+                                            <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                                                Labels
+                                            </h4>
+
+                                            <ul className="flex gap-1 items-center">
+                                                {card.labels.map((item) => (
+                                                    <li
+                                                        key={item.id}
+                                                        className={`
                                                 h-7 leading-7 text-center px-3 min-w-12 max-w-full text-xs font-semibold rounded
                                                 ${getLabelClass(item.color, item.tone) || 'bg-gray-300 text-gray-900'}
                                                 transition-colors duration-150
                                             `}
-                                    >
-                                        {item.name}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+                                                    >
+                                                        {item.name}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
 
                         <div className="col-span-12">
                             <CardDescription card={card} />

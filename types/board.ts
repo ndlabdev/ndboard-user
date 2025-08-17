@@ -71,6 +71,7 @@ export interface BoardCardsResponse {
     assignees: {
         id: string;
         name: string;
+        email: string;
         avatarUrl: string | null;
     }[];
     checklists: BoardCardChecklists[];
