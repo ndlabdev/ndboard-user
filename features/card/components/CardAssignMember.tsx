@@ -55,7 +55,7 @@ export function CardAssignMember({ board, card }: Props) {
         <Popover modal>
             <PopoverTrigger asChild>
                 <Button size="sm" variant="outline">
-                    <User className="mr-1 h-4 w-4" />
+                    <User className="size-4" />
                     Members
                 </Button>
             </PopoverTrigger>

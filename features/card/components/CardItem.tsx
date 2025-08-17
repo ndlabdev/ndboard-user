@@ -1,6 +1,6 @@
 import { memo, useState } from 'react'
 import { getLabelClass, isUrl } from '@/lib/utils'
-import { calcAllChecklistsProgress, CardAddChecklist, CardAddLabel, CardAssignMember, CardLinkPreview } from '@/features/card'
+import { calcAllChecklistsProgress, CardAddChecklist, CardAddLabel, CardAssignMember, CardLinkPreview, CardSetDueDate } from '@/features/card'
 import { BoardCardChecklists, BoardCardsResponse, BoardDetailResponse } from '@/types'
 import {
     Dialog,
@@ -145,6 +145,8 @@ export const CardItem = memo(function CardItem({
                                     card={card}
                                     board={board}
                                 />
+
+                                <CardSetDueDate card={card} />
 
                                 <CardAssignMember
                                     card={card}

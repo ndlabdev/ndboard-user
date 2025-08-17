@@ -6,7 +6,9 @@ export const cardUpdateSchema = z.object({
     name: z.string().optional(),
     description: z.any().optional(),
     labels: z.array(z.string()).optional(),
-    assignees: z.array(z.string()).optional()
+    assignees: z.array(z.string()).optional(),
+    startDate: z.string().datetime().nullable().optional(),
+    dueDate: z.string().datetime().nullable().optional()
 })
 
 // ** State

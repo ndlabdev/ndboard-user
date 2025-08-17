@@ -24,7 +24,9 @@ export function useCardUpdateMutation(
                                 labels: data.data.labels,
                                 assignees: data.data.assignees,
                                 description: data.data.description,
-                                updatedAt: data.data.updatedAt
+                                updatedAt: data.data.updatedAt,
+                                startDate: data.data.startDate,
+                                dueDate: data.data.dueDate
                             }
                             : card
                     )

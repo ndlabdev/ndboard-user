@@ -65,6 +65,7 @@ export interface BoardCardsResponse {
     listId: string;
     boardId: string;
     order: number;
+    startDate: Date | null;
     dueDate: Date | null;
     isArchived: boolean;
     labels: BoardLabelResponse[];

@@ -9,6 +9,7 @@ export * from './components/CardArchiveSection'
 export * from './components/CardAddLabel'
 export * from './components/CardAddChecklist'
 export * from './components/CardAssignMember'
+export * from './components/CardSetDueDate'
 
 // ** Hooks
 export * from './hooks/useCardCreateMutation'
