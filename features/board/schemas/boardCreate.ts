@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { BOARD_VISIBILITY } from '@/features/board'
+import { BOARD_VISIBILITY, DEFAULT_BOARD_BACKGROUNDS } from '@/features/board'
 
 const BOARD_VISIBILITY_VALUES = Object.values(BOARD_VISIBILITY) as [string, ...string[]]
 
@@ -21,7 +21,7 @@ export const boardCreateSchema = z.object({
 export const boardCreateState: z.infer<typeof boardCreateSchema> = {
     name: '',
     description: '',
-    coverImageUrl: '',
+    coverImageUrl: DEFAULT_BOARD_BACKGROUNDS[0].fullUrl,
     workspaceId: '',
     visibility: BOARD_VISIBILITY.PRIVATE
 }
