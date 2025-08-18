@@ -85,7 +85,7 @@ export function BoardInviteMember({
                 </Button>
             </PopoverTrigger>
 
-            <PopoverContent className="w-80 p-0">
+            <PopoverContent className="w-80 p-0 overflow-y-auto max-h-80">
                 <div className="p-3">
                     <div className="text-xs font-semibold text-gray-500 mb-2">Board Members</div>
                     <div className="flex flex-col gap-1 max-h-40 overflow-y-auto">

@@ -33,6 +33,14 @@ export interface CardGetListItem {
         url: string
         uploadedById: string
     }[]
+    activities: {
+        userId: string;
+        id: string;
+        createdAt: Date;
+        cardId: string;
+        detail: string | null;
+        action: string;
+    }[]
     customFields: {
         id: string
         name: string
@@ -78,6 +86,27 @@ export interface CardUpdateResponse {
             name: string;
             avatarUrl: string | null;
         }
+        comments: {
+            id: string;
+            content: string;
+            createdAt: Date;
+            user: {
+                name: string;
+                id: string;
+                avatarUrl: string | null;
+            };
+        }[];
+        activities: {
+            id: string;
+            action: string;
+            detail: string | null;
+            createdAt: Date;
+            user: {
+                name: string;
+                id: string;
+                avatarUrl: string | null;
+            };
+        }[];
     }
 }
 
@@ -95,6 +124,15 @@ export interface CardAddChecklistsResponse {
             checklistId: string;
             isChecked: boolean;
         }[];
+        listId: string;
+        activities: {
+            userId: string;
+            id: string;
+            createdAt: Date;
+            cardId: string;
+            detail: string | null;
+            action: string;
+        }
     }
 }
 
@@ -111,6 +149,15 @@ export interface CardAddChecklistItemResponse {
             checklistItemId: string;
             completedAt: Date;
         }[];
+        listId: string;
+        activities: {
+            userId: string;
+            id: string;
+            createdAt: Date;
+            cardId: string;
+            detail: string | null;
+            action: string;
+        }
     }
 }
 
@@ -118,6 +165,15 @@ export interface CardDeleteChecklistItemResponse {
     data: {
         id: string
         cardId: string
+        listId: string
         checklistId: string
+        activities: {
+            userId: string;
+            id: string;
+            createdAt: Date;
+            cardId: string;
+            detail: string | null;
+            action: string;
+        }
     }
 }

@@ -26,7 +26,11 @@ export function useCardDeleteChecklistMutation(
                             ? card
                             : {
                                 ...card,
-                                checklists: card.checklists.filter((cl) => cl.id !== payload.id)
+                                checklists: card.checklists.filter((cl) => cl.id !== payload.id),
+                                activities: [
+                                    ...(data.data.activities ? [data.data.activities] : []),
+                                    ...(card.activities ?? [])
+                                ]
                             }
                     )
                 }

@@ -94,6 +94,17 @@ export interface BoardCardsResponse {
             avatarUrl: string | null;
         };
     }[];
+    activities: {
+        id: string;
+        action: string;
+        detail: string | null;
+        createdAt: Date;
+        user: {
+            name: string;
+            id: string;
+            avatarUrl: string | null;
+        };
+    }[];
     customFieldValues: {
         id: string;
         value: string;

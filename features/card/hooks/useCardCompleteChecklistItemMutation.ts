@@ -25,6 +25,10 @@ export function useCardCompleteChecklistItemMutation(
                             ? card
                             : {
                                 ...card,
+                                activities: [
+                                    ...(data.data.activities ? [data.data.activities] : []),
+                                    ...(card.activities ?? [])
+                                ],
                                 checklists: card.checklists.map((list) =>
                                     list.id !== payload.checklistId
                                         ? list
