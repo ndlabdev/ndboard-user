@@ -103,6 +103,7 @@ export function CardSetDueDate({ card }: Props) {
 
             <PopoverContent
                 align="start"
+                side="right"
                 className="max-h-[80vh] overflow-y-auto w-80"
             >
                 <div className="flex flex-col gap-4">

@@ -1,5 +1,5 @@
 import { memo, useState } from 'react'
-import { getLabelClass, isUrl } from '@/lib/utils'
+import { cn, getLabelClass, isUrl } from '@/lib/utils'
 import { calcAllChecklistsProgress, CardAddChecklist, CardAddLabel, CardAssignMember, CardLinkPreview, CardSetDueDate } from '@/features/card'
 import { BoardCardChecklists, BoardCardsResponse, BoardDetailResponse } from '@/types'
 import {
@@ -16,6 +16,7 @@ import { SquareCheckBig } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { CardDescription } from './CardDescription'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { addDays, format, isBefore, isToday, isWithinInterval } from 'date-fns'
 
 interface Props {
     card: BoardCardsResponse
@@ -87,6 +88,44 @@ export const CardItem = memo(function CardItem({
                                 </h4>
 
                                 <CardChecklistSummary card={card} />
+
+                                {(card.startDate || card.dueDate) && (
+                                    <div className="mt-2">
+                                        {(() => {
+                                            const now = new Date()
+                                            const start = card.startDate ? new Date(card.startDate) : null
+                                            const due = card.dueDate ? new Date(card.dueDate) : null
+
+                                            let statusClass = ''
+                                            if (due) {
+                                                if (isBefore(due, now) && !isToday(due)) {
+                                                    statusClass = 'bg-red-100 text-red-600 border-red-200'
+                                                } else if (
+                                                    isWithinInterval(due, { start: now, end: addDays(now, 1) })
+                                                ) {
+                                                    statusClass = 'bg-amber-100 text-amber-600 border-amber-200'
+                                                } else {
+                                                    statusClass = 'bg-green-100 text-green-600 border-green-200'
+                                                }
+                                            }
+
+                                            return (
+                                                <div
+                                                    className={cn(
+                                                        'inline-flex items-center text-sm font-medium px-2 py-1 rounded border',
+                                                        statusClass
+                                                    )}
+                                                >
+                                                    {start
+                                                        ? `${format(start, 'dd MMM yyyy')} → ${due ? format(due, 'dd MMM yyyy') : ''}`
+                                                        : due
+                                                            ? format(due, 'dd MMM yyyy')
+                                                            : ''}
+                                                </div>
+                                            )
+                                        })()}
+                                    </div>
+                                )}
 
                                 {card.assignees && card.assignees.length > 0 && (
                                     <div className="flex justify-end mt-2">
