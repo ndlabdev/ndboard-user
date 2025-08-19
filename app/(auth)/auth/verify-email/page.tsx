@@ -118,7 +118,7 @@ export default function VerifyEmailPage() {
                                     )}
                                     Resend Verification Email
                                 </Button>
-                                {resendMessage && <p className="text-sm text-gray-500">{resendMessage}</p>}
+                                {resendMessage && <p className="text-sm text-green-500">{resendMessage}</p>}
                             </div>
                         )}
 
