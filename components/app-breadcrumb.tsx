@@ -4,9 +4,7 @@ import {
     Breadcrumb,
     BreadcrumbItem,
     BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator
+    BreadcrumbList
 } from '@/components/ui/breadcrumb'
 import { useAuth } from '@/features/auth'
 
@@ -20,12 +18,6 @@ export function AppBreadcrumb() {
                     <BreadcrumbLink href="#">
                         {user?.username}
                     </BreadcrumbLink>
-                </BreadcrumbItem>
-
-                <BreadcrumbSeparator className="hidden md:block" />
-
-                <BreadcrumbItem>
-                    <BreadcrumbPage>Data Fetching</BreadcrumbPage>
                 </BreadcrumbItem>
             </BreadcrumbList>
         </Breadcrumb>

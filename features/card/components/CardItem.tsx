@@ -203,7 +203,7 @@ export const CardItem = memo(function CardItem({
                                     </div>
                                 </div>
 
-                                {(card.assignees && card.assignees.length > 0) && (card.labels && card.labels.length > 0) && (
+                                {((card.assignees && card.assignees.length > 0) || (card.labels && card.labels.length > 0)) && (
                                     <div className="col-span-12">
                                         <div className="flex flex-wrap gap-4">
                                             {card.assignees && card.assignees.length > 0 && (
