@@ -1,18 +1,20 @@
 import { apiFetch } from '@/lib/fetcher'
 import type { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse, LoginSocialResponse, LoginSocialParams, RefreshTokenResponse } from '@/types'
 
+const isRetry = true
+
 export function authLoginApi(payload: LoginRequest): Promise<LoginResponse> {
     return apiFetch<LoginResponse>('/auth/login', {
         method: 'POST',
         body: JSON.stringify(payload)
-    })
+    }, isRetry)
 }
 
 export function authRegisterApi(payload: RegisterRequest): Promise<RegisterResponse> {
     return apiFetch<RegisterResponse>('/auth/register', {
         method: 'POST',
         body: JSON.stringify(payload)
-    })
+    }, isRetry)
 }
 
 export function authLoginGoogleApi(): Promise<LoginSocialResponse> {
