@@ -46,6 +46,17 @@ export interface CardGetListItem {
         name: string
         value: string
     }[]
+    comments: {
+        id: string;
+        content: string;
+        createdAt: Date;
+        user: {
+            name: string;
+            id: string;
+            email: string;
+            avatarUrl: string | null;
+        };
+    }[]
     meta: OgObject
 }
 
@@ -175,5 +186,29 @@ export interface CardDeleteChecklistItemResponse {
             detail: string | null;
             action: string;
         }
+    }
+}
+
+export interface CardAddCommentResponse {
+    data: {
+        userId: string;
+        id: string;
+        createdAt: Date;
+        cardId: string;
+        content: string;
+        activities: {
+            user: {
+                name: string;
+                id: string;
+                email: string;
+                avatarUrl: string | null;
+            };
+        };
+        user: {
+            name: string;
+            id: string;
+            email: string;
+            avatarUrl: string | null;
+        };
     }
 }

@@ -1,6 +1,6 @@
 import { memo, useState } from 'react'
 import { cn, getLabelClass, isUrl } from '@/lib/utils'
-import { calcAllChecklistsProgress, CardAddChecklist, CardAddLabel, CardAssignMember, CardLinkPreview, CardSetDueDate } from '@/features/card'
+import { calcAllChecklistsProgress, CardAddChecklist, CardAddLabel, CardAssignMember, CardLinkPreview, CardSetDueDate, useCardAddCommentMutation } from '@/features/card'
 import { BoardCardChecklists, BoardCardsResponse, BoardDetailResponse } from '@/types'
 import {
     Dialog,
@@ -59,7 +59,22 @@ export const CardItem = memo(function CardItem({
 }: Props) {
     const [isOpen, setIsOpen] = useState(false)
     const [lists, setLists] = useState<BoardCardChecklists[]>(card?.checklists ?? [])
-    
+    const [commentText, setCommentText] = useState('')
+
+    const addCommentMutation = useCardAddCommentMutation(card.id, card.listId)
+   
+    const handleAddComment = () => {
+        if (!commentText.trim()) return
+        addCommentMutation.mutate(
+            { content: commentText },
+            {
+                onSuccess: () => {
+                    setCommentText('')
+                }
+            }
+        )
+    }
+
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
@@ -285,12 +300,20 @@ export const CardItem = memo(function CardItem({
 
                                 {/* Form add comment */}
                                 <div className="flex flex-col gap-2">
-                                    <Textarea placeholder="Write a comment..." className="min-h-[60px]" />
+                                    <Textarea
+                                        placeholder="Write a comment..."
+                                        className="min-h-[60px]"
+                                        value={commentText}
+                                        onChange={(e) => setCommentText(e.target.value)}
+                                    />
                                     <div className="flex justify-end">
                                         <Button
                                             size="sm"
-                                            disabled
-                                        >Add Comment</Button>
+                                            disabled={addCommentMutation.isPending || !commentText.trim()}
+                                            onClick={handleAddComment}
+                                        >
+                                            {addCommentMutation.isPending ? 'Adding...' : 'Add Comment'}
+                                        </Button>
                                     </div>
                                 </div>
 
