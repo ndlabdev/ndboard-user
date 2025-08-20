@@ -17,6 +17,7 @@ import {
 } from '@/features/auth'
 import type { User } from '@/types/user'
 import { toast } from 'sonner'
+import { useQueryClient } from '@tanstack/react-query'
 
 type AuthContextType = {
     user: User['data'] | null
@@ -30,12 +31,14 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const router = useRouter()
+    const queryClient = useQueryClient()
     const { data, isLoading, isFetching } = useMeQuery()
     const [user, setUser] = useState<User['data'] | null>(null)
 
     const authLogoutMutation = useAuthLogoutMutation(
         () => {
             setUser(null)
+            queryClient.clear()
             router.replace('/login')
             toast.success('Logged out successfully')
         },
