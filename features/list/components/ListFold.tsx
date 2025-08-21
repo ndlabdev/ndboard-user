@@ -81,7 +81,7 @@ export const ListFold = memo(function ListFold({
                         className="font-semibold whitespace-nowrap origin-bottom-left"
                         style={{ writingMode: 'vertical-rl' }}
                     >
-                        {column.name}
+                        {column.name} ({column._count.cards})
                     </h3>
                 </div>
             )}

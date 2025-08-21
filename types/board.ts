@@ -42,6 +42,9 @@ export interface BoardListsResponse {
     color: string;
     order: number;
     isFold: boolean;
+    _count: {
+        cards: number
+    }
 }
 
 export interface BoardCardChecklists {
