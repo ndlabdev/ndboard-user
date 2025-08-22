@@ -11,6 +11,7 @@ export * from './hooks/useBoardInviteMemberMutation'
 export * from './hooks/useBoardRemoveMemberMutation'
 export * from './hooks/useBoardCreateCustomFieldMutation'
 export * from './hooks/useBoardCustomFieldsQuery'
+export * from './hooks/useBoardDeleteCustomFieldMutation'
 
 // ** Components
 export * from './components/BoardList'

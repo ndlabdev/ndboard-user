@@ -271,3 +271,9 @@ export interface BoardCustomFieldListResponse {
         total: number
     }
 }
+
+export interface BoardDeleteCustomFieldResponse {
+    data: {
+        id: string;
+    }
+}

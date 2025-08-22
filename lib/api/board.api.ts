@@ -1,6 +1,6 @@
 import { apiFetch } from '@/lib/fetcher'
 import { BoardCreateCustomFieldFormValues, BoardCreateFormValues, BoardFavoriteFormValues, BoardLabelCreateFormValues, BoardUpdateFormValues } from '@/features/board'
-import type { BoardListResponse, BoardDetailResponse, BoardCreateResponse, BoardUpdateResponse, BoardFavoriteResponse, BoardCreateLabelsResponse, BoardInviteMembersResponse, BoardCreateCustomFieldResponse, BoardCustomFieldListResponse } from '@/types'
+import type { BoardListResponse, BoardDetailResponse, BoardCreateResponse, BoardUpdateResponse, BoardFavoriteResponse, BoardCreateLabelsResponse, BoardInviteMembersResponse, BoardCreateCustomFieldResponse, BoardCustomFieldListResponse, BoardDeleteCustomFieldResponse } from '@/types'
 
 export function boardGetListApi(workspaceId: string, isStarred = false): Promise<BoardListResponse> {
     return apiFetch<BoardListResponse>('/boards', {
@@ -84,6 +84,12 @@ export function boardCreateBoardCustomFieldApi(shortLink: string, payload: Board
     return apiFetch<BoardCreateCustomFieldResponse>(`/boards/${shortLink}/custom-fields`, {
         method: 'POST',
         body: JSON.stringify(payload)
+    })
+}
+
+export function boardDeleteBoardCustomFieldApi(shortLink: string, fieldId: string): Promise<BoardDeleteCustomFieldResponse> {
+    return apiFetch<BoardDeleteCustomFieldResponse>(`/boards/${shortLink}/custom-fields/${fieldId}`, {
+        method: 'DELETE'
     })
 }
 

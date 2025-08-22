@@ -32,7 +32,7 @@ import {
 import { Checkbox } from '@/components/ui/checkbox'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { BoardCreateCustomFieldFormValues, boardCreateCustomFieldSchema, boardCreateCustomFieldState, useBoardCreateCustomFieldMutation, useBoardCustomFieldsQuery } from '@/features/board'
+import { BoardCreateCustomFieldFormValues, boardCreateCustomFieldSchema, boardCreateCustomFieldState, useBoardCreateCustomFieldMutation, useBoardCustomFieldsQuery, useBoardDeleteCustomFieldMutation } from '@/features/board'
 
 // preset colors
 const OPTION_COLORS = ['red','orange','yellow','green','blue','indigo','purple','pink','gray']
@@ -62,6 +62,7 @@ export const BoardMenuCustomFields = memo(function BoardMenuCustomFields({
     const { data, isLoading } = useBoardCustomFieldsQuery(board.shortLink)
     const fields = data?.data ?? []
     const createMutation = useBoardCreateCustomFieldMutation(board.shortLink)
+    const deleteMutation = useBoardDeleteCustomFieldMutation(board.shortLink)
 
     const form = useForm<BoardCreateCustomFieldFormValues>({
         resolver: zodResolver(boardCreateCustomFieldSchema),
@@ -94,8 +95,8 @@ export const BoardMenuCustomFields = memo(function BoardMenuCustomFields({
         setMode('form')
     }
 
-    const handleDelete = (id: string) => {
-        // setFields((prev) => prev.filter((f) => f.id !== id))
+    const handleDelete = async (id: string) => {
+        await deleteMutation.mutateAsync(id)
     }
 
     const handleCancel = () => {
@@ -148,6 +149,19 @@ export const BoardMenuCustomFields = memo(function BoardMenuCustomFields({
                                                             ))}
                                                         </div>
                                                     )}
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <Button variant="ghost" size="icon" onClick={() => handleEdit(f)}>
+                                                        <Pencil className="size-4" />
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() => handleDelete(f.id)}
+                                                        disabled={deleteMutation.isPending}
+                                                    >
+                                                        <Trash2 className="size-4 text-red-500" />
+                                                    </Button>
                                                 </div>
                                             </div>
                                         ))
