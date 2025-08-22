@@ -8,7 +8,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { BoardMenuArchiveList, BoardMenuBackgroundPicker, BoardMenuLabel, BoardMenuStar, BoardMenuVisibility } from '@/features/board'
+import { BoardMenuArchiveList, BoardMenuBackgroundPicker, BoardMenuCustomFields, BoardMenuLabel, BoardMenuStar, BoardMenuVisibility } from '@/features/board'
 import { BoardDetailResponse } from '@/types'
 
 interface Props {
@@ -55,6 +55,8 @@ export const BoardMenu = memo(function BoardMenu({
                         board={board}
                         textColor={textColor}
                     />
+
+                    <BoardMenuCustomFields board={board} />
                 </DropdownMenuGroup>
             </DropdownMenuContent>
         </DropdownMenu>

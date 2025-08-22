@@ -246,3 +246,28 @@ export interface BoardInviteMembersResponse {
         role: string
     }
 }
+
+export interface BoardCustomFieldOption {
+    id: string
+    label: string
+    color: string
+}
+
+export interface BoardCreateCustomFieldResponse {
+    data: {
+        name: string;
+        options: BoardCustomFieldOption[];
+        id: string;
+        order: number;
+        boardId: string;
+        type: string;
+        showOnCard: boolean;
+    }
+}
+
+export interface BoardCustomFieldListResponse {
+    data: BoardCreateCustomFieldResponse['data'][]
+    meta: {
+        total: number
+    }
+}
