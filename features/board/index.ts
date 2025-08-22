@@ -12,6 +12,7 @@ export * from './hooks/useBoardRemoveMemberMutation'
 export * from './hooks/useBoardCreateCustomFieldMutation'
 export * from './hooks/useBoardCustomFieldsQuery'
 export * from './hooks/useBoardDeleteCustomFieldMutation'
+export * from './hooks/useBoardUpdateCustomFieldMutation'
 
 // ** Components
 export * from './components/BoardList'

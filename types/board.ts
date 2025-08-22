@@ -260,7 +260,7 @@ export interface BoardCreateCustomFieldResponse {
         id: string;
         order: number;
         boardId: string;
-        type: string;
+        type: 'text' | 'number' | 'date' | 'checkbox' | 'select';
         showOnCard: boolean;
     }
 }

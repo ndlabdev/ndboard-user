@@ -93,6 +93,13 @@ export function boardDeleteBoardCustomFieldApi(shortLink: string, fieldId: strin
     })
 }
 
+export function boardUpdateBoardCustomFieldApi(shortLink: string, payload: BoardCreateCustomFieldFormValues): Promise<BoardCreateCustomFieldResponse> {
+    return apiFetch<BoardCreateCustomFieldResponse>(`/boards/${shortLink}/custom-fields/${payload.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(payload)
+    })
+}
+
 export function boardBoardCustomFieldListApi(shortLink: string): Promise<BoardCustomFieldListResponse> {
     return apiFetch<BoardCustomFieldListResponse>(`/boards/${shortLink}/custom-fields`)
 }

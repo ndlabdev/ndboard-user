@@ -13,7 +13,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Input } from '@/components/ui/input'
-import { BoardDetailResponse } from '@/types'
+import { BoardCreateCustomFieldResponse, BoardDetailResponse } from '@/types'
 import {
     Select,
     SelectTrigger,
@@ -32,7 +32,7 @@ import {
 import { Checkbox } from '@/components/ui/checkbox'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { BoardCreateCustomFieldFormValues, boardCreateCustomFieldSchema, boardCreateCustomFieldState, useBoardCreateCustomFieldMutation, useBoardCustomFieldsQuery, useBoardDeleteCustomFieldMutation } from '@/features/board'
+import { BoardCreateCustomFieldFormValues, boardCreateCustomFieldSchema, boardCreateCustomFieldState, useBoardCreateCustomFieldMutation, useBoardCustomFieldsQuery, useBoardDeleteCustomFieldMutation, useBoardUpdateCustomFieldMutation } from '@/features/board'
 
 // preset colors
 const OPTION_COLORS = ['red','orange','yellow','green','blue','indigo','purple','pink','gray']
@@ -41,15 +41,6 @@ interface Props {
     board: BoardDetailResponse['data']
 }
 
-type CustomField = {
-    id: string
-    name: string
-    type: 'text' | 'number' | 'date' | 'checkbox' | 'select'
-    showOnCard: boolean
-    options?: { id: string; label: string; color: string }[]
-}
-
-
 type Mode = 'list' | 'form'
 
 export const BoardMenuCustomFields = memo(function BoardMenuCustomFields({
@@ -57,11 +48,12 @@ export const BoardMenuCustomFields = memo(function BoardMenuCustomFields({
 }: Props) {
     const [isOpen, setIsOpen] = useState(false)
     const [mode, setMode] = useState<Mode>('list')
-    const [editing, setEditing] = useState<CustomField | null>(null)
+    const [editing, setEditing] = useState<BoardCreateCustomFieldResponse['data'] | null>(null)
 
     const { data, isLoading } = useBoardCustomFieldsQuery(board.shortLink)
     const fields = data?.data ?? []
     const createMutation = useBoardCreateCustomFieldMutation(board.shortLink)
+    const updateMutation = useBoardUpdateCustomFieldMutation(board.shortLink)
     const deleteMutation = useBoardDeleteCustomFieldMutation(board.shortLink)
 
     const form = useForm<BoardCreateCustomFieldFormValues>({
@@ -79,12 +71,19 @@ export const BoardMenuCustomFields = memo(function BoardMenuCustomFields({
     }
 
     const handleSave = async (values: BoardCreateCustomFieldFormValues) => {
-        await createMutation.mutateAsync(values)
+        if (editing) {
+            await updateMutation.mutateAsync({
+                ...values,
+                id: editing.id
+            })
+        } else {
+            await createMutation.mutateAsync(values)
+        }
         resetForm()
         setMode('list')
     }
 
-    const handleEdit = (field: CustomField) => {
+    const handleEdit = (field: BoardCreateCustomFieldResponse['data']) => {
         setEditing(field)
         form.reset({
             name: field.name,
