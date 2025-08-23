@@ -1,6 +1,6 @@
 import { useMutation, UseMutationResult, useQueryClient } from '@tanstack/react-query'
 import { boardDeleteBoardCustomFieldApi } from '@/lib/api'
-import type { BoardCustomFieldListResponse, BoardDeleteCustomFieldResponse } from '@/types'
+import type { BoardCustomFieldListResponse, BoardDeleteCustomFieldResponse, BoardDetailResponse, CardGetListResponse } from '@/types'
 
 export function useBoardDeleteCustomFieldMutation(
     shortLink: string,
@@ -21,6 +21,39 @@ export function useBoardDeleteCustomFieldMutation(
                     return {
                         ...old,
                         data: old.data.filter((f) => f.id !== fieldId)
+                    }
+                }
+            )
+            // 2. Update board detail cache
+            queryClient.setQueryData<BoardDetailResponse>(
+                ['boards', shortLink],
+                (old) => {
+                    if (!old) return old
+
+                    return {
+                        ...old,
+                        data: {
+                            ...old.data,
+                            customFields: old.data.customFields.filter((cf) => cf.id !== fieldId)
+                        }
+                    }
+                }
+            )
+
+            // 3. Update cards cache (remove field from each card.customFields)
+            queryClient.setQueriesData<CardGetListResponse>(
+                { queryKey: ['cards'] },
+                (old) => {
+                    if (!old) return old
+
+                    return {
+                        ...old,
+                        data: old.data.map((card) => ({
+                            ...card,
+                            customFields: card.customFields
+                                ? card.customFields.filter((cf) => cf.id !== fieldId)
+                                : []
+                        }))
                     }
                 }
             )
