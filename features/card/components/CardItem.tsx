@@ -107,7 +107,7 @@ export const CardItem = memo(function CardItem({
                                 <CardChecklistSummary card={card} />
 
                                 {(card.startDate || card.dueDate) && (
-                                    <div className="mt-2">
+                                    <div className="my-2">
                                         {(() => {
                                             const now = new Date()
                                             const start = card.startDate ? new Date(card.startDate) : null
@@ -143,6 +143,48 @@ export const CardItem = memo(function CardItem({
                                         })()}
                                     </div>
                                 )}
+
+                                {/* --- Custom Fields showOnCard --- */}
+                                {board.customFields &&
+                                    board.customFields
+                                        .filter((f) => f.showOnCard)
+                                        .map((field) => {
+                                            const cf = card.customFields?.find((v) => v.id === field.id)
+                                            const value = cf?.value ?? ''
+
+                                            if (!value) return null
+
+                                            return (
+                                                <div
+                                                    key={field.id}
+                                                    className="mt-1 text-xs text-muted-foreground flex items-center gap-1"
+                                                >
+                                                    <span className="font-medium">{field.name}:</span>
+                                                    {field.type === 'checkbox' ? (
+                                                        <span>{value === 'true' ? '✅' : '❌'}</span>
+                                                    ) : field.type === 'date' ? (
+                                                        <span>{format(new Date(value), 'dd MMM yyyy HH:mm')}</span>
+                                                    ) : field.type === 'select' ? (
+                                                        (() => {
+                                                            const opt = field.options?.find((o) => o.id === value)
+                                                            
+                                                            return opt ? (
+                                                                <span className="inline-flex items-center">
+                                                                    <span
+                                                                        className={`inline-block size-2 rounded-full mr-1 bg-${opt.color}-500`}
+                                                                    />
+                                                                    {opt.label}
+                                                                </span>
+                                                            ) : (
+                                                                '--'
+                                                            )
+                                                        })()
+                                                    ) : (
+                                                        <span>{value}</span>
+                                                    )}
+                                                </div>
+                                            )
+                                        })}
 
                                 {card.assignees && card.assignees.length > 0 && (
                                     <div className="flex justify-end mt-2">
