@@ -263,7 +263,7 @@ export interface BoardInviteMembersResponse {
 export interface BoardCustomFieldOption {
     id: string
     label: string
-    color: string
+    color: 'green' | 'yellow' | 'orange' | 'red' | 'blue' | 'purple' | 'pink' | 'gray' | 'indigo'
 }
 
 export interface BoardCreateCustomFieldResponse {

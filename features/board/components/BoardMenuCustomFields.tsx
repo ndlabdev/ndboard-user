@@ -32,10 +32,7 @@ import {
 import { Checkbox } from '@/components/ui/checkbox'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { BoardCreateCustomFieldFormValues, boardCreateCustomFieldSchema, boardCreateCustomFieldState, useBoardCreateCustomFieldMutation, useBoardCustomFieldsQuery, useBoardDeleteCustomFieldMutation, useBoardUpdateCustomFieldMutation } from '@/features/board'
-
-// preset colors
-const OPTION_COLORS = ['red','orange','yellow','green','blue','indigo','purple','pink','gray']
+import { BoardCreateCustomFieldFormValues, boardCreateCustomFieldSchema, boardCreateCustomFieldState, COLOR_CLASSES, OPTION_COLORS, useBoardCreateCustomFieldMutation, useBoardCustomFieldsQuery, useBoardDeleteCustomFieldMutation, useBoardUpdateCustomFieldMutation } from '@/features/board'
 
 interface Props {
     board: BoardDetailResponse['data']
@@ -141,7 +138,7 @@ export const BoardMenuCustomFields = memo(function BoardMenuCustomFields({
                                                             {f.options.map((o) => (
                                                                 <span
                                                                     key={o.id}
-                                                                    className={`text-xs px-2 py-0.5 rounded-full bg-${o.color}-500 text-white`}
+                                                                    className={`text-xs px-2 py-0.5 rounded-full ${COLOR_CLASSES[o.color]} text-white`}
                                                                 >
                                                                     {o.label}
                                                                 </span>
@@ -266,13 +263,13 @@ export const BoardMenuCustomFields = memo(function BoardMenuCustomFields({
                                                             <FormItem>
                                                                 <FormControl>
                                                                     <Select value={field.value} onValueChange={field.onChange}>
-                                                                        <SelectTrigger className="w-[100px]">
+                                                                        <SelectTrigger className="w-[120px]">
                                                                             <SelectValue />
                                                                         </SelectTrigger>
                                                                         <SelectContent>
                                                                             {OPTION_COLORS.map((c) => (
                                                                                 <SelectItem key={c} value={c}>
-                                                                                    <span className={`inline-block size-3 rounded-full mr-2 bg-${c}-500`} />
+                                                                                    <span className={`inline-block size-3 rounded-full ${COLOR_CLASSES[c]}`} />
                                                                                     {c}
                                                                                 </SelectItem>
                                                                             ))}

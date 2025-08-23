@@ -220,3 +220,19 @@ export const LABEL_COLOR_NAMES = LABEL_COLORS.map((c) => c.name) as [string, ...
 export type LabelColor = typeof LABEL_COLOR_NAMES[number]
 export const LABEL_TONES = ['subtle', 'normal', 'bold'] as const
 export type LabelTone = typeof LABEL_TONES[number]
+
+export const COLOR_CLASSES = {
+    red: 'bg-red-500',
+    orange: 'bg-orange-500',
+    yellow: 'bg-yellow-500',
+    green: 'bg-green-500',
+    blue: 'bg-blue-500',
+    indigo: 'bg-indigo-500',
+    purple: 'bg-purple-500',
+    pink: 'bg-pink-500',
+    gray: 'bg-gray-500'
+} as const
+
+type OptionColor = keyof typeof COLOR_CLASSES
+
+export const OPTION_COLORS: OptionColor[] = Object.keys(COLOR_CLASSES) as OptionColor[]
