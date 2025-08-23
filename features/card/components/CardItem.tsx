@@ -1,6 +1,6 @@
 import { memo, useState } from 'react'
 import { cn, getLabelClass, isUrl } from '@/lib/utils'
-import { calcAllChecklistsProgress, CardAddChecklist, CardAddLabel, CardAssignMember, CardLinkPreview, CardSetDueDate, useCardAddCommentMutation } from '@/features/card'
+import { calcAllChecklistsProgress, CardAddChecklist, CardAddLabel, CardAssignMember, CardCustomFieldsSection, CardLinkPreview, CardSetDueDate, useCardAddCommentMutation } from '@/features/card'
 import { BoardCardChecklists, BoardCardsResponse, BoardDetailResponse } from '@/types'
 import {
     Dialog,
@@ -287,6 +287,15 @@ export const CardItem = memo(function CardItem({
                                             setLists={setLists}
                                         />
                                     </div>
+                                )}
+
+                                {board.customFields && board.customFields.length > 0 && (
+                                    <div className="col-span-12">
+                                        <CardCustomFieldsSection
+                                            board={board}
+                                            card={card}
+                                        />
+                                    </div>    
                                 )}
                             </div>
                         </div>

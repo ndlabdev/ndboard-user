@@ -114,6 +114,11 @@ export interface BoardCardsResponse {
         cardId: string;
         boardCustomFieldId: string;
     }[];
+    customFields: {
+        id: string;
+        name: string;
+        value: any;
+    }[]
     meta: OgObject;
 }
 
@@ -155,6 +160,14 @@ export interface BoardDetailResponse {
         lists: BoardListsResponse[]
         labels: BoardLabelResponse[]
         members: BoardMembersResponse[]
+        customFields: {
+            name: string;
+            options: BoardCreateCustomFieldResponse['data']['options'];
+            id: string;
+            order: number;
+            type: string;
+            showOnCard: boolean;
+        }[]
         isFavorite: boolean
     }
 }

@@ -20,15 +20,7 @@ export function useCardUpdateMutation(
                         card.id === data.data.id
                             ? {
                                 ...card,
-                                name: data.data.name,
-                                labels: data.data.labels,
-                                assignees: data.data.assignees,
-                                description: data.data.description,
-                                updatedAt: data.data.updatedAt,
-                                startDate: data.data.startDate,
-                                dueDate: data.data.dueDate,
-                                comments: data.data.comments,
-                                activities: data.data.activities
+                                ...data.data
                             }
                             : card
                     )

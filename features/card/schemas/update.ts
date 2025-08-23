@@ -8,7 +8,15 @@ export const cardUpdateSchema = z.object({
     labels: z.array(z.string()).optional(),
     assignees: z.array(z.string()).optional(),
     startDate: z.string().datetime().nullable().optional(),
-    dueDate: z.string().datetime().nullable().optional()
+    dueDate: z.string().datetime().nullable().optional(),
+    customFields: z
+        .array(
+            z.object({
+                boardCustomFieldId: z.string(),
+                value: z.string()
+            })
+        )
+        .optional()
 })
 
 // ** State
