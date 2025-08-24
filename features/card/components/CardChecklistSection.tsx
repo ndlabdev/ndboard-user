@@ -28,7 +28,7 @@ export function CardChecklistSection({ card, lists, setLists }: Props) {
     const completeItemMutation = useCardCompleteChecklistItemMutation(card.listId)
     const deleteChecklistMutation = useCardDeleteChecklistMutation(card.listId)
     const deleteItemMutation = useCardDeleteChecklistItemMutation(card.listId)
-    const addItemMutation = useCardAddChecklistItemMutation(card.listId, (res) => {
+    const addItemMutation = useCardAddChecklistItemMutation((res) => {
         const it = res?.data
         if (!it?.id || !it?.checklistId) return
         setLists((prev) =>

@@ -118,3 +118,7 @@ export function cardAddCommentApi(cardId: string, payload: CardAddCommentFormVal
         body: JSON.stringify(payload)
     })
 }
+
+export function cardDetailApi(cardId: string): Promise<{ data: BoardCardsResponse }> {
+    return apiFetch<{ data: BoardCardsResponse }>(`/cards/${cardId}`)
+}

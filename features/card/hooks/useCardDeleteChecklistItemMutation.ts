@@ -1,6 +1,6 @@
 import { useMutation, UseMutationResult, useQueryClient } from '@tanstack/react-query'
 import { cardDeleteChecklistItemApi } from '@/lib/api'
-import type { CardDeleteChecklistItemResponse, CardGetListResponse } from '@/types'
+import type { BoardCardsResponse, CardDeleteChecklistItemResponse } from '@/types'
 import type { CardDeleteChecklistItemFormValues } from '@/features/card'
 
 export function useCardDeleteChecklistItemMutation(
@@ -13,35 +13,28 @@ export function useCardDeleteChecklistItemMutation(
     return useMutation<CardDeleteChecklistItemResponse, unknown, CardDeleteChecklistItemFormValues>({
         mutationFn: cardDeleteChecklistItemApi,
         onSuccess: (data) => {
-            queryClient.setQueryData(['cards', listId], (old: CardGetListResponse | undefined) => {
+            queryClient.setQueryData(['cards', data.data.cardId], (old: { data: BoardCardsResponse } | undefined) => {
                 if (!old) return old
 
-                const payload = data?.data
-                if (!payload) return old
-
                 return {
-                    ...old,
-                    data: old.data.map((card) =>
-                        card.id !== payload.cardId
-                            ? card
-                            : {
-                                ...card,
-                                activities: [
-                                    ...(data.data.activities ? [data.data.activities] : []),
-                                    ...(card.activities ?? [])
-                                ],
-                                checklists: card.checklists.map((list) =>
-                                    list.id !== payload.checklistId
-                                        ? list
-                                        : {
-                                            ...list,
-                                            items: list.items.filter((x) => x.id !== payload.id)
-                                        }
-                                )
-                            }
-                    )
+                    data: {
+                        ...old.data,
+                        activities: [
+                            ...(data.data.activities ? [data.data.activities] : []),
+                            ...(old.data.activities ?? [])
+                        ],
+                        checklists: old.data.checklists.map((list) =>
+                            list.id !== data.data.checklistId
+                                ? list
+                                : {
+                                    ...list,
+                                    items: list.items.filter((x) => x.id !== data.data.id)
+                                }
+                        )
+                    }
                 }
             })
+
             onSuccess?.(data)
         },
         onError

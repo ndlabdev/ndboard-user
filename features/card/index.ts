@@ -32,6 +32,7 @@ export * from './hooks/useCardCompleteChecklistItemMutation'
 export * from './hooks/useCardRenameChecklistItemMutation'
 export * from './hooks/useCardUpdateChecklistMutation'
 export * from './hooks/useCardAddCommentMutation'
+export * from './hooks/useCardDetailQuery'
 
 // ** Schemas
 export * from './schemas/create'

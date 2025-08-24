@@ -1,6 +1,6 @@
 import { useMutation, UseMutationResult, useQueryClient } from '@tanstack/react-query'
 import { cardAddChecklistsApi } from '@/lib/api'
-import type { CardAddChecklistsResponse, CardGetListResponse } from '@/types'
+import type { BoardCardsResponse, CardAddChecklistsResponse } from '@/types'
 import type { CardAddChecklistsFormValues } from '@/features/card'
 
 export function useCardAddChecklistsMutation(
@@ -12,27 +12,19 @@ export function useCardAddChecklistsMutation(
     return useMutation<CardAddChecklistsResponse, unknown, CardAddChecklistsFormValues>({
         mutationFn: cardAddChecklistsApi,
         onSuccess: (data) => {
-            queryClient.setQueryData(
-                ['cards', data.data.listId],
-                (old: CardGetListResponse | undefined) => {
-                    if (!old) return old
+            queryClient.setQueryData(['cards', data.data.cardId], (old: { data: BoardCardsResponse } | undefined) => {
+                if (!old) return old
 
-                    return {
-                        ...old,
-                        data: old.data.map((card) =>
-                            card.id === data.data.cardId
-                                ? {
-                                    ...card,
-                                    activities: [
-                                        ...(data.data.activities ? [data.data.activities] : []),
-                                        ...(card.activities ?? [])
-                                    ]
-                                }
-                                : card
-                        )
+                return {
+                    data: {
+                        ...old.data,
+                        activities: [
+                            ...(data.data.activities ? [data.data.activities] : []),
+                            ...(old.data.activities ?? [])
+                        ]
                     }
                 }
-            )
+            })
 
             onSuccess?.(data)
         },
