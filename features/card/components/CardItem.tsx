@@ -1,6 +1,6 @@
 import { memo, useState } from 'react'
 import { getLabelClass, isUrl } from '@/lib/utils'
-import { CardAddChecklist, CardAddLabel, CardAssignMember, CardChecklistSummary, CardCustomFieldsSection, CardItemAssignees, CardItemCustomFields, CardItemDueDate, CardLinkPreview, CardSetDueDate, useCardAddCommentMutation, useCardDetailQuery } from '@/features/card'
+import { CardAddChecklist, CardAddLabel, CardAssignMember, CardChecklistSummary, CardContentActivities, CardContentComments, CardCustomFieldsSection, CardItemAssignees, CardItemCustomFields, CardItemDueDate, CardItemLabels, CardLinkPreview, CardSetDueDate, useCardDetailQuery } from '@/features/card'
 import { BoardCardChecklists, BoardCardsResponse, BoardDetailResponse } from '@/types'
 import {
     Dialog,
@@ -12,12 +12,9 @@ import {
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { EditableTextarea } from './CardEditableTextarea'
 import { CardChecklistSection } from './CardChecklistSection'
-import { History, Loader2, MessageSquare } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 import { CardDescription } from './CardDescription'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { format } from 'date-fns'
-import { Textarea } from '@/components/ui/textarea'
-import { Button } from '@/components/ui/button'
 
 interface Props {
     card: BoardCardsResponse
@@ -32,23 +29,9 @@ export const CardItem = memo(function CardItem({
 }: Props) {
     const [isOpen, setIsOpen] = useState(false)
     const [lists, setLists] = useState<BoardCardChecklists[]>(card?.checklists ?? [])
-    const [commentText, setCommentText] = useState('')
 
     const { data: cardDetail, isLoading } = useCardDetailQuery(card.id, isOpen)
-    const addCommentMutation = useCardAddCommentMutation(card.id)
    
-    const handleAddComment = () => {
-        if (!commentText.trim()) return
-        addCommentMutation.mutate(
-            { content: commentText },
-            {
-                onSuccess: () => {
-                    setCommentText('')
-                }
-            }
-        )
-    }
-
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
@@ -57,27 +40,8 @@ export const CardItem = memo(function CardItem({
                         ? <CardLinkPreview meta={card.meta} />
                         : (
                             <div className="p-3">
-                                {card.labels.length > 0 && (
-                                    <ul className="flex flex-wrap gap-1 items-center mb-2">
-                                        {card.labels.map((item) => (
-                                            <li
-                                                key={item.id}
-                                                className={`
-                                                    h-4 text-center px-1 min-w-12 max-w-full text-[10px] font-semibold rounded
-                                                    ${getLabelClass(item.color, item.tone) || 'bg-gray-300 text-gray-900'}
-                                                    transition-colors duration-150
-                                                `}
-                                            >
-                                                {item.name}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-
-                                <h4 className="font-semibold text-sm">
-                                    {card.name}
-                                </h4>
-
+                                <CardItemLabels card={card} />
+                                <h4 className="font-semibold text-sm">{card.name}</h4>
                                 <CardChecklistSummary card={card} />
                                 <CardItemDueDate card={card} />
                                 <CardItemCustomFields
@@ -221,95 +185,8 @@ export const CardItem = memo(function CardItem({
                             </div>
 
                             <div className="lg:col-span-4 col-span-12 border-l px-4 mb-3 flex flex-col gap-6">
-                                {/* Comments */}
-                                <div className="flex flex-col gap-3">
-                                    <h4 className="text-sm font-semibold flex items-center gap-2">
-                                        <MessageSquare className="w-4 h-4" /> Comments
-                                    </h4>
-
-                                    {/* Form add comment */}
-                                    <div className="flex flex-col gap-2">
-                                        <Textarea
-                                            placeholder="Write a comment..."
-                                            className="min-h-[60px]"
-                                            value={commentText}
-                                            onChange={(e) => setCommentText(e.target.value)}
-                                        />
-                                        <div className="flex justify-end">
-                                            <Button
-                                                size="sm"
-                                                disabled={addCommentMutation.isPending || !commentText.trim()}
-                                                onClick={handleAddComment}
-                                            >
-                                                {addCommentMutation.isPending ? 'Adding...' : 'Add Comment'}
-                                            </Button>
-                                        </div>
-                                    </div>
-
-                                    {/* List comments */}
-                                    <ul className="flex flex-col gap-3 mt-2">
-                                        {cardDetail.data.comments && cardDetail.data.comments.length > 0 ? (
-                                            cardDetail.data.comments.map((c) => (
-                                                <li key={c.id} className="flex gap-2">
-                                                    <Avatar className="w-8 h-8">
-                                                        {c.user.avatarUrl ? (
-                                                            <AvatarImage src={c.user.avatarUrl} alt={c.user.name} />
-                                                        ) : (
-                                                            <AvatarFallback>
-                                                                {c.user.name.charAt(0).toUpperCase()}
-                                                            </AvatarFallback>
-                                                        )}
-                                                    </Avatar>
-                                                    <div className="flex flex-col bg-muted/30 rounded-lg px-3 py-2 w-full">
-                                                        <div className="flex justify-between items-center">
-                                                            <span className="text-sm font-medium">{c.user.name}</span>
-                                                            <span className="text-xs text-muted-foreground">
-                                                                {format(new Date(c.createdAt), 'dd MMM yyyy HH:mm')}
-                                                            </span>
-                                                        </div>
-                                                        <p className="text-sm mt-1">{c.content}</p>
-                                                    </div>
-                                                </li>
-                                            ))
-                                        ) : (
-                                            <li className="text-sm text-muted-foreground italic">No comments yet</li>
-                                        )}
-                                    </ul>
-                                </div>
-
-                                {/* Activities */}
-                                <div className="flex flex-col gap-3">
-                                    <h4 className="text-sm font-semibold flex items-center gap-2">
-                                        <History className="w-4 h-4" /> Activity
-                                    </h4>
-
-                                    <ul className="flex flex-col gap-3">
-                                        {cardDetail.data.activities && cardDetail.data.activities.length > 0 ? (
-                                            cardDetail.data.activities.map((a) => (
-                                                <li key={a.id} className="flex gap-2 text-sm">
-                                                    <Avatar className="w-6 h-6">
-                                                        {a.user.avatarUrl ? (
-                                                            <AvatarImage src={a.user.avatarUrl} alt={a.user.name} />
-                                                        ) : (
-                                                            <AvatarFallback>
-                                                                {a.user.name.charAt(0).toUpperCase()}
-                                                            </AvatarFallback>
-                                                        )}
-                                                    </Avatar>
-                                                    <div>
-                                                        <span className="font-medium">{a.user.name}</span>{' '}
-                                                        <span className="text-muted-foreground">{a.detail}</span>
-                                                        <div className="text-xs text-muted-foreground">
-                                                            {format(new Date(a.createdAt), 'dd MMM yyyy HH:mm')}
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                            ))
-                                        ) : (
-                                            <li className="text-sm text-muted-foreground italic">No activities yet</li>
-                                        )}
-                                    </ul>
-                                </div>
+                                <CardContentComments card={cardDetail.data} />
+                                <CardContentActivities card={cardDetail.data} />
                             </div>
                         </div>
                     )}

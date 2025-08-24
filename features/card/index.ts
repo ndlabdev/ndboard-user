@@ -15,6 +15,9 @@ export * from './components/CardChecklistSummary'
 export * from './components/CardItemDueDate'
 export * from './components/CardItemCustomFields'
 export * from './components/CardItemAssignees'
+export * from './components/CardItemLabels'
+export * from './components/CardContentComments'
+export * from './components/CardContentActivities'
 
 // ** Hooks
 export * from './hooks/useCardCreateMutation'
