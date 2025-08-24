@@ -11,6 +11,10 @@ export * from './components/CardAddChecklist'
 export * from './components/CardAssignMember'
 export * from './components/CardSetDueDate'
 export * from './components/CardCustomFieldsSection'
+export * from './components/CardChecklistSummary'
+export * from './components/CardItemDueDate'
+export * from './components/CardItemCustomFields'
+export * from './components/CardItemAssignees'
 
 // ** Hooks
 export * from './hooks/useCardCreateMutation'

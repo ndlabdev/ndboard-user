@@ -1,6 +1,6 @@
 import { memo, useState } from 'react'
-import { cn, getLabelClass, isUrl } from '@/lib/utils'
-import { calcAllChecklistsProgress, CardAddChecklist, CardAddLabel, CardAssignMember, CardCustomFieldsSection, CardLinkPreview, CardSetDueDate, useCardAddCommentMutation } from '@/features/card'
+import { getLabelClass, isUrl } from '@/lib/utils'
+import { CardAddChecklist, CardAddLabel, CardAssignMember, CardChecklistSummary, CardCustomFieldsSection, CardItemAssignees, CardItemCustomFields, CardItemDueDate, CardLinkPreview, CardSetDueDate, useCardAddCommentMutation } from '@/features/card'
 import { BoardCardChecklists, BoardCardsResponse, BoardDetailResponse } from '@/types'
 import {
     Dialog,
@@ -12,11 +12,10 @@ import {
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { EditableTextarea } from './CardEditableTextarea'
 import { CardChecklistSection } from './CardChecklistSection'
-import { History, MessageSquare, SquareCheckBig } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
+import { History, MessageSquare } from 'lucide-react'
 import { CardDescription } from './CardDescription'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { addDays, format, isBefore, isToday, isWithinInterval } from 'date-fns'
+import { format } from 'date-fns'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 
@@ -24,32 +23,6 @@ interface Props {
     card: BoardCardsResponse
     board: BoardDetailResponse['data']
     nearLastItem?: boolean
-}
-
-function CardChecklistSummary({ card }: Pick<Props, 'card'>) {
-    if (!card.checklists || card.checklists.length === 0) return null
-
-    const totalItems = card.checklists.reduce((sum, cl) => sum + cl.items.length, 0)
-    const completedItems = card.checklists.reduce(
-        (sum, cl) => sum + cl.items.filter((it) => it.isChecked).length,
-        0
-    )
-
-    if (!totalItems) return null
-
-    const progress = calcAllChecklistsProgress(card.checklists)
-
-    const isDone = progress === 100
-
-    return (
-        <Badge
-            variant={isDone ? 'default' : 'secondary'}
-            className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium mt-2"
-        >
-            <SquareCheckBig className={`size-3 ${isDone ? 'text-white' : 'text-muted-foreground'}`} />
-            {completedItems}/{totalItems}
-        </Badge>
-    )
 }
 
 export const CardItem = memo(function CardItem({
@@ -105,116 +78,12 @@ export const CardItem = memo(function CardItem({
                                 </h4>
 
                                 <CardChecklistSummary card={card} />
-
-                                {(card.startDate || card.dueDate) && (
-                                    <div className="my-2">
-                                        {(() => {
-                                            const now = new Date()
-                                            const start = card.startDate ? new Date(card.startDate) : null
-                                            const due = card.dueDate ? new Date(card.dueDate) : null
-
-                                            let statusClass = ''
-                                            if (due) {
-                                                if (isBefore(due, now) && !isToday(due)) {
-                                                    statusClass = 'bg-red-100 text-red-600 border-red-200'
-                                                } else if (
-                                                    isWithinInterval(due, { start: now, end: addDays(now, 1) })
-                                                ) {
-                                                    statusClass = 'bg-amber-100 text-amber-600 border-amber-200'
-                                                } else {
-                                                    statusClass = 'bg-green-100 text-green-600 border-green-200'
-                                                }
-                                            }
-
-                                            return (
-                                                <div
-                                                    className={cn(
-                                                        'inline-flex items-center text-sm font-medium px-2 py-1 rounded border',
-                                                        statusClass
-                                                    )}
-                                                >
-                                                    {start
-                                                        ? `${format(start, 'dd MMM yyyy')} → ${due ? format(due, 'dd MMM yyyy') : ''}`
-                                                        : due
-                                                            ? format(due, 'dd MMM yyyy')
-                                                            : ''}
-                                                </div>
-                                            )
-                                        })()}
-                                    </div>
-                                )}
-
-                                {/* --- Custom Fields showOnCard --- */}
-                                {board.customFields &&
-                                    board.customFields
-                                        .filter((f) => f.showOnCard)
-                                        .map((field) => {
-                                            const cf = card.customFields?.find((v) => v.id === field.id)
-                                            const value = cf?.value ?? ''
-
-                                            if (!value) return null
-
-                                            return (
-                                                <div
-                                                    key={field.id}
-                                                    className="mt-1 text-xs text-muted-foreground flex items-center gap-1"
-                                                >
-                                                    <span className="font-medium">{field.name}:</span>
-                                                    {field.type === 'checkbox' ? (
-                                                        <span>{value === 'true' ? '✅' : '❌'}</span>
-                                                    ) : field.type === 'date' ? (
-                                                        <span>{format(new Date(value), 'dd MMM yyyy HH:mm')}</span>
-                                                    ) : field.type === 'select' ? (
-                                                        (() => {
-                                                            const opt = field.options?.find((o) => o.id === value)
-                                                            
-                                                            return opt ? (
-                                                                <span className="inline-flex items-center">
-                                                                    <span
-                                                                        className={`inline-block size-2 rounded-full mr-1 bg-${opt.color}-500`}
-                                                                    />
-                                                                    {opt.label}
-                                                                </span>
-                                                            ) : (
-                                                                '--'
-                                                            )
-                                                        })()
-                                                    ) : (
-                                                        <span>{value}</span>
-                                                    )}
-                                                </div>
-                                            )
-                                        })}
-
-                                {card.assignees && card.assignees.length > 0 && (
-                                    <div className="flex justify-end mt-2">
-                                        <div className="flex -space-x-2">
-                                            {card.assignees.slice(0, 3).map((m) => (
-                                                <Avatar
-                                                    key={m.id}
-                                                    title={m.name}
-                                                    className="w-6 h-6 border-2 border-white"
-                                                >
-                                                    {m.avatarUrl ? (
-                                                        <AvatarImage src={m.avatarUrl} alt={m.name} />
-                                                    ) : (
-                                                        <AvatarFallback>
-                                                            {m.name.charAt(0).toUpperCase()}
-                                                        </AvatarFallback>
-                                                    )}
-                                                </Avatar>
-                                            ))}
-
-                                            {card.assignees.length > 3 && (
-                                                <Avatar className="w-6 h-6 border-2 border-white bg-gray-300 text-[10px] font-semibold">
-                                                    <AvatarFallback>
-                                                        +{card.assignees.length - 3}
-                                                    </AvatarFallback>
-                                                </Avatar>
-                                            )}
-                                        </div>
-                                    </div>
-                                )}
+                                <CardItemDueDate card={card} />
+                                <CardItemCustomFields
+                                    card={card}
+                                    board={board}
+                                />
+                                <CardItemAssignees card={card} />
                             </div>
                         )}
                 </div>
