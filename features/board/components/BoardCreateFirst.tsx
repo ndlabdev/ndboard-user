@@ -16,7 +16,6 @@ import { useForm } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Plus } from 'lucide-react'
-import { toast } from 'sonner'
 import {
     Form,
     FormControl,
@@ -34,7 +33,6 @@ import {
 } from '@/components/ui/select'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { BOARD_VISIBILITY_OPTIONS, BoardBackgroundPicker, BoardCreateFormValues, boardCreateSchema, boardCreateState, useBoardCreateMutation } from '@/features/board'
-import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useRouter } from '@bprogress/next/app'
@@ -45,7 +43,6 @@ interface Props {
 
 export function BoardCreateFirst({ workspaceId }: Props) {
     const router = useRouter()
-    const queryClient = useQueryClient()
     const [open, setOpen] = useState(false)
     const form = useForm<BoardCreateFormValues>({
         resolver: zodResolver(boardCreateSchema),
@@ -57,19 +54,8 @@ export function BoardCreateFirst({ workspaceId }: Props) {
 
     const { mutate, isPending, isSuccess } = useBoardCreateMutation(
         ({ data }) => {
-            toast.success('Board Created Successfully', {
-                description: 'Your new board is ready. Start organizing your tasks and collaborate with your team.'
-            })
-
             setOpen(false)
             router.push(`/b/${data.shortLink}/${data.slug}`)
-            queryClient.invalidateQueries({ queryKey: ['boards'] })
-        }, (error) => {
-            const msg =
-                (error as { message?: string })?.message ||
-                'Create Board Failed'
-
-            toast.error(msg)
         }
     )
 

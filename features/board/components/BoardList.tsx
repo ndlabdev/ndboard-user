@@ -21,11 +21,15 @@ export function BoardList({
     isStarred = false
 }: Props) {
     const router = useRouter()
-    const { data, isLoading } = useBoardGetListQuery(workspaceId, isStarred)
+    const { data, isLoading } = useBoardGetListQuery(workspaceId)
 
     if (isLoading) return <BoardSkeleton />
 
-    const boards = data?.data || []
+    const boards = data?.data
+        ? isStarred
+            ? data.data.filter((item) => item.isFavorite)
+            : data.data
+        : []
 
     if (isStarred && boards.length === 0) return
 
