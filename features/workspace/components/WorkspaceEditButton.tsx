@@ -16,7 +16,6 @@ import { useForm } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Edit2 } from 'lucide-react'
-import { toast } from 'sonner'
 import {
     Form,
     FormControl,
@@ -28,7 +27,6 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from '@bprogress/next/app'
 import { WorkspaceEditFormValues, useWorkspaceEditMutation, workspaceEditSchema } from '@/features/workspace'
-import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 
@@ -42,7 +40,6 @@ interface Props {
 export function WorkspaceEditButton(props: Props) {
     const router = useRouter()
     const [open, setOpen] = useState(false)
-    const queryClient = useQueryClient()
     const form = useForm<WorkspaceEditFormValues>({
         resolver: zodResolver(workspaceEditSchema),
         defaultValues: props
@@ -50,19 +47,8 @@ export function WorkspaceEditButton(props: Props) {
 
     const { mutate, isPending } = useWorkspaceEditMutation(
         (data) => {
-            toast.success('Workspace Updated Successfully', {
-                description: 'Your workspace information has been updated.'
-            })
-
             setOpen(false)
-            queryClient.invalidateQueries({ queryKey: ['workspaces'] })
             if (props.slug !== data.data.slug) router.push(`/w/${data.data.slug}/boards`)
-        }, (error) => {
-            const msg =
-                (error as { message?: string })?.message ||
-                'Update Workspace Failed'
-
-            toast.error(msg)
         }
     )
 

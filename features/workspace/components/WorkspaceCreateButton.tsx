@@ -16,7 +16,6 @@ import { useForm } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Plus } from 'lucide-react'
-import { toast } from 'sonner'
 import {
     Form,
     FormControl,
@@ -27,34 +26,17 @@ import {
 } from '@/components/ui/form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { WorkspaceCreateFormValues, workspaceCreateSchema, useWorkspaceCreateMutation, workspaceCreateState } from '@/features/workspace'
-import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 
 export function WorkspaceCreateButton() {
     const [open, setOpen] = useState(false)
-    const queryClient = useQueryClient()
     const form = useForm<WorkspaceCreateFormValues>({
         resolver: zodResolver(workspaceCreateSchema),
         defaultValues: workspaceCreateState
     })
 
-    const { mutate, isPending, isSuccess } = useWorkspaceCreateMutation(
-        () => {
-            toast.success('Workspace Created Successfully', {
-                description: 'Your new workspace has been created.'
-            })
-
-            setOpen(false)
-            queryClient.invalidateQueries({ queryKey: ['workspaces'] })
-        }, (error) => {
-            const msg =
-                (error as { message?: string })?.message ||
-                'Create Workspace Failed'
-
-            toast.error(msg)
-        }
-    )
+    const { mutate, isPending, isSuccess } = useWorkspaceCreateMutation(() => setOpen(false))
 
     const onSubmit = (values: WorkspaceCreateFormValues) => mutate(values)
 
