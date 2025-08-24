@@ -1,6 +1,6 @@
 import { useMutation, UseMutationResult, useQueryClient } from '@tanstack/react-query'
 import { boardUnFavoriteApi } from '@/lib/api'
-import type { BoardDetailResponse, BoardFavoriteResponse } from '@/types'
+import type { BoardDetailResponse, BoardFavoriteResponse, BoardListResponse } from '@/types'
 import type { BoardFavoriteFormValues } from '@/features/board'
 
 export function useBoardUnFavoriteMutation(): UseMutationResult<BoardFavoriteResponse, unknown, BoardFavoriteFormValues, unknown> {
@@ -9,7 +9,20 @@ export function useBoardUnFavoriteMutation(): UseMutationResult<BoardFavoriteRes
     return useMutation<BoardFavoriteResponse, unknown, BoardFavoriteFormValues>({
         mutationFn: boardUnFavoriteApi,
         onSuccess: (_data, variables) => {
-            queryClient.invalidateQueries({ queryKey: ['boards', _data.data.workspaceId] })
+            // ✅ Update board list cache (workspace level)
+            queryClient.setQueryData(
+                ['boards', _data.data.workspaceId],
+                (old: BoardListResponse) =>
+                    old
+                        ? {
+                            ...old,
+                            data: old.data.map((b) =>
+                                b.id === _data.data.boardId ? { ...b, isFavorite: _data.data.isFavorite } : b
+                            )
+                        }
+                        : old
+            )
+
             queryClient.setQueryData(['boards', variables.shortLink], (old: BoardDetailResponse) => ({
                 ...old,
                 data: {
