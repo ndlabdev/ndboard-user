@@ -236,3 +236,17 @@ export const COLOR_CLASSES = {
 type OptionColor = keyof typeof COLOR_CLASSES
 
 export const OPTION_COLORS: OptionColor[] = Object.keys(COLOR_CLASSES) as OptionColor[]
+
+/**
+ * Board types supported in the app
+ * Stored in DB as string (Board.type)
+ */
+export const BOARD_TYPE = {
+    BOARD: 'board',
+    DASHBOARD: 'dashboard',
+    TIMELINE: 'timeline',
+    TABLE: 'table',
+    CALENDAR: 'calendar'
+} as const
+
+export type BoardType = typeof BOARD_TYPE[keyof typeof BOARD_TYPE]

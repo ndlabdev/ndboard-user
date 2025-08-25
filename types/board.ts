@@ -1,3 +1,4 @@
+import { BoardType } from '@/features/board'
 import { PaginateMeta } from './api-common'
 import { OgObject } from './og-object'
 import type { JSONContent } from '@tiptap/core'
@@ -148,6 +149,7 @@ export interface BoardDetailResponse {
         shortLink: string
         slug: string
         workspaceId: string
+        type: BoardType
         ownerId: string
         createdById: string
         updatedById: string
@@ -218,6 +220,7 @@ export interface BoardUpdateResponse {
     data: {
         name: string
         slug: string
+        type: string
         shortLink: string
         id: string
         createdAt: Date

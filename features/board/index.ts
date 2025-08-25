@@ -33,6 +33,7 @@ export * from './components/BoardMenuLabelForm'
 export * from './components/BoardMenuArchiveList'
 export * from './components/BoardInviteMember'
 export * from './components/BoardMenuCustomFields'
+export * from './components/BoardTypeSelect'
 
 // ** Constants
 export * from './constants'

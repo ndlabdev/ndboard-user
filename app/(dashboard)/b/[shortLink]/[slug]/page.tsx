@@ -2,7 +2,7 @@
 
 import { useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import { BoardChangeVisibility, BoardCoverImage, BoardDetailSkeleton, BoardInviteMember, BoardMenu, BoardNameEditable, BoardStar, useBoardUpdateMutation, useBoardWithCardsQuery } from '@/features/board'
+import { BoardChangeVisibility, BoardCoverImage, BoardDetailSkeleton, BoardInviteMember, BoardMenu, BoardNameEditable, BoardStar, BoardTypeSelect, useBoardUpdateMutation, useBoardWithCardsQuery } from '@/features/board'
 import { ListColumnKanban } from '@/features/list'
 import { getTextColorByBg } from '@/utils'
 
@@ -49,11 +49,20 @@ export default function BoardDetailPage() {
             <div className="relative z-20 flex flex-col h-full">
                 <div className="inline-block py-2.5 px-4 backdrop-blur-md bg-black/10 shadow-lg">
                     <div className="flex justify-between">
-                        <BoardNameEditable
-                            name={board.name}
-                            textColor={textColor}
-                            onUpdate={handleUpdateBoardName}
-                        />
+                        <div className="flex gap-4">
+                            <BoardNameEditable
+                                name={board.name}
+                                textColor={textColor}
+                                onUpdate={handleUpdateBoardName}
+                            />
+
+                            <BoardTypeSelect
+                                shortLink={board.shortLink}
+                                workspaceId={board.workspaceId}
+                                currentType={board.type}
+                                textColor={textColor}
+                            />
+                        </div>
 
                         <div className="flex gap-2">
                             <BoardStar
@@ -83,10 +92,12 @@ export default function BoardDetailPage() {
                 </div>
 
                 <div className="h-full overflow-y-hidden max-h-[calc(100vh-108px)]">
-                    <ListColumnKanban
-                        board={board}
-                        listCards={listCards}
-                    />
+                    {board.type === 'board' && (
+                        <ListColumnKanban
+                            board={board}
+                            listCards={listCards}
+                        />
+                    )}
                 </div>
             </div>
         </section>

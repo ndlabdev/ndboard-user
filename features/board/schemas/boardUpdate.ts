@@ -7,6 +7,7 @@ const BOARD_VISIBILITY_VALUES = Object.values(BOARD_VISIBILITY) as [string, ...s
 export const boardUpdateSchema = z.object({
     shortLink: z.string(),
     name: z.string().optional(),
+    type: z.string().optional(),
     visibility: z.enum(BOARD_VISIBILITY_VALUES).optional(),
     coverImageUrl: z.string().optional()
 })

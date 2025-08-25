@@ -19,6 +19,7 @@ export function useBoardUpdateMutation(workspaceId: string): UseMutationResult<B
                             ? {
                                 ...board,
                                 ...variables.name && { name: variables.name },
+                                ...variables.type && { type: variables.type },
                                 ...variables.visibility && { visibility: variables.visibility },
                                 ...variables.coverImageUrl && { coverImageUrl: variables.coverImageUrl }
                             }
@@ -35,6 +36,7 @@ export function useBoardUpdateMutation(workspaceId: string): UseMutationResult<B
                     data: {
                         ...old.data,
                         ...variables.name && { name: variables.name },
+                        ...variables.type && { type: variables.type },
                         ...variables.visibility && { visibility: variables.visibility },
                         ...variables.coverImageUrl && { coverImageUrl: variables.coverImageUrl }
                     }
