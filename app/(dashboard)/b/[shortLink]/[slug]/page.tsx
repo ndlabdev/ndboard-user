@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation'
 import { BoardChangeVisibility, BoardCoverImage, BoardDetailSkeleton, BoardInviteMember, BoardMenu, BoardNameEditable, BoardStar, BoardTypeSelect, useBoardUpdateMutation, useBoardWithCardsQuery } from '@/features/board'
 import { ListColumnKanban } from '@/features/list'
 import { getTextColorByBg } from '@/utils'
+import { DashboardView } from '@/features/dashboard'
 
 export default function BoardDetailPage() {
     const params = useParams()
@@ -97,6 +98,10 @@ export default function BoardDetailPage() {
                             board={board}
                             listCards={listCards}
                         />
+                    )}
+
+                    {board.type === 'dashboard' && (
+                        <DashboardView board={board} />
                     )}
                 </div>
             </div>
