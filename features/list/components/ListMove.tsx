@@ -8,7 +8,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, Dialog
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Loader2Icon } from 'lucide-react'
 import { toast } from 'sonner'
-import { memo, useState } from 'react'
+import { Dispatch, memo, SetStateAction, useState } from 'react'
 import { listMoveSchema, ListMoveFormValues } from '@/features/list'
 import { useBoardGetListQuery } from '@/features/board'
 import {
@@ -22,11 +22,13 @@ import {
 interface Props {
     board: BoardDetailResponse['data']
     column: BoardListsResponse
+    setIsMenuOpen: Dispatch<SetStateAction<boolean>>
 }
 
 export const ListMove = memo(function ListMove({
     board,
-    column
+    column,
+    setIsMenuOpen
 }: Props) {
     const [open, setOpen] = useState(false)
     const form = useForm<ListMoveFormValues>({
@@ -55,13 +57,18 @@ export const ListMove = memo(function ListMove({
                 `List "${column.name}" has been moved from board "${oldBoard?.name}" to board "${newBoard?.name}"!`
             )
             setOpen(false)
+            setIsMenuOpen(false)
         },
-        () => {
-            toast.error('Move list failed!')
+        (error) => {
+            const msg =
+                (error as { message?: string })?.message ||
+                'Move list failed!'
+
+            toast.error(msg)
         }
     )
 
-    const onSubmit = (values: ListMoveFormValues) => mutate(values)
+    const onSubmit = async (values: ListMoveFormValues) => mutate(values)
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>

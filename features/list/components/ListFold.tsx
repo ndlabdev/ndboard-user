@@ -10,8 +10,6 @@ interface Props {
     headerRef: RefObject<HTMLDivElement | null>
     setAddingIndex: Dispatch<SetStateAction<number | 'end' | null>>
     setNewCardTitle: Dispatch<SetStateAction<string>>
-    isMenuOpen: boolean
-    setIsMenuOpen: Dispatch<SetStateAction<boolean>>
 }
 
 export const ListFold = memo(function ListFold({
@@ -19,9 +17,7 @@ export const ListFold = memo(function ListFold({
     column,
     headerRef,
     setAddingIndex,
-    setNewCardTitle,
-    isMenuOpen,
-    setIsMenuOpen
+    setNewCardTitle
 }: Props) {
     const { mutate } = useListUpdateMutation(column.id, board.shortLink)
 
@@ -57,8 +53,6 @@ export const ListFold = memo(function ListFold({
                             column={column}
                             setAddingIndex={setAddingIndex}
                             setNewCardTitle={setNewCardTitle}
-                            isMenuOpen={isMenuOpen}
-                            setIsMenuOpen={setIsMenuOpen}
                         />
                     </div>
                 </div>

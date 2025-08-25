@@ -55,7 +55,6 @@ export const ListColumn = memo(function ListColumn({
     board,
     column
 }: Props) {
-    const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
     const [addingIndex, setAddingIndex] = useState<number | 'end' | null>(null)
     const [newCardTitle, setNewCardTitle] = useState('')
     const scrollableRef = useRef<HTMLDivElement | null>(null)
@@ -227,8 +226,6 @@ export const ListColumn = memo(function ListColumn({
                         board={board}
                         column={column}
                         headerRef={headerRef}
-                        isMenuOpen={isMenuOpen}
-                        setIsMenuOpen={setIsMenuOpen}
                         setAddingIndex={setAddingIndex}
                         setNewCardTitle={setNewCardTitle}
                     />

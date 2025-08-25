@@ -1,6 +1,6 @@
 import { ListArchive, ListArchiveAllCards, ListCopy, ListMove, ListMoveAllCards } from '@/features/list'
 import { BoardDetailResponse, BoardListsResponse } from '@/types'
-import { Dispatch, memo, SetStateAction } from 'react'
+import { Dispatch, memo, SetStateAction, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Ellipsis } from 'lucide-react'
 import {
@@ -17,18 +17,16 @@ interface Props {
     column: BoardListsResponse
     setAddingIndex: Dispatch<SetStateAction<number | 'end' | null>>
     setNewCardTitle: Dispatch<SetStateAction<string>>
-    isMenuOpen: boolean
-    setIsMenuOpen: Dispatch<SetStateAction<boolean>>
 }
 
 export const ListActions = memo(function ListActions({
     board,
     column,
     setAddingIndex,
-    setNewCardTitle,
-    isMenuOpen,
-    setIsMenuOpen
+    setNewCardTitle
 }: Props) {
+    const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
+
     return (
         <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
             <DropdownMenuTrigger asChild>
@@ -65,6 +63,7 @@ export const ListActions = memo(function ListActions({
                     <ListMove
                         board={board}
                         column={column}
+                        setIsMenuOpen={setIsMenuOpen}
                     />
 
                     <ListMoveAllCards
