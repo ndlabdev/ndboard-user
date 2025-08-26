@@ -1,6 +1,6 @@
 import { useMutation, UseMutationResult, useQueryClient } from '@tanstack/react-query'
 import { cardUpdateApi } from '@/lib/api'
-import type { BoardCardsResponse, CardGetListResponse, CardUpdateResponse } from '@/types'
+import type { BoardCardsResponse, CardGetListResponse, CardUpdateResponse, CalendarViewBoardResponse } from '@/types'
 import type { CardUpdateFormValues } from '@/features/card'
 
 export function useCardUpdateMutation(
@@ -38,6 +38,18 @@ export function useCardUpdateMutation(
                 }
             })
 
+            queryClient.setQueryData(['board-calendar', data.data.boardId], (old: CalendarViewBoardResponse) => {
+                if (!old) return old
+
+                return {
+                    ...old,
+                    data: old.data.map((c) =>
+                        c.id === data.data.id
+                            ? { ...c, startDate: data.data.startDate, dueDate: data.data.dueDate }
+                            : c
+                    )
+                }
+            })
             onSuccess?.(data)
         }
     })

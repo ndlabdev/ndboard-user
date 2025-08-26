@@ -6,6 +6,7 @@ import { BoardChangeVisibility, BoardCoverImage, BoardDetailSkeleton, BoardInvit
 import { ListColumnKanban } from '@/features/list'
 import { getTextColorByBg } from '@/utils'
 import { DashboardView } from '@/features/dashboard'
+import { CalendarView } from '@/features/calendar'
 
 export default function BoardDetailPage() {
     const params = useParams()
@@ -102,6 +103,10 @@ export default function BoardDetailPage() {
 
                     {board.type === 'dashboard' && (
                         <DashboardView board={board} />
+                    )}
+
+                    {board.type === 'calendar' && (
+                        <CalendarView board={board} />
                     )}
                 </div>
             </div>
