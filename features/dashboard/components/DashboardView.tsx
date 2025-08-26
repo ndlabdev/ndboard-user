@@ -16,6 +16,7 @@ import {
 } from 'recharts'
 import { BoardDetailResponse } from '@/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { format } from 'date-fns'
 
 interface Props {
     board: BoardDetailResponse['data']
@@ -34,8 +35,13 @@ export function DashboardView({ board }: Props) {
 
     const { cardsByList, cardsByMember, cardsByLabel, cardsByDueDate } = data.data
 
+    const dueDateData = cardsByDueDate.map((d) => ({
+        ...d,
+        date: format(new Date(d.date), 'dd/MM')
+    }))
+
     return (
-        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 h-full overflow-y-auto">
+        <div className="p-6 grid grid-cols-1 gap-6 h-full overflow-y-auto">
             {/* Cards by List */}
             <Card>
                 <CardHeader>
@@ -113,10 +119,12 @@ export function DashboardView({ board }: Props) {
                 </CardHeader>
                 <CardContent className="h-64">
                     <ResponsiveContainer>
-                        <LineChart data={cardsByDueDate}>
+                        <LineChart data={dueDateData}>
                             <XAxis dataKey="date" />
                             <YAxis />
-                            <Tooltip />
+                            <Tooltip
+                                labelFormatter={(label) => `Date: ${label}`}
+                            />
                             <Line type="monotone" dataKey="count" stroke="#3b82f6" />
                         </LineChart>
                     </ResponsiveContainer>
