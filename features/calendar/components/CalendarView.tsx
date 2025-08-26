@@ -38,11 +38,15 @@ export function CalendarView({ board }: Props) {
         .filter((c) => !selectedLabel || c.labels?.some((l) => l.id === selectedLabel))
         .filter((c) => !selectedMember || c.assignees?.some((a) => a.id === selectedMember))
         .map((c) => {
+            const start = c.startDate ?? c.dueDate
+            const end = c.dueDate ? new Date(c.dueDate) : undefined
+            const endDate = end ? new Date(end.getTime() + 24 * 60 * 60 * 1000) : undefined
+  
             return {
                 id: c.id,
                 title: c.name,
-                start: c.startDate ?? c.dueDate ?? undefined,
-                end: c.dueDate ?? undefined,
+                start,
+                end: endDate,
                 allDay: !c.startDate || (c.startDate === c.dueDate),
                 extendedProps: {
                     listId: c.listId,
@@ -212,6 +216,15 @@ export function CalendarView({ board }: Props) {
                                 )}
                             </div>
                         )
+                    }}
+                    dateClick={(info) => {
+                        const clickedDate = info.date
+
+                        console.log(clickedDate)
+                        // openCreateCardModal({
+                        //     startDate: clickedDate.toISOString(),
+                        //     dueDate: clickedDate.toISOString()
+                        // })
                     }}
                 />
             </Card>
