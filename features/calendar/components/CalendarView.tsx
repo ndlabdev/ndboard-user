@@ -4,12 +4,14 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import timeGridPlugin from '@fullcalendar/timegrid'
-import { BoardDetailResponse } from '@/types'
+import { BoardDetailResponse, BoardLabelResponse } from '@/types'
 import { useCalendarViewBoardQuery } from '@/features/calendar'
 import { Card } from '@/components/ui/card'
 import { useCardUpdateMutation } from '@/features/card'
 import { useState } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { getLabelClass } from '@/lib/utils'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 interface Props {
     board: BoardDetailResponse['data']
@@ -35,17 +37,21 @@ export function CalendarView({ board }: Props) {
         .filter((c) => !selectedList || c.listId === selectedList)
         .filter((c) => !selectedLabel || c.labels?.some((l) => l.id === selectedLabel))
         .filter((c) => !selectedMember || c.assignees?.some((a) => a.id === selectedMember))
-        .map((c) => ({
-            id: c.id,
-            title: c.name,
-            start: c.startDate ?? c.dueDate ?? undefined,
-            end: c.dueDate ?? undefined,
-            allDay: !c.startDate || (c.startDate === c.dueDate),
-            extendedProps: {
-                listId: c.listId,
-                listName: c.listName
+        .map((c) => {
+            return {
+                id: c.id,
+                title: c.name,
+                start: c.startDate ?? c.dueDate ?? undefined,
+                end: c.dueDate ?? undefined,
+                allDay: !c.startDate || (c.startDate === c.dueDate),
+                extendedProps: {
+                    listId: c.listId,
+                    listName: c.listName,
+                    labels: c.labels,
+                    assignees: c.assignees
+                }
             }
-        }))
+        })
 
     return (
         <div className="p-4 h-full flex flex-col gap-4">
@@ -159,6 +165,52 @@ export function CalendarView({ board }: Props) {
                     eventClick={(info) => {
                         alert(
                             `Clicked card: ${info.event.title} (List: ${info.event.extendedProps['listName']})`
+                        )
+                    }}
+                    eventContent={(arg) => {
+                        const labels = arg.event.extendedProps['labels'] as BoardLabelResponse[]
+                        const assignees = arg.event.extendedProps['assignees'] as {
+                            id: string
+                            name: string
+                            avatarUrl?: string | null
+                        }[] | undefined
+
+                        return (
+                            <div className="flex flex-col gap-1">
+                                {/* labels */}
+                                {labels && labels.length > 0 && (
+                                    <ul className="flex flex-wrap gap-1">
+                                        {labels.map((l) => (
+                                            <li
+                                                key={l.id}
+                                                className={`h-4 px-1 text-[10px] font-semibold rounded ${getLabelClass(l.color, l.tone ?? 'normal')}`}
+                                            >
+                                                {l.name}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+
+                                {/* title */}
+                                <div className="text-xs font-medium truncate">{arg.event.title}</div>
+
+                                {/* assignees */}
+                                {assignees && assignees.length > 0 && (
+                                    <div className="flex -space-x-2 mt-1">
+                                        {assignees.map((a) => (
+                                            <Avatar key={a.id} className="w-5 h-5 border border-white">
+                                                {a.avatarUrl ? (
+                                                    <AvatarImage src={a.avatarUrl} alt={a.name} />
+                                                ) : (
+                                                    <AvatarFallback className="text-[10px]">
+                                                        {a.name.charAt(0).toUpperCase()}
+                                                    </AvatarFallback>
+                                                )}
+                                            </Avatar>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         )
                     }}
                 />
