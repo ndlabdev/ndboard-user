@@ -4,6 +4,8 @@ import { z } from 'zod'
 export const cardCreateSchema = z.object({
     name: z.string().optional(),
     listId: z.string(),
+    startDate: z.string().datetime().nullable().optional(),
+    dueDate: z.string().datetime().nullable().optional(),
     index: z.number().optional()
 })
 

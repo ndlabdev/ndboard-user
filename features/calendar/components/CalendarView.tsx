@@ -5,10 +5,10 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import { BoardDetailResponse, BoardLabelResponse } from '@/types'
-import { useCalendarViewBoardQuery } from '@/features/calendar'
+import { CalendarCreateCard, useCalendarViewBoardQuery } from '@/features/calendar'
 import { Card } from '@/components/ui/card'
 import { useCardUpdateMutation } from '@/features/card'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { getLabelClass } from '@/lib/utils'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -24,6 +24,11 @@ export function CalendarView({ board }: Props) {
     const [selectedList, setSelectedList] = useState<string | null>(null)
     const [selectedLabel, setSelectedLabel] = useState<string | null>(null)
     const [selectedMember, setSelectedMember] = useState<string | null>(null)
+    const [popoverOpen, setPopoverOpen] = useState(false)
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+    const [startDate, setStartDate] = useState<Date>(new Date())
+    const [dueDate, setDueDate] = useState<Date>(new Date())
+    const lastClick = useRef<number | null>(null)
 
     if (isLoading) {
         return <div className="p-4">Loading calendar...</div>
@@ -38,7 +43,7 @@ export function CalendarView({ board }: Props) {
         .filter((c) => !selectedLabel || c.labels?.some((l) => l.id === selectedLabel))
         .filter((c) => !selectedMember || c.assignees?.some((a) => a.id === selectedMember))
         .map((c) => {
-            const start = c.startDate ?? c.dueDate
+            const start = c.startDate ?? c.dueDate ?? undefined
             const end = c.dueDate ? new Date(c.dueDate) : undefined
             const endDate = end ? new Date(end.getTime() + 24 * 60 * 60 * 1000) : undefined
   
@@ -146,6 +151,7 @@ export function CalendarView({ board }: Props) {
                         center: 'title',
                         right: 'dayGridMonth,timeGridWeek,timeGridDay'
                     }}
+                    selectable={true}
                     events={events}
                     height="100%"
                     editable={true}
@@ -218,16 +224,28 @@ export function CalendarView({ board }: Props) {
                         )
                     }}
                     dateClick={(info) => {
-                        const clickedDate = info.date
+                        const now = Date.now()
+                        if (lastClick.current && now - lastClick.current < 300) {
+                            setAnchorEl(info.dayEl)
 
-                        console.log(clickedDate)
-                        // openCreateCardModal({
-                        //     startDate: clickedDate.toISOString(),
-                        //     dueDate: clickedDate.toISOString()
-                        // })
+                            setStartDate(info.date)
+                            setDueDate(info.date)
+
+                            setPopoverOpen(true)
+                        }
+                        lastClick.current = now
                     }}
                 />
             </Card>
+
+            <CalendarCreateCard
+                board={board}
+                anchorEl={anchorEl}
+                open={popoverOpen}
+                onOpenChange={setPopoverOpen}
+                startDateProps={startDate}
+                dueDateProps={dueDate}
+            />
         </div>
     )
 }

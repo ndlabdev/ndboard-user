@@ -67,6 +67,7 @@ export interface BoardCardsResponse {
     name: string;
     description: JSONContent | null;
     listId: string;
+    listName: string;
     boardId: string;
     order: number;
     startDate: Date | null;
