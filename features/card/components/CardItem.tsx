@@ -1,6 +1,6 @@
-import { memo, useState } from 'react'
-import { getLabelClass, isUrl } from '@/lib/utils'
-import { CardAddChecklist, CardAddLabel, CardAssignMember, CardChecklistSummary, CardContentActivities, CardContentComments, CardCustomFieldsSection, CardItemAssignees, CardItemCustomFields, CardItemDueDate, CardItemLabels, CardLinkPreview, CardSetDueDate, useCardDetailQuery } from '@/features/card'
+import { memo, useEffect, useState } from 'react'
+import { getLabelClass } from '@/lib/utils'
+import { CardAddChecklist, CardAddLabel, CardAssignMember, CardContentActivities, CardContentComments, CardCustomFieldsSection, CardSetDueDate, useCardDetailQuery } from '@/features/card'
 import { BoardCardChecklists, BoardCardsResponse, BoardDetailResponse } from '@/types'
 import {
     Dialog,
@@ -19,39 +19,29 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 interface Props {
     card: BoardCardsResponse
     board: BoardDetailResponse['data']
-    nearLastItem?: boolean
+    children?: React.ReactNode;
 }
 
 export const CardItem = memo(function CardItem({
     card,
     board,
-    nearLastItem = false
+    children
 }: Props) {
     const [isOpen, setIsOpen] = useState(false)
-    const [lists, setLists] = useState<BoardCardChecklists[]>(card?.checklists ?? [])
+    const [lists, setLists] = useState<BoardCardChecklists[]>([])
 
     const { data: cardDetail, isLoading } = useCardDetailQuery(card.id, isOpen)
-   
+
+    useEffect(() => {
+        if (cardDetail?.data?.checklists) {
+            setLists(cardDetail.data.checklists)
+        }
+    }, [cardDetail])
+
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <div className={`bg-white rounded-lg shadow border border-white hover:border-primary group list-none cursor-pointer ${nearLastItem ? 'mb-2' : ''}`}>
-                    {isUrl(card.name) && card.meta
-                        ? <CardLinkPreview meta={card.meta} />
-                        : (
-                            <div className="p-3">
-                                <CardItemLabels card={card} />
-                                <h4 className="font-semibold text-sm">{card.name}</h4>
-                                <CardChecklistSummary card={card} />
-                                <CardItemDueDate card={card} />
-                                <CardItemCustomFields
-                                    card={card}
-                                    board={board}
-                                />
-                                <CardItemAssignees card={card} />
-                            </div>
-                        )}
-                </div>
+                {children}
             </DialogTrigger>
 
             <DialogContent className="sm:max-w-5/6 max-h-[95vh] flex flex-col overflow-x-auto">

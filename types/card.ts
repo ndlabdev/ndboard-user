@@ -82,6 +82,7 @@ export interface CardUpdateResponse {
         isArchived: boolean;
         order: number;
         boardId: string;
+        listName: string;
         startDate: Date | null;
         dueDate: Date | null;
         listId: string;

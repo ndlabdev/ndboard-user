@@ -47,6 +47,8 @@ export function useCardUpdateMutation(
                         c.id === data.data.id
                             ? {
                                 ...c,
+                                name: data.data.name,
+                                listName: data.data.listName,
                                 startDate: data.data.startDate,
                                 dueDate: data.data.dueDate,
                                 labels: data.data.labels?.map((l) => ({

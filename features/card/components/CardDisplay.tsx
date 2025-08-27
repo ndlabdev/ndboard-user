@@ -1,9 +1,18 @@
 import { isSafari } from '@/shared/is-safari'
-import { CardShadow } from './CardShadow'
 import { TCard, TCardState } from '@/shared/data'
 import { RefObject } from 'react'
-import { CardItem } from './CardItem'
 import { BoardDetailResponse } from '@/types'
+import { isUrl } from '@/lib/utils'
+import {
+    CardLinkPreview,
+    CardItemLabels,
+    CardChecklistSummary,
+    CardItemDueDate,
+    CardItemCustomFields,
+    CardItemAssignees,
+    CardItem,
+    CardShadow
+} from '@/features/card'
 
 // eslint-disable-next-line no-unused-vars
 const innerStyles: { [Key in TCardState['type']]?: string } = {
@@ -54,7 +63,25 @@ export function CardDisplay({
                 <CardItem
                     card={card}
                     board={board}
-                />
+                >
+                    <div className={'bg-white rounded-lg shadow border border-white hover:border-primary group list-none cursor-pointer'}>
+                        {isUrl(card.name) && card.meta
+                            ? <CardLinkPreview meta={card.meta} />
+                            : (
+                                <div className="p-3">
+                                    <CardItemLabels card={card} />
+                                    <h4 className="font-semibold text-sm">{card.name}</h4>
+                                    <CardChecklistSummary card={card} />
+                                    <CardItemDueDate card={card} />
+                                    <CardItemCustomFields
+                                        card={card}
+                                        board={board}
+                                    />
+                                    <CardItemAssignees card={card} />
+                                </div>
+                            )}
+                    </div>
+                </CardItem>
             </div>
 
             {state.type === 'is-over' && state.closestEdge === 'bottom' ? (
