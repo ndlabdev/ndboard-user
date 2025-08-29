@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { useParams } from 'next/navigation'
 import {
     useWorkspaceGetListQuery,
+    WorkspaceDeleteDialog,
     WorkspaceHeader,
     WorkspaceSkeleton,
     WorkspaceTransferOwnershipDialog
@@ -13,12 +14,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Users, Trash2, Crown } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { useRouter } from '@bprogress/next/app'
+import { useAuth } from '@/features/auth'
 
 export default function BoardSettingsPage() {
     const params = useParams()
+    const router = useRouter()
+    const { user } = useAuth()
     const { data, isLoading } = useWorkspaceGetListQuery()
     const workspace = data?.data.find((item) => item.slug === params.slug)
+
     const [openTransferDialog, setOpenTransferDialog] = useState(false)
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
 
     if (isLoading) return <WorkspaceSkeleton />
 
@@ -106,6 +113,7 @@ export default function BoardSettingsPage() {
                         <Button
                             variant="destructive"
                             className="flex items-center gap-2"
+                            onClick={() => setOpenDeleteDialog(true)}
                         >
                             <Trash2 size={16} /> Delete Workspace
                         </Button>
@@ -120,6 +128,17 @@ export default function BoardSettingsPage() {
                 members={workspace.members}
                 open={openTransferDialog}
                 onOpenChange={setOpenTransferDialog}
+            />
+
+            {/* Delete Workspace Dialog */}
+            <WorkspaceDeleteDialog
+                workspaceId={workspace.id}
+                workspaceName={workspace.name}
+                open={openDeleteDialog}
+                onOpenChange={setOpenDeleteDialog}
+                onDeleted={() => {
+                    router.push(`/u/${user?.username}/boards`)
+                }}
             />
         </section>
     )

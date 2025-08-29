@@ -109,3 +109,11 @@ export interface WorkspaceTransferOwnerResponse {
     }
     message: string
 }
+
+export interface WorkspaceDeleteResponse {
+    data: {
+        readonly workspaceId: string;
+        readonly name: string;
+    }
+    message: string
+}
