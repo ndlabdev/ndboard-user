@@ -2,6 +2,7 @@ import { useMutation, UseMutationResult, useQueryClient } from '@tanstack/react-
 import { boardUpdateApi } from '@/lib/api'
 import type { BoardDetailResponse, BoardListResponse, BoardUpdateResponse } from '@/types'
 import type { BoardUpdateFormValues } from '@/features/board'
+import { toast } from 'sonner'
 
 export function useBoardUpdateMutation(workspaceId: string): UseMutationResult<BoardUpdateResponse, unknown, BoardUpdateFormValues, unknown> {
     const queryClient = useQueryClient()
@@ -42,6 +43,13 @@ export function useBoardUpdateMutation(workspaceId: string): UseMutationResult<B
                     }
                 }
             })
+        },
+        onError: (error) => {
+            const msg =
+                (error as { message?: string })?.message ||
+                'Update Board Failed'
+
+            toast.error(msg)
         }
     })
 }
