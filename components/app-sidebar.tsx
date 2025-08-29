@@ -45,18 +45,8 @@ const data = {
     projects: [
         {
             name: 'Boards',
-            url: '#',
+            url: '/u/[username]/boards',
             icon: Presentation
-        },
-        {
-            name: 'Members',
-            url: '#',
-            icon: Users
-        },
-        {
-            name: 'Settings',
-            url: '#',
-            icon: Settings
         }
     ]
 }
