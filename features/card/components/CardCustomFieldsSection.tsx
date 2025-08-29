@@ -56,6 +56,7 @@ interface ItemProps {
 
 function CardCustomFieldItem({ field, value = '', cardId }: ItemProps) {
     const updateMutation = useCardUpdateMutation()
+    const [open, setOpen] = useState(false)
     const [localValue, setLocalValue] = useState(value)
 
     const debouncedUpdateRef = useRef<((_val: string | null) => void) | null>(null)
@@ -133,7 +134,7 @@ function CardCustomFieldItem({ field, value = '', cardId }: ItemProps) {
             )}
 
             {field.type === 'date' && (
-                <Popover modal>
+                <Popover open={open} onOpenChange={setOpen} modal>
                     <PopoverTrigger asChild>
                         <Button
                             variant="outline"
@@ -198,6 +199,7 @@ function CardCustomFieldItem({ field, value = '', cardId }: ItemProps) {
                                     variant="ghost"
                                     onClick={() => {
                                         setLocalValue('')
+                                        setOpen(false)
                                         updateMutation.mutate({
                                             id: cardId,
                                             customFields: [{ boardCustomFieldId: field.id, value: '' }]
@@ -210,6 +212,7 @@ function CardCustomFieldItem({ field, value = '', cardId }: ItemProps) {
                                 <Button
                                     size="sm"
                                     onClick={() => {
+                                        setOpen(false)
                                         updateMutation.mutate({
                                             id: cardId,
                                             customFields: [

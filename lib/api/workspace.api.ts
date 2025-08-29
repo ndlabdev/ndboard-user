@@ -1,6 +1,6 @@
-import { WorkspaceCreateFormValues, WorkspaceEditFormValues, WorkspaceInviteMemberFormValues } from '@/features/workspace'
+import { WorkspaceCreateFormValues, WorkspaceEditFormValues, WorkspaceInviteMemberFormValues, WorkspaceTransferOwnerFormValues } from '@/features/workspace'
 import { apiFetch } from '@/lib/fetcher'
-import type { WorkspaceCreateResponse, WorkspaceListResponse, WorkspaceEditResponse, WorkspaceMemberListResponse, WorkspaceInviteMemberResponse, WorkspaceMemberSearchResponse, WorkspaceMemberRemoveResponse } from '@/types'
+import type { WorkspaceCreateResponse, WorkspaceListResponse, WorkspaceEditResponse, WorkspaceMemberListResponse, WorkspaceInviteMemberResponse, WorkspaceMemberSearchResponse, WorkspaceMemberRemoveResponse, WorkspaceTransferOwnerResponse } from '@/types'
 
 export function workspaceGetListApi(): Promise<WorkspaceListResponse> {
     return apiFetch<WorkspaceListResponse>('/workspace', {
@@ -52,5 +52,12 @@ export function workspaceMemberSearchApi(workspaceId: string, q: string): Promis
 export async function workspaceRemoveMemberApi(workspaceId: string, userId: string): Promise<WorkspaceMemberRemoveResponse> {
     return apiFetch<WorkspaceMemberRemoveResponse>(`/workspace/${workspaceId}/members/${userId}`, {
         method: 'DELETE'
+    })
+}
+
+export function workspaceTransferOwnerApi(payload: WorkspaceTransferOwnerFormValues): Promise<WorkspaceTransferOwnerResponse> {
+    return apiFetch<WorkspaceTransferOwnerResponse>(`/workspace/${payload.workspaceId}/transfer-owner`, {
+        method: 'PATCH',
+        body: JSON.stringify(payload)
     })
 }

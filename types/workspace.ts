@@ -34,6 +34,14 @@ export interface WorkspaceListResponse {
         createdAt: Date
         updatedAt: Date
         memberCount: number
+        members: {
+            id: string;
+            name: string;
+            email: string;
+            avatarUrl: string | null;
+            role: string;
+            joinedAt: Date;
+        }[]
     }[]
     meta: PaginateMeta
 }
@@ -90,4 +98,14 @@ export interface WorkspaceMemberRemoveResponse {
         joinedAt: Date;
         invitedById: string | null;
     }
+}
+
+export interface WorkspaceTransferOwnerResponse {
+    data: {
+        readonly workspaceId: string;
+        readonly oldOwnerId: string;
+        readonly newOwnerId: string;
+        readonly newOwnerName: string;
+    }
+    message: string
 }
