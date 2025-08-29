@@ -1,7 +1,6 @@
 'use client'
 
 import { type LucideIcon } from 'lucide-react'
-
 import {
     SidebarGroup,
     SidebarMenu,
@@ -10,6 +9,7 @@ import {
 } from '@/components/ui/sidebar'
 import Link from 'next/link'
 import { useAuth } from '@/features/auth'
+import { usePathname } from 'next/navigation'
 
 export function NavProjects({
     projects
@@ -21,20 +21,29 @@ export function NavProjects({
   }[]
 }) {
     const { user } = useAuth()
+    const pathname = usePathname()
 
     return (
         <SidebarGroup className="group-data-[collapsible=icon]:hidden">
             <SidebarMenu>
-                {projects.map((item) => (
-                    <SidebarMenuItem key={item.name}>
-                        <SidebarMenuButton asChild>
-                            <Link href={item.url.replace('[username]', user?.username as string)}>
-                                <item.icon />
-                                <span>{item.name}</span>
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                ))}
+                {projects.map((item) => {
+                    const href = item.url.replace('[username]', user?.username as string)
+
+                    const isActive =
+                        pathname === href ||
+                        pathname.startsWith(`${href}/`)
+
+                    return (
+                        <SidebarMenuItem key={item.name}>
+                            <SidebarMenuButton asChild isActive={isActive}>
+                                <Link href={href}>
+                                    <item.icon />
+                                    <span>{item.name}</span>
+                                </Link>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                    )
+                })}
             </SidebarMenu>
         </SidebarGroup>
     )
