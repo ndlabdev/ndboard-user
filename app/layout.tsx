@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { IBM_Plex_Sans, IBM_Plex_Mono } from 'next/font/google'
 import './globals.css'
 import ReactQueryProvider from '@/providers/ReactQueryProvider'
@@ -18,6 +18,10 @@ const ibmMono = IBM_Plex_Mono({
     weight: ['400', '500', '600', '700'],
     display: 'swap'
 })
+
+export const viewport: Viewport = {
+    themeColor: '#3b82f6'
+}
 
 export const metadata: Metadata = {
     title: {
@@ -66,8 +70,7 @@ export const metadata: Metadata = {
         icon: '/favicon.ico',
         shortcut: '/favicon-16x16.png',
         apple: '/apple-touch-icon.png'
-    },
-    themeColor: '#3b82f6'
+    }
 }
 
 export default function RootLayout({
